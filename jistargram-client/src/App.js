@@ -21,20 +21,21 @@ function App() {
 
       {/* 오른쪽 추천 유저 리스트 */}
       <main className="main-content">
-        <h3>회원님을 위한 추천</h3>
-        
-        <ul className="recommend-list">
-          <li className="user-card">
-            <img src="/default-profile.png" alt="user" />
-            <div className="info">
-              <b>user1</b>
-              <span>회원님을 위한 추천</span>
-            </div>
-            <button className="follow-btn">팔로우</button>
-          </li>
-          
-          {/* 더 추가 가능 */}
-        </ul>
+        {/* 여기에 메인 피드들 출력 */}
+        {/* 유저 사진 */} {/* 닉네임 */}{/* 게시일자 */} {/* --- */}
+        {/* 피드 사진 */}
+        {/* 좋아요 */} {/* 댓글 */}
+        {/* 좋아요 수 */}
+        {/* 게시글 내용 */}
+        {/* 댓글 n개 보기 */}
+        {/* 댓글 달기 */}
+        {/* 댓글 */}
+        <div>
+          <ul>
+            <li>여기에 메인 피드들 출력</li>
+          </ul>
+        </div>
+
       </main>
     </div>
   );

@@ -34,52 +34,10 @@
   background-color: #f2f2f2;
 }
 
+
 /* 가운데 메인 피드 */
 .main-content {
   padding: 40px;
   background-color: #fafafa;
   overflow-y: auto;
-}
-
-/* 추천 유저 리스트 예시 */
-.recommend-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-}
-
-.user-card {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.user-card img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.user-card .info {
-  flex-grow: 1;
-}
-
-.follow-btn {
-  background-color: #0095f6;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.follow-btn:hover {
-  background-color: #0077cc;
-}
-
-/* 오른쪽 공간 (일단 비움) */
-.right-space {
-  border-left: 1px solid #ddd;
-  background-color: white;
 }

@@ -1,0 +1,7 @@
+/* App 컴포넌트 전용 스타일 */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 300px;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}

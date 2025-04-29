@@ -1,0 +1,85 @@
+/* 전체 레이아웃 */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 300px;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* 왼쪽 사이드바 */
+.sidebar {
+  background-color: white;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 12px 8px;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.sidebar li:hover {
+  background-color: #f2f2f2;
+}
+
+/* 가운데 메인 피드 */
+.main-content {
+  padding: 40px;
+  background-color: #fafafa;
+  overflow-y: auto;
+}
+
+/* 추천 유저 리스트 예시 */
+.recommend-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.user-card img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-card .info {
+  flex-grow: 1;
+}
+
+.follow-btn {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.follow-btn:hover {
+  background-color: #0077cc;
+}
+
+/* 오른쪽 공간 (일단 비움) */
+.right-space {
+  border-left: 1px solid #ddd;
+  background-color: white;
+}

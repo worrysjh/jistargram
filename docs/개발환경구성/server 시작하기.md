@@ -19,7 +19,7 @@ Express.js + PostgreSQL 기반의 RESTful API 서버로, 회원가입 기능을 
 ### 1. 레포지토리 클론
 
 ```bash
-git clone https://github.com/yourname/jistargram.git
+git clone https://github.com/worrysjh/jistargram.git
 cd jistargram/jistargram-server
 ```
 

@@ -20,7 +20,7 @@ React 기반으로 제작되며, 사용자 인터페이스(UI), API 연동, 인�
 ### 1. 레포지토리 클론
 
 ```bash
-git clone https://github.com/yourname/jistargram.git
+git clone https://github.com/worrysjh/jistargram.git
 cd jistargram/jistargram-client
 ```
 

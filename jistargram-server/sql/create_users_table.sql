@@ -8,6 +8,6 @@ CREATE TABLE  users (
     birthdate DATE NOT NULL,
     gender VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-    bio TEXT,
+    biography TEXT,
     profile_img VARCHAR(255);
 );

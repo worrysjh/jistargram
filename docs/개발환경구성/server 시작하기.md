@@ -39,7 +39,23 @@ cp .env.example .env
 
 `.env` 파일은 Git에 포함되지 않으며, 개인 설정 값을 직접 입력해야 합니다.
 
-### 4. 서버 실행
+### 4. 추가 설치 주요 패키지
+
+```bash
+npm install express cors pg bcrypt jsonwebtoken dotenv
+npm install --save-dev nodemon
+```
+| 패키지 | 설명 |
+|---|---|
+| express | 웹 서버 |
+| cors | API CORS 허용 |
+| pg | PostgreSQL 클라이언트 |
+| bcrypt | 비밀번호 해싱 |
+| jsonwebtoken | JWT 인증 |
+| dotenv | .env 환경 변수 로딩 |
+| nodemon | 개발 중 서버 자동 재시작(dev only) |
+
+### 5. 서버 실행
 
 ```bash
 npm run dev

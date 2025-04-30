@@ -16,10 +16,10 @@ async function register(req, res) {
       [userid, username, email, hashedPasswd, birthdate, gender]
     );
 
-    res.status(201).json({ message: "✅ User registered successfully" });
+    res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "❌ Registration failed" });
+    res.status(500).json({ message: "Registration failed" });
   }
 }
 
@@ -34,24 +34,42 @@ async function login(req, res) {
     const user = result.rows[0];
 
     if (!user) {
-      return res.status(400).json({ message: "❌ Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const match = await bcrypt.compare(passwd, user.passwd);
     if (!match) {
-      return res.status(400).json({ message: "❌ Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     //로그인 성공 -> 토큰 발급
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userid: user.userid }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    res.json({ message: "✅ Login successful", token });
+    res.json({ message: "Login successful", token });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "❌ Login failed" });
+    res.status(500).json({ message: "Login failed" });
   }
 }
 
-module.exports = { register, login };
+//회원정보수정
+async function updateUser(req, res) {
+  const userid = req.user.userid; // 미들웨어에서 보내준 값
+  const {username, email, birthdate} = req.body;
+
+  try{
+    await pool.query(
+      "UPDATE users SET username = $1, email = $2, birthdate = $3 WHERE userid = $4",
+      [username, email, birthdate, userid]
+    );
+  
+    res.json({message: "Update User Information"});
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({message: "failed to update user info"});
+  }
+}
+
+module.exports = { register, login, updateUser };

@@ -6,6 +6,8 @@ CREATE TABLE  users (
     email VARCHAR(255) UNIQUE NOT NULL,
     passwd VARCHAR(255) NOT NULL,
     birthdate DATE NOT NULL,
-    gender VARCHAR(10) NOT NULL;
-    created_at TIMESTAMP DEFAULT NOW() NOT NULL
+    gender VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+    bio TEXT,
+    profile_img VARCHAR(255);
 );

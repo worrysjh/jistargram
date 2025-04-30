@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 //회원가입
 async function register(req, res) {
-  const { userid, username, email, passwd, birthdate, gender } = req.body;
+  const { userid, username, email, passwd, birthdate, gender, biography, profile_img } = req.body;
 
   try {
     //비밀번호 암호화
@@ -12,8 +12,8 @@ async function register(req, res) {
 
     //DB에 저장
     await pool.query(
-      "INSERT INTO users (userid, username, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
-      [userid, username, email, hashedPasswd, birthdate, gender]
+      "INSERT INTO users (userid, username, email, passwd, birthdate, gender, biography, profile_img) values ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [userid, username, email, hashedPasswd, birthdate, gender, biography, profile_img]
     );
 
     res.status(201).json({ message: "User registered successfully" });
@@ -57,12 +57,12 @@ async function login(req, res) {
 //회원정보수정
 async function updateUser(req, res) {
   const userid = req.user.userid; // 미들웨어에서 보내준 값
-  const {username, email, birthdate} = req.body;
+  const {username, email, birthdate, biography, profile_img} = req.body;
 
   try{
     await pool.query(
-      "UPDATE users SET username = $1, email = $2, birthdate = $3 WHERE userid = $4",
-      [username, email, birthdate, userid]
+      "UPDATE users SET username = $1, email = $2, birthdate = $3, biography = $4, profile_img = $5 WHERE userid = $4",
+      [username, email, birthdate, userid, biography, profile_img]
     );
   
     res.json({message: "Update User Information"});

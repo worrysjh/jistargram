@@ -90,4 +90,18 @@ async function updateUser(req, res) {
   }
 }
 
-module.exports = { register, login, updateUser };
+//회원탈퇴
+async function resignUser(req, res) {
+  const userid = req.user.userid;
+
+  try {
+    await pool.query("DELETE FROM users WHERE userid = $1", [userid]);
+
+    res.json({ message: "Resign User" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "failed to resign user" });
+  }
+}
+
+module.exports = { register, login, updateUser, resignUser };

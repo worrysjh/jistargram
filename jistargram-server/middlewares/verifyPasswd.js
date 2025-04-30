@@ -1,17 +1,20 @@
 const pool = require("../models/db");
 const bcrypt = require("bcrypt");
 
+//비밀번호 검사 로직
 async function verifyPasswd(req, res, next) {
+  console.log("req.user:", req.user);
   const { passwd } = req.body;
   const userid = req.user.userid;
 
   try {
     const result = await pool.query(
       "SELECT passwd FROM users WHERE userid = $1",
-      userid
+      [userid]
     );
 
-    const userpwd = result.row[0]?.passwd;
+    const userpwd = result.rows[0]?.passwd;
+
     if (!userpwd) return res.status(404).json({ message: "User not found" });
 
     const valid = await bcrypt.compare(passwd, userpwd);

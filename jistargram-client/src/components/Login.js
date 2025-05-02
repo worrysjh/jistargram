@@ -12,24 +12,28 @@ function Login({ onLogin }) {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label>아이디: </label>
         <input
           type="text"
+          placeholder="아이디"
           value={userid}
           onChange={(e) => setUserid(e.target.value)}
           required
+          className="login-input"
         />
       </div>
       <div>
-        <label>비밀번호: </label>
         <input
           type="password"
+          placeholder="비밀번호"
           value={passwd}
           onChange={(e) => setPasswd(e.target.value)}
           required
+          className="login-input"
         />
       </div>
-      <button type="submit">로그인</button>
+      <button type="submit" className="login-button">
+        로그인
+      </button>
     </form>
   );
 }

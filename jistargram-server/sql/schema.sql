@@ -31,7 +31,7 @@ CREATE TABLE likes (
     postid INTEGER NOT NULL,
     userid VARCHAR(255) NOT NULL,
     liked_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (postid, userid)
+    PRIMARY KEY (postid, userid),
     FOREIGN KEY (postid) REFERENCES posts(postid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
 );
@@ -41,17 +41,17 @@ CREATE TABLE comments (
     commentid SERIAL PRIMARY KEY,
     postid INTEGER NOT NULL,
     userid VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-    FOREIGN KEY(postid) REFERENCES posts(commentid) ON DELETE CASCADE
+    FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE
 );
 
 --팔로잉 테이블
 CREATE TABLE follows (
-    follower_id VARCHAR(255) NOT NULL,
-    following_id VARCHAR(255) NOT NULL,
+    followerid VARCHAR(255) NOT NULL,
+    followingid VARCHAR(255) NOT NULL,
     followed_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (follower_id, following_id),
-    FOREIGN KEY (follower_id) REFERENCES users(userid) ON DELETE CASCADE,
-    FOREIGN KEY (following_id) REFERENCES users(userid) ON DELETE CASCADE
+    PRIMARY KEY (followerid, followingid),
+    FOREIGN KEY (followerid) REFERENCES users(userid) ON DELETE CASCADE,
+    FOREIGN KEY (followingid) REFERENCES users(userid) ON DELETE CASCADE
 );

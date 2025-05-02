@@ -35,6 +35,7 @@ function RegisterPage() {
 
       if (response.ok) {
         setMessage("회원가입 성공");
+        alert("회원가입 성공!");
         navigator("/login");
       } else {
         setMessage(`회원가입 실패: ${data.message}`);

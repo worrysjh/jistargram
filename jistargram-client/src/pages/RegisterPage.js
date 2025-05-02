@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Register from "../components/Register";
-import Footer from "../components/Footer";
+import Footer from "../components/layout/Footer";
 
 import "../styles/RegisterPage.css";
 

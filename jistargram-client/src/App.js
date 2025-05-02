@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/layout/Layout";
 
 import Logout from "./components/Logout";
 import RegisterPage from "./pages/RegisterPage";
@@ -27,9 +28,11 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
+            <Layout>
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            </Layout>
           }
         />
         <Route path="/login" element={<LoginPage />} />

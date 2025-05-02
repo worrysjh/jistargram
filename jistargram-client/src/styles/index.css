@@ -1,4 +1,10 @@
 /* 전체 레이아웃 */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .layout {
   display: grid;
   grid-template-columns: 240px 1fr 300px;
@@ -11,6 +17,7 @@
   background-color: white;
   padding: 20px;
   border-right: 1px solid #ddd;
+  height: 100vh;
 }
 
 .sidebar h2 {
@@ -21,6 +28,7 @@
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .sidebar li {
@@ -34,10 +42,21 @@
   background-color: #f2f2f2;
 }
 
-
 /* 가운데 메인 피드 */
 .main-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
   padding: 40px;
   background-color: #fafafa;
   overflow-y: auto;
+}
+
+/* 오른쪽 추천영역 */
+.recommend-section {
+  background-color: #fff;
+  border-left: 1px solid #ddd;
+  padding: 20px;
+  height: 100vh;
 }

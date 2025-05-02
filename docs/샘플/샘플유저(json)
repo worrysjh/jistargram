@@ -1,0 +1,9 @@
+{
+  "userid": "sampleuser1",
+  "username": "샘플유저",
+  "email": "sample1@example.com",
+  "passwd": "testpassword123",
+  "birthdate": "1995-08-20",
+  "gender": "female",
+  "biography": "안녕하세요"
+}

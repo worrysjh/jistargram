@@ -4,34 +4,33 @@ const jwt = require("jsonwebtoken");
 
 //회원가입
 async function register(req, res) {
-  const {
-    userid,
-    username,
-    email,
-    passwd,
-    birthdate,
-    gender,
-    biography,
-    profile_img,
-  } = req.body;
+  const { userid, username, email, passwd, birthdate, gender } = req.body;
 
+  //아이디, 비밀번호 중복검사
   try {
+    const idCheck = await pool.query(
+      "SELECT userid FROM users WHERE userid = $1",
+      [userid]
+    );
+    if (idCheck.rows.length > 0) {
+      return res.status(400).json({ message: "이미 회원가입된 아이디입니다." });
+    }
+
+    const emailCheck = await pool.query(
+      "SELECT email FROM users WHERE email = $1",
+      [email]
+    );
+    if (emailCheck.rows.length > 0) {
+      return res.status(400).json({ message: "이미 회원가입된 이메일입니다." });
+    }
+
     //비밀번호 암호화
     const hashedPasswd = await bcrypt.hash(passwd, 10);
 
     //DB에 저장
     await pool.query(
-      "INSERT INTO users (userid, username, email, passwd, birthdate, gender, biography, profile_img) values ($1, $2, $3, $4, $5, $6, $7, $8)",
-      [
-        userid,
-        username,
-        email,
-        hashedPasswd,
-        birthdate,
-        gender,
-        biography,
-        profile_img,
-      ]
+      "INSERT INTO users (userid, username, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
+      [userid, username, email, hashedPasswd, birthdate, gender]
     );
 
     res.status(201).json({ message: "User registered successfully" });

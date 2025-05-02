@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Login";
+import Footer from "../components/Footer";
 
 import "../styles/LoginPage.css";
 
@@ -50,13 +51,7 @@ function LoginPage() {
           </div>
         </div>
 
-        <div className="footer">
-          <div className="footer-links">
-            Meta · 소개 · 블로그 · 채용 정보 · 도움말 · API · 개인정보처리방침 ·
-            약관
-          </div>
-          <div className="footer-copy">© 2025 Jistargram from Meta</div>
-        </div>
+        <Footer />
       </div>
     </>
   );

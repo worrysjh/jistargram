@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Logout from "./components/Logout";
+import RegisterPage from "./pages/RegisterPage";
 
 function Navbar() {
   const token = localStorage.getItem("token");
@@ -12,7 +13,8 @@ function Navbar() {
   return (
     <nav>
       <Link to="/">홈</Link> | {""}
-      {!token ? <Link to="/login">로그인</Link> : <Logout />}
+      {!token ? <Link to="/login">로그인</Link> : <Logout />} |
+      <Link to="/register">회원가입</Link>
     </nav>
   );
 }
@@ -31,6 +33,7 @@ function App() {
           }
         />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </Router>
   );

@@ -6,7 +6,7 @@ function authenticateToken(req, res, next) {
   if (!token) return res.status(401).json({ message: "token does not exist" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.stutus(403).json({ message: "token is invalid" });
+    if (err) return res.status(403).json({ message: "token is invalid" });
 
     req.user = user;
     next();

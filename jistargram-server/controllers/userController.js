@@ -71,6 +71,26 @@ async function login(req, res) {
   }
 }
 
+//회원정보조회
+async function getMyProfile(req, res) {
+  try {
+    const result = await pool.query(
+      "SELECT userid, username, email, birthdate, biography, profile_img, created_at FROM users WHERE userid = $1",
+      [req.user.userid]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "유저를 찾을 수 없음" });
+    }
+
+    res.json(result.rows[0]);
+    console.log(result.rows[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "서버 에러" });
+  }
+}
+
 //회원정보수정
 async function updateUser(req, res) {
   const userid = req.user.userid; // 미들웨어에서 보내준 값
@@ -103,4 +123,4 @@ async function resignUser(req, res) {
   }
 }
 
-module.exports = { register, login, updateUser, resignUser };
+module.exports = { register, login, updateUser, resignUser, getMyProfile };

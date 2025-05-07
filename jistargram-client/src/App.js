@@ -7,6 +7,7 @@ import Layout from "./components/layout/Layout";
 
 import Logout from "./components/Logout";
 import RegisterPage from "./pages/RegisterPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function Navbar() {
   const token = localStorage.getItem("token");
@@ -25,16 +26,24 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Layout>
+        <Route element={<Layout />}>
+          <Route
+            path="/"
+            element={
               <ProtectedRoute>
                 <HomePage />
               </ProtectedRoute>
-            </Layout>
-          }
-        />
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>

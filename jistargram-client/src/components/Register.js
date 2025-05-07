@@ -75,4 +75,4 @@ function Register({ onRegist }) {
   );
 }
 
-export default Register; // ✅ 꼭 있어야 함!
+export default Register;

@@ -4,6 +4,7 @@ import Login from "../components/Login";
 import Footer from "../components/layout/Footer";
 
 import "../styles/LoginPage.css";
+import { authFetch } from "../utils/authFetch";
 
 function LoginPage() {
   const [message, setMessage] = useState("");
@@ -11,7 +12,7 @@ function LoginPage() {
 
   const handleLogin = async (userid, passwd) => {
     try {
-      const response = await fetch("http://localhost:4000/users/login", {
+      const response = await authFetch("http://localhost:4000/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userid, passwd }),

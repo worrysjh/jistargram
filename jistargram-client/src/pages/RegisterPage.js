@@ -4,6 +4,7 @@ import Register from "../components/Register";
 import Footer from "../components/layout/Footer";
 
 import "../styles/RegisterPage.css";
+import { authFetch } from "../utils/authFetch";
 
 function RegisterPage() {
   const [message, setMessage] = useState("");
@@ -18,7 +19,7 @@ function RegisterPage() {
     gender
   ) => {
     try {
-      const response = await fetch("http://localhost:4000/users/register", {
+      const response = await authFetch("http://localhost:4000/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

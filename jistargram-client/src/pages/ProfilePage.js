@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
+import { authFetch } from "../utils/authFetch";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:4000/users/getMyProfile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await authFetch(
+        "http://localhost:4000/users/getMyProfile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
       setProfile(data);

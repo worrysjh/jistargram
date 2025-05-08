@@ -19,6 +19,10 @@ function ProfilePage() {
         },
         navigate
       );
+      if (!response) {
+        console.log("서버 응답 없음 또는 인증 실패");
+        return;
+      }
 
       const data = await response.json();
       setProfile(data);
@@ -29,13 +33,26 @@ function ProfilePage() {
 
   if (!profile) return <p>로딩 중...</p>;
 
+  const birthdate = profile.birthdate;
+  const date = new Date(birthdate);
+
+  const formatted = date.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="profile-container">
       <div className="profile-header">
         <div className="profile-picture">
           <img
-            src={profile.profile_img || "/default-profile.png"}
-            alt="프로필사진"
+            src={
+              profile.profile_img
+                ? `http://localhost:4000${profile.profile_img}`
+                : "/common/img/사용자이미지.jpeg"
+            }
+            alt="프로필 이미지"
           />
         </div>
         <div className="profile-info">
@@ -61,8 +78,8 @@ function ProfilePage() {
             </li>
           </ul>
           <div className="profile-details">
-            <strong>{profile.username}</strong>
-            <p>{profile.birthdate}</p>
+            <strong>{profile.userid}</strong>
+            <p>생년월일: {formatted}</p>
             <p>{profile.biography || "작성된 자기소개가 없습니다."}</p>
           </div>
         </div>

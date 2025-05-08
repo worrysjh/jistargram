@@ -5,19 +5,28 @@ const {
   updateProfile,
   resignUser,
   getMyProfile,
+  updateProfileImg,
 } = require("../controllers/userController");
+
 const authenticateToken = require("../middlewares/auth");
 const verifyPasswd = require("../middlewares/verifyPasswd");
+const upload = require("../middlewares/upload");
+
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
 
-router.delete("/resignUser", authenticateToken, verifyPasswd, resignUser);
+// ✅ 파일 업로드 라우트 - 반드시 multipart/form-data 요청이어야 함
+router.post(
+  "/updateProfileImg",
+  authenticateToken,
+  upload.single("profile_img"),
+  updateProfileImg
+);
 
-//마이페이지 조회
+router.delete("/resignUser", authenticateToken, verifyPasswd, resignUser);
 router.get("/getMyProfile", authenticateToken, getMyProfile);
-//마이페이지 자기소개 수정
 router.patch("/updateProfile", authenticateToken, updateProfile);
 
 module.exports = router;

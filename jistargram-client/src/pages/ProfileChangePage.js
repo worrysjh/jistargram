@@ -6,6 +6,8 @@ import "../styles/ProfileChangePage.css";
 function ProfileChangePage() {
   const [profile, setProfile] = useState(null);
   const [bio, setBio] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +46,10 @@ function ProfileChangePage() {
       },
       navigate
     );
+    if (!response) {
+      console.log("서버 응답 없음 또는 인증 실패");
+      return;
+    }
 
     if (response && response.ok) {
       alert("프로필이 수정되었습니다.");
@@ -52,18 +58,55 @@ function ProfileChangePage() {
     }
   };
 
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return alert("파일을 선택하세요");
+
+    const formData = new FormData();
+    formData.append("profile_img", selectedFile);
+
+    const response = await authFetch(
+      "http://localhost:4000/users/updateProfileImg",
+      {
+        method: "POST",
+        body: formData,
+      },
+      navigate
+    );
+
+    if (response && response.ok) {
+      alert("프로필 사진이 변경되었습니다.");
+      setShowModal(false);
+      window.location.reload();
+    } else {
+      alert("업로드 실패");
+    }
+  };
+
   return (
     <div className="profile-edit-container">
       <div className="profile-edit-header">
         <img
-          src={profile.profile_img || "/default-profile.png"}
-          alt="프로필사진"
+          src={
+            profile.profile_img
+              ? `http://localhost:4000${profile.profile_img}`
+              : "/common/img/사용자이미지.jpeg"
+          }
+          alt="프로필 이미지"
           className="profile-edit-picture"
         />
         <div>
           <h2 className="profile-edit-username">{profile.userid}</h2>
           <p>{profile.username}</p>
-          <button className="photo-change-btn">사진 변경</button>
+          <button
+            className="photo-change-btn"
+            onClick={() => setShowModal(true)}
+          >
+            사진 변경
+          </button>
         </div>
       </div>
 
@@ -81,6 +124,17 @@ function ProfileChangePage() {
           제출
         </button>
       </form>
+
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>프로필 사진 변경</h3>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+            <button onClick={handleUpload}>업로드</button>
+            <button onClick={() => setShowModal(false)}>닫기</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

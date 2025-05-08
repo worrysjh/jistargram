@@ -8,6 +8,7 @@ import Layout from "./components/layout/Layout";
 import Logout from "./components/Logout";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
+import ProfileChangePage from "./pages/ProfileChangePage";
 
 function Navbar() {
   const token = localStorage.getItem("token");
@@ -40,6 +41,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              <ProtectedRoute>
+                <ProfileChangePage />
               </ProtectedRoute>
             }
           />

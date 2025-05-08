@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
 import { authFetch } from "../utils/authFetch";
+import { useNavigate } from "react-router-dom";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
@@ -13,7 +16,8 @@ function ProfilePage() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
+        navigate
       );
 
       const data = await response.json();
@@ -21,7 +25,7 @@ function ProfilePage() {
     };
 
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   if (!profile) return <p>로딩 중...</p>;
 
@@ -37,7 +41,12 @@ function ProfilePage() {
         <div className="profile-info">
           <div className="profile-top">
             <h2 className="profile-username">{profile.username}</h2>
-            <button className="profile-button">프로필 편집</button>
+            <button
+              className="profile-button"
+              onClick={() => navigate("/profile/edit")}
+            >
+              프로필 편집
+            </button>
             <span className="settings-icon">설정</span>
           </div>
           <ul className="profile-stats">

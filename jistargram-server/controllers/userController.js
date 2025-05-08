@@ -92,15 +92,15 @@ async function getMyProfile(req, res) {
 }
 
 //회원정보수정
-async function updateUser(req, res) {
-  const userid = req.user.userid; // 미들웨어에서 보내준 값
-  const { username, email, birthdate, biography, profile_img } = req.body;
+async function updateProfile(req, res) {
+  const { biography } = req.body;
+  const userid = req.user.userid;
 
   try {
-    await pool.query(
-      "UPDATE users SET username = $1, email = $2, birthdate = $3, biography = $4, profile_img = $5 WHERE userid = $4",
-      [username, email, birthdate, userid, biography, profile_img]
-    );
+    await pool.query("UPDATE users SET biography=$1 WHERE userid = $2", [
+      biography,
+      userid,
+    ]);
 
     res.json({ message: "Update User Information" });
   } catch (err) {
@@ -123,4 +123,4 @@ async function resignUser(req, res) {
   }
 }
 
-module.exports = { register, login, updateUser, resignUser, getMyProfile };
+module.exports = { register, login, updateProfile, resignUser, getMyProfile };

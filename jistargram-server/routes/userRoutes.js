@@ -2,7 +2,7 @@ const express = require("express");
 const {
   register,
   login,
-  updateUser,
+  updateProfile,
   resignUser,
   getMyProfile,
 } = require("../controllers/userController");
@@ -13,10 +13,11 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 
-router.put("/updateUser", authenticateToken, updateUser);
 router.delete("/resignUser", authenticateToken, verifyPasswd, resignUser);
 
 //마이페이지 조회
 router.get("/getMyProfile", authenticateToken, getMyProfile);
+//마이페이지 자기소개 수정
+router.patch("/updateProfile", authenticateToken, updateProfile);
 
 module.exports = router;

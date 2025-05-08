@@ -18,6 +18,10 @@ html, body {
   padding: 20px;
   border-right: 1px solid #ddd;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
 }
 
 .sidebar h2 {
@@ -59,4 +63,56 @@ html, body {
   border-left: 1px solid #ddd;
   padding: 20px;
   height: 100vh;
+}
+
+
+/* sidebar 하단 영역 (햄버거 버튼 위치) */
+.sidebar-bottom {
+  margin-top: auto;  /* 나머지 메뉴를 위로 밀어내고 하단 고정 */
+  position: relative;
+  margin-bottom: 30px; 
+}
+
+.hamburger {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  padding: 8px;
+}
+
+/* 드롭다운 메뉴 */
+.dropdown-menu {
+  position: absolute;
+  bottom: 50px; /* 햄버거 버튼 위로 */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  width: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f2f2f2;
+}
+
+.menu-divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 8px 0;
 }

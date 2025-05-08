@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../styles/index.css";
 import { Link } from "react-router-dom";
+import { FiMenu } from "react-icons/fi";
+import Logout from "../Logout";
 
 function Aside() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <aside className="sidebar">
       <h2>Jistargram</h2>
@@ -20,6 +28,24 @@ function Aside() {
           <li>프로필</li>
         </Link>
       </ul>
+
+      <div className="sidebar-bottom">
+        <div className="hamburger" onClick={toggleMenu}>
+          <FiMenu size={24} /> 더 보기
+        </div>
+
+        {menuOpen && (
+          <div className="dropdown-menu">
+            <ul>
+              <li>모드 설정</li>
+              <hr className="menu-divider" />
+              <li>
+                <Logout />
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

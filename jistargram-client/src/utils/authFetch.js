@@ -6,7 +6,7 @@ export async function authFetch(url, options = {}, navigate) {
   const headers = {
     ...options.headers,
     Authorization: token ? `Bearer ${token}` : undefined,
-    ...(isFormData ? {} : { "Content-Type": "application/json" }), // 👈 FormData면 Content-Type 추가 안함
+    ...(isFormData ? {} : { "Content-Type": "application/json" }), // FormData면 Content-Type 추가 안함
   };
 
   try {

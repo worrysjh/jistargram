@@ -17,7 +17,7 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 
-// ✅ 파일 업로드 라우트 - 반드시 multipart/form-data 요청이어야 함
+// 파일 업로드 라우트
 router.post(
   "/updateProfileImg",
   authenticateToken,

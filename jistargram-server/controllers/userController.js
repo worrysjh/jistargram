@@ -110,7 +110,7 @@ async function updateProfile(req, res) {
   }
 }
 
-// ✅ 프로필 이미지 업데이트 (기존 이미지 삭제 포함)
+// 프로필 이미지 업데이트 (기존 이미지 삭제 포함)
 async function updateProfileImg(req, res) {
   const filename = req.file.filename;
   const userid = req.user.userid;

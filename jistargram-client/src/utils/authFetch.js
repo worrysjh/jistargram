@@ -6,7 +6,7 @@ export async function authFetch(url, options = {}, navigate) {
   const headers = {
     ...options.headers,
     Authorization: token ? `Bearer ${token}` : undefined,
-    ...(isFormData ? {} : { "Content-Type": "application/json" }), // FormData면 Content-Type 추가 안함
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
   };
 
   try {
@@ -15,7 +15,17 @@ export async function authFetch(url, options = {}, navigate) {
       headers,
     });
 
-    // 토큰 만료 처리 생략...
+    if (
+      (response.status === 401 || response.status === 403) &&
+      !url.includes("/login") &&
+      !url.includes("/register")
+    ) {
+      alert("세션이 만료되었습니다. 다시 로그인해주세요");
+      localStorage.removeItem("token");
+      if (navigate) navigate("/login");
+      return null;
+    }
+
     return response;
   } catch (err) {
     console.log("네트워크 오류: ", err);

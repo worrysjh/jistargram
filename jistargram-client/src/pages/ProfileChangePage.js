@@ -53,6 +53,7 @@ function ProfileChangePage() {
 
     if (response && response.ok) {
       alert("프로필이 수정되었습니다.");
+      navigate("/profile");
     } else {
       alert("수정 실패: 서버 오류 또는 권한 없음");
     }

@@ -6,8 +6,9 @@ DROP TABLE IF EXISTS follows;
 
 --사용자 테이블
 CREATE TABLE  users (
-    userid VARCHAR(255) PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
+    userid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username VARCHAR(255) UNIQUE NOT NULL,
+    nickname VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     passwd VARCHAR(255) NOT NULL,
     birthdate DATE NOT NULL,
@@ -19,14 +20,15 @@ CREATE TABLE  users (
 
 --게시글 테이블
 CREATE TABLE posts (
-    postid SERIAL PRIMARY KEY,
-    userid VARCHAR(255) NOT NULL,
+    postid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    author_id UUID REFERENCES users(userid),
     content TEXT,
     media_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
 --좋아요 테이블
+--수정 필요
 CREATE TABLE likes (
     postid INTEGER NOT NULL,
     userid VARCHAR(255) NOT NULL,
@@ -37,6 +39,7 @@ CREATE TABLE likes (
 );
 
 --댓글 테이블
+--수정 필요
 CREATE TABLE comments (
     commentid SERIAL PRIMARY KEY,
     postid INTEGER NOT NULL,
@@ -47,6 +50,7 @@ CREATE TABLE comments (
 );
 
 --팔로잉 테이블
+--수정 필요
 CREATE TABLE follows (
     followerid VARCHAR(255) NOT NULL,
     followingid VARCHAR(255) NOT NULL,

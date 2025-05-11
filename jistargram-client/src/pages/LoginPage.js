@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Login from "../components/Login";
 import Footer from "../components/layout/Footer";
 
 import "../styles/LoginPage.css";
 import { authFetch } from "../utils/authFetch";
+import LoginForm from "../components/LoginForm";
 
 function LoginPage() {
   const [message, setMessage] = useState("");
@@ -39,7 +39,7 @@ function LoginPage() {
         <div className="form-wrapper">
           <div className="login-box">
             <h2>Jistargram</h2>
-            <Login onLogin={handleLogin} />
+            <LoginForm onLogin={handleLogin} />
             <div className="divider">또는</div>
             <a href="forgot" className="forgot-link">
               비밀번호를 잊으셨나요?

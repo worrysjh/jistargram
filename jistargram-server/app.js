@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
+const postRoutes = require("./routes/postRoutes");
 require("dotenv").config();
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 
 // 라우터 연결
 app.use("/users", userRoutes);
+app.use("/posts", postRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Jistargram Server!");

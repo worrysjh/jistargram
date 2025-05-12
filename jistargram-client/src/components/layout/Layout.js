@@ -1,15 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import Aside from "./Aside";
 import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
+import PostModal from "../posts/PostModal";
 
-function Layout({ children }) {
+function Layout() {
+  const username = "사용자이름";
+  const handleSubmit = (data) => {
+    console.log("게시글 데이터", data);
+  };
+  const [showPostModal, setShowPostModal] = useState(false);
+
   return (
     <div className="layout">
-      <Aside />
+      <Aside onOpenPostModal={() => setShowPostModal(true)} />
       <main className="main-content">
         <Outlet />
         <Footer />
+        {showPostModal && (
+          <PostModal
+            username={username}
+            onClose={() => setShowPostModal(false)}
+            onSubmit={handleSubmit}
+          />
+        )}
       </main>
     </div>
   );

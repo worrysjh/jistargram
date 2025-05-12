@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/layout/Layout";
+import PostModal from "./components/posts/PostModal";
 
 import Logout from "./components/auth/Logout";
 import RegisterPage from "./pages/RegisterPage";
@@ -23,6 +24,7 @@ function Navbar() {
 }
 
 function App() {
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   return (
     <Router>
       <Navbar />
@@ -30,7 +32,7 @@ function App() {
         <Route
           element={
             <ProtectedRoute>
-              <Layout />
+              <Layout onOpenPostModal={() => setIsPostModalOpen(true)} />
             </ProtectedRoute>
           }
         >
@@ -42,6 +44,10 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
+
+      {isPostModalOpen && (
+        <PostModal onClose={() => setIsPostModalOpen(false)} />
+      )}
     </Router>
   );
 }

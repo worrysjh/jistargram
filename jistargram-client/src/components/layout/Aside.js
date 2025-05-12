@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import Logout from "../auth/Logout";
 
-function Aside() {
+function Aside({ onOpenPostModal }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -23,7 +23,7 @@ function Aside() {
         <li>릴스</li>
         <li>메시지</li>
         <li>알림</li>
-        <li>만들기</li>
+        <li onClick={onOpenPostModal}>만들기</li>
         <Link to="/profile">
           <li>프로필</li>
         </Link>

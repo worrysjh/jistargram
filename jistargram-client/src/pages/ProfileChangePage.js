@@ -100,7 +100,7 @@ function ProfileChangePage() {
           className="profile-edit-picture"
         />
         <div>
-          <h2 className="profile-edit-username">{profile.userid}</h2>
+          <h2 className="profile-edit-username">{profile.username}</h2>
           <p>{profile.username}</p>
           <button
             className="photo-change-btn"

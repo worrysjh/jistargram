@@ -13,7 +13,6 @@ import ProfileChangePage from "./pages/ProfileChangePage";
 //임시 페이지 이동용 네비게이터 - 삭제예정
 function Navbar() {
   const token = localStorage.getItem("token");
-
   return (
     <nav>
       <Link to="/">홈</Link> | {""}

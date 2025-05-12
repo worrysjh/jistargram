@@ -6,12 +6,12 @@ const path = require("path");
 
 // 회원가입
 async function register(req, res) {
-  const { userid, username, email, passwd, birthdate, gender } = req.body;
+  const { username, nickname, email, passwd, birthdate, gender } = req.body;
 
   try {
     const idCheck = await pool.query(
-      "SELECT userid FROM users WHERE userid = $1",
-      [userid]
+      "SELECT username FROM users WHERE username = $1",
+      [username]
     );
     if (idCheck.rows.length > 0) {
       return res.status(400).json({ message: "이미 사용 중인 아이디입니다." });
@@ -28,8 +28,8 @@ async function register(req, res) {
     const hashedPasswd = await bcrypt.hash(passwd, 10);
 
     await pool.query(
-      "INSERT INTO users (userid, username, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
-      [userid, username, email, hashedPasswd, birthdate, gender]
+      "INSERT INTO users (username, nickname, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
+      [username, nickname, email, hashedPasswd, birthdate, gender]
     );
 
     res.status(201).json({ message: "회원가입 성공" });
@@ -41,11 +41,11 @@ async function register(req, res) {
 
 // 로그인
 async function login(req, res) {
-  const { userid, passwd } = req.body;
+  const { username, passwd } = req.body;
 
   try {
-    const result = await pool.query("SELECT * FROM users WHERE userid = $1", [
-      userid,
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
+      username,
     ]);
     const user = result.rows[0];
 
@@ -62,9 +62,13 @@ async function login(req, res) {
         .json({ message: "잘못된 아이디 또는 비밀번호입니다." });
     }
 
-    const token = jwt.sign({ userid: user.userid }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { username: user.username },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     res.json({ message: "로그인 성공", token });
   } catch (err) {
@@ -76,10 +80,9 @@ async function login(req, res) {
 // 내 프로필 조회
 async function getMyProfile(req, res) {
   try {
-    const result = await pool.query(
-      "SELECT userid, username, email, birthdate, biography, profile_img, created_at FROM users WHERE userid = $1",
-      [req.user.userid]
-    );
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
+      req.user.username,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "유저를 찾을 수 없음" });
@@ -95,12 +98,12 @@ async function getMyProfile(req, res) {
 // 자기소개 업데이트
 async function updateProfile(req, res) {
   const { biography } = req.body;
-  const userid = req.user.userid;
+  const username = req.user.username;
 
   try {
-    await pool.query("UPDATE users SET biography=$1 WHERE userid=$2", [
+    await pool.query("UPDATE users SET biography = $1 WHERE username = $2", [
       biography,
-      userid,
+      username,
     ]);
 
     res.json({ message: "자기소개가 업데이트되었습니다." });
@@ -113,14 +116,14 @@ async function updateProfile(req, res) {
 // 프로필 이미지 업데이트 (기존 이미지 삭제 포함)
 async function updateProfileImg(req, res) {
   const filename = req.file.filename;
-  const userid = req.user.userid;
+  const username = req.user.username;
 
   const imagePath = `/uploads/profile_imgs/${filename}`;
 
   // 기존 이미지 삭제
   const result = await pool.query(
-    "SELECT profile_img FROM users WHERE userid = $1",
-    [userid]
+    "SELECT profile_img FROM users WHERE username = $1",
+    [username]
   );
   const oldImage = result.rows[0]?.profile_img;
 
@@ -136,9 +139,9 @@ async function updateProfileImg(req, res) {
   }
 
   // DB 업데이트
-  await pool.query("UPDATE users SET profile_img = $1 WHERE userid = $2", [
+  await pool.query("UPDATE users SET profile_img = $1 WHERE username = $2", [
     imagePath,
-    userid,
+    username,
   ]);
 
   res.json({ message: "프로필 이미지 업데이트 완료", path: imagePath });
@@ -146,10 +149,10 @@ async function updateProfileImg(req, res) {
 
 // 회원 탈퇴
 async function resignUser(req, res) {
-  const userid = req.user.userid;
+  const username = req.user.userid;
 
   try {
-    await pool.query("DELETE FROM users WHERE userid = $1", [userid]);
+    await pool.query("DELETE FROM users WHERE username = $1", [username]);
     res.json({ message: "회원 탈퇴 완료" });
   } catch (err) {
     console.error(err);

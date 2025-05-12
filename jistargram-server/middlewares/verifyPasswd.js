@@ -5,12 +5,12 @@ const bcrypt = require("bcrypt");
 async function verifyPasswd(req, res, next) {
   console.log("req.user:", req.user);
   const { passwd } = req.body;
-  const userid = req.user.userid;
+  const username = req.user.username;
 
   try {
     const result = await pool.query(
-      "SELECT passwd FROM users WHERE userid = $1",
-      [userid]
+      "SELECT passwd FROM users WHERE username = $1",
+      [username]
     );
 
     const userpwd = result.rows[0]?.passwd;

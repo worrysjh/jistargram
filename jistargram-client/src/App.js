@@ -5,7 +5,7 @@ import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 
-import Logout from "./components/Logout";
+import Logout from "./components/auth/Logout";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProfileChangePage from "./pages/ProfileChangePage";

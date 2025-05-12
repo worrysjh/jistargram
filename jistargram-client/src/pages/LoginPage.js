@@ -4,7 +4,7 @@ import Footer from "../components/layout/Footer";
 
 import "../styles/LoginPage.css";
 import { authFetch } from "../utils/authFetch";
-import LoginForm from "../components/LoginForm";
+import LoginForm from "../components/auth/LoginForm";
 
 function LoginPage() {
   const [message, setMessage] = useState("");

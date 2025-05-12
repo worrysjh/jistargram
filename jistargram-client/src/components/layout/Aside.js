@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../../styles/index.css";
 import { Link } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
-import Logout from "../Logout";
+import Logout from "../auth/Logout";
 
 function Aside() {
   const [menuOpen, setMenuOpen] = useState(false);

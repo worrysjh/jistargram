@@ -10,7 +10,7 @@ const {
 
 const authenticateToken = require("../middlewares/auth");
 const verifyPasswd = require("../middlewares/verifyPasswd");
-const upload = require("../middlewares/profileImgUpload");
+const upload = require("../middlewares/uploadProfileImage");
 
 const router = express.Router();
 

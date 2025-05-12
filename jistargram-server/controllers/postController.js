@@ -4,7 +4,8 @@ const fs = require("fs");
 
 //게시글 등록
 async function uploadPost(req, res) {
-  const { content, media_url } = req.body;
+  const { content } = req.body;
+  const image = `/uploads/post_imgs/${req.file.filename}`;
   const username = req.user.username;
   try {
     const result = await pool.query(
@@ -15,9 +16,9 @@ async function uploadPost(req, res) {
 
     await pool.query(
       "INSERT INTO posts (author_id, content, media_url) values ($1, $2, $3)",
-      [author_id, content, media_url]
+      [author_id, content, image]
     );
-
+    console.log(content);
     res.status(200).json({ message: "게시글 등록 성공" });
   } catch (err) {
     console.error(err);

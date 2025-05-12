@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostModal.css";
+import { submitPost } from "../../actions/postUpload";
 
 function PostModal({ username, onClose, onSubmit }) {
   const [image, setImage] = useState(null);
-  const [caption, setCaption] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [content, setContent] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) setImage(URL.createObjectURL(file));
+    if (file) {
+      setImage(URL.createObjectURL(file));
+      setSelectedFile(file);
+    }
   };
 
-  const handleSubmit = () => {
-    onSubmit({ image, caption });
-    setImage(null);
-    setCaption("");
-    onClose();
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    const navigate = "/";
+    formData.append("image", selectedFile);
+    formData.append("content", content);
+    const success = await submitPost(formData, navigate);
+    if (success) {
+      onClose();
+      window.location.reload();
+    }
   };
 
   const modalContent = (
@@ -46,11 +56,11 @@ function PostModal({ username, onClose, onSubmit }) {
             </div>
             <textarea
               placeholder="게시글 문구 입력..."
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               maxLength={2200}
             />
-            <div className="counter">{caption.length}/2200</div>
+            <div className="counter">{content.length}/2200</div>
           </div>
         </div>
 

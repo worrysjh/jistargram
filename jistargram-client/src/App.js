@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import HomePage from "./pages/HomePage";
+import IndexPage from "./pages/IndexPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import PostModal from "./components/posts/PostModal";
@@ -36,7 +36,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<IndexPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<ProfileChangePage />} />
         </Route>

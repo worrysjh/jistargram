@@ -11,6 +11,6 @@ router.post(
   upload.single("image"),
   uploadPost
 );
-router.get("/showAllPost", showPost);
+router.get("/showPost", showPost);
 
 module.exports = router;

@@ -1,36 +1,36 @@
 const pool = require("../models/db");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const fs = require("fs");
-const path = require("path");
+const { registerUser } = require("../services/userService/registerService");
+const { loginService } = require("../services/userService/loginService");
+const {
+  getMyProfileService,
+} = require("../services/userService/getMyProfileService");
+const {
+  updateMyBioService,
+} = require("../services/userService/updateMyBioService");
+const {
+  updateMyImgService,
+} = require("../services/userService/updateMyImgService");
+const {
+  changeStateService,
+} = require("../services/userService/changeStateService");
 
 // 회원가입
 async function register(req, res) {
   const { username, nickname, email, passwd, birthdate, gender } = req.body;
 
   try {
-    const idCheck = await pool.query(
-      "SELECT username FROM users WHERE username = $1",
-      [username]
-    );
-    if (idCheck.rows.length > 0) {
-      return res.status(400).json({ message: "이미 사용 중인 아이디입니다." });
+    const result = await registerUser({
+      username,
+      nickname,
+      email,
+      passwd,
+      birthdate,
+      gender,
+    });
+
+    if (!result.success) {
+      return res.status(400).json({ message: result.messgae });
     }
-
-    const emailCheck = await pool.query(
-      "SELECT email FROM users WHERE email = $1",
-      [email]
-    );
-    if (emailCheck.rows.length > 0) {
-      return res.status(400).json({ message: "이미 사용 중인 이메일입니다." });
-    }
-
-    const hashedPasswd = await bcrypt.hash(passwd, 10);
-
-    await pool.query(
-      "INSERT INTO users (username, nickname, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
-      [username, nickname, email, hashedPasswd, birthdate, gender]
-    );
 
     res.status(201).json({ message: "회원가입 성공" });
   } catch (err) {
@@ -44,33 +44,12 @@ async function login(req, res) {
   const { username, passwd } = req.body;
 
   try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
-    const user = result.rows[0];
-
-    if (!user) {
-      return res
-        .status(400)
-        .json({ message: "잘못된 아이디 또는 비밀번호입니다." });
+    const result = await loginService({ username, passwd });
+    if (!result.success) {
+      return res.status(400).json({ message: result.message });
     }
 
-    const match = await bcrypt.compare(passwd, user.passwd);
-    if (!match) {
-      return res
-        .status(400)
-        .json({ message: "잘못된 아이디 또는 비밀번호입니다." });
-    }
-
-    const token = jwt.sign(
-      { username: user.username },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1h",
-      }
-    );
-
-    res.json({ message: "로그인 성공", token });
+    res.json({ message: "로그인 성공", token: result.token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "로그인 실패" });
@@ -80,15 +59,8 @@ async function login(req, res) {
 // 내 프로필 조회
 async function getMyProfile(req, res) {
   try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
-      req.user.username,
-    ]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "유저를 찾을 수 없음" });
-    }
-
-    res.json(result.rows[0]);
+    const result = await getMyProfileService(req.user.username);
+    res.json(result.result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "서버 에러" });
@@ -99,12 +71,8 @@ async function getMyProfile(req, res) {
 async function updateProfile(req, res) {
   const { biography } = req.body;
   const username = req.user.username;
-
   try {
-    await pool.query("UPDATE users SET biography = $1 WHERE username = $2", [
-      biography,
-      username,
-    ]);
+    await updateMyBioService({ biography, username });
 
     res.json({ message: "자기소개가 업데이트되었습니다." });
   } catch (err) {
@@ -118,45 +86,28 @@ async function updateProfileImg(req, res) {
   const filename = req.file.filename;
   const username = req.user.username;
 
-  const imagePath = `/uploads/profile_imgs/${filename}`;
-
-  // 기존 이미지 삭제
-  const result = await pool.query(
-    "SELECT profile_img FROM users WHERE username = $1",
-    [username]
-  );
-  const oldImage = result.rows[0]?.profile_img;
-
-  if (oldImage && oldImage !== "/common/img/사용자이미지.jpeg") {
-    const oldImagePath = path.join(__dirname, "..", "public", oldImage);
-    fs.unlink(oldImagePath, (err) => {
-      if (err) {
-        console.log("기존 이미지 삭제 실패 또는 존재하지 않음:", err.message);
-      } else {
-        console.log("기존 이미지 삭제 성공:", oldImagePath);
-      }
-    });
+  try {
+    const result = await updateMyImgService({ username, filename });
+    if (!result.success) {
+      return res.status(400).json({ message: result.message });
+    }
+    res.json({ message: "프로필 업데이트 성공" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "프로필 업데이트 실패" });
   }
-
-  // DB 업데이트
-  await pool.query("UPDATE users SET profile_img = $1 WHERE username = $2", [
-    imagePath,
-    username,
-  ]);
-
-  res.json({ message: "프로필 이미지 업데이트 완료", path: imagePath });
 }
 
 // 회원 탈퇴
 async function resignUser(req, res) {
-  const username = req.user.userid;
+  const userid = req.user.userid;
 
   try {
-    await pool.query("DELETE FROM users WHERE username = $1", [username]);
-    res.json({ message: "회원 탈퇴 완료" });
+    await changeStateService(userid);
+    res.json({ message: "계정 비활성화 완료" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "회원 탈퇴 실패" });
+    res.status(500).json({ message: "계정 비활성화 실패" });
   }
 }
 

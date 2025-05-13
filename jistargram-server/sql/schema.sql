@@ -15,7 +15,8 @@ CREATE TABLE  users (
     gender VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     biography TEXT,
-    profile_img VARCHAR(255);
+    profile_img VARCHAR(255),
+    user_state VARCHAR(20) DEFAULT '활성' NOT NULL;
 );
 
 --게시글 테이블

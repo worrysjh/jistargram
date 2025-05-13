@@ -57,7 +57,7 @@ function ProfilePage() {
         </div>
         <div className="profile-info">
           <div className="profile-top">
-            <h2 className="profile-username">{profile.username}</h2>
+            <h2 className="profile-username">{profile.user_name}</h2>
             <button
               className="profile-button"
               onClick={() => navigate("/profile/edit")}
@@ -78,7 +78,7 @@ function ProfilePage() {
             </li>
           </ul>
           <div className="profile-details">
-            <strong>{profile.nickname}</strong>
+            <strong>{profile.nick_name}</strong>
             <p>생년월일: {formatted}</p>
             <p>{profile.biography || "작성된 자기소개가 없습니다."}</p>
           </div>

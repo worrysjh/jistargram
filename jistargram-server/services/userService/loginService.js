@@ -2,13 +2,14 @@ const pool = require("../../models/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-async function loginService({ username, passwd }) {
+async function loginService({ user_name, passwd }) {
   try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM users WHERE user_name = $1",
+      [user_name]
+    );
     const user = result.rows[0];
-    // id(username) 존재 여부 확인
+    // id(user_name) 존재 여부 확인
     if (!user) {
       return { success: false, message: "잘못된 아이디 또는 비밀번호입니다." };
     }
@@ -20,7 +21,7 @@ async function loginService({ username, passwd }) {
     }
 
     const token = jwt.sign(
-      { userid: user.userid, username: user.username },
+      { user_id: user.user_id, user_name: user.user_name },
       process.env.JWT_SECRET,
       {
         expiresIn: "1h",
@@ -31,8 +32,8 @@ async function loginService({ username, passwd }) {
       success: true,
       token,
       user: {
-        username: user.username,
-        userid: user.userid,
+        user_name: user.user_name,
+        user_id: user.user_id,
       },
     };
   } catch (err) {

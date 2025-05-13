@@ -1,4 +1,3 @@
-const pool = require("../models/db");
 const { registerUser } = require("../services/userService/registerService");
 const { loginService } = require("../services/userService/loginService");
 const {
@@ -16,12 +15,12 @@ const {
 
 // 회원가입
 async function register(req, res) {
-  const { username, nickname, email, passwd, birthdate, gender } = req.body;
+  const { user_name, nick_name, email, passwd, birthdate, gender } = req.body;
 
   try {
     const result = await registerUser({
-      username,
-      nickname,
+      user_name,
+      nick_name,
       email,
       passwd,
       birthdate,
@@ -41,10 +40,10 @@ async function register(req, res) {
 
 // 로그인
 async function login(req, res) {
-  const { username, passwd } = req.body;
+  const { user_name, passwd } = req.body;
 
   try {
-    const result = await loginService({ username, passwd });
+    const result = await loginService({ user_name, passwd });
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
@@ -59,7 +58,8 @@ async function login(req, res) {
 // 내 프로필 조회
 async function getMyProfile(req, res) {
   try {
-    const result = await getMyProfileService(req.user.username);
+    const result = await getMyProfileService(req.user.user_name);
+    console.log("getMyProfile 결과: ", result);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -70,9 +70,9 @@ async function getMyProfile(req, res) {
 // 자기소개 업데이트
 async function updateProfile(req, res) {
   const { biography } = req.body;
-  const username = req.user.username;
+  const user_name = req.user.user_name;
   try {
-    await updateMyBioService({ biography, username });
+    await updateMyBioService({ biography, user_name });
 
     res.json({ message: "자기소개가 업데이트되었습니다." });
   } catch (err) {
@@ -84,10 +84,10 @@ async function updateProfile(req, res) {
 // 프로필 이미지 업데이트 (기존 이미지 삭제 포함)
 async function updateProfileImg(req, res) {
   const filename = req.file.filename;
-  const username = req.user.username;
+  const user_name = req.user.user_name;
 
   try {
-    const result = await updateMyImgService({ username, filename });
+    const result = await updateMyImgService({ user_name, filename });
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
@@ -100,10 +100,10 @@ async function updateProfileImg(req, res) {
 
 // 회원 탈퇴
 async function resignUser(req, res) {
-  const userid = req.user.userid;
+  const user_id = req.user.user_id;
 
   try {
-    await changeStateService(userid);
+    await changeStateService(user_id);
     res.json({ message: "계정 비활성화 완료" });
   } catch (err) {
     console.error(err);

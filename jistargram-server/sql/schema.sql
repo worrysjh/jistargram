@@ -6,9 +6,9 @@ DROP TABLE IF EXISTS follows;
 
 --사용자 테이블
 CREATE TABLE  users (
-    userid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username VARCHAR(255) UNIQUE NOT NULL,
-    nickname VARCHAR(255) NOT NULL,
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_name VARCHAR(255) UNIQUE NOT NULL,
+    nick_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     passwd VARCHAR(255) NOT NULL,
     birthdate DATE NOT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE  users (
 
 --게시글 테이블
 CREATE TABLE posts (
-    postid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    userid UUID REFERENCES users(userid),
+    post_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(user_id),
     content TEXT,
     media_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT NOW(),
@@ -33,20 +33,20 @@ CREATE TABLE posts (
 
 --댓글 테이블
 CREATE TABLE comments (
-    commentid SERIAL PRIMARY KEY,
-    postid UUID NOT NULL REFERENCES posts(postid) ON DELETE CASCADE,
-    userid NOT NULL REFERENCES users(userid),
+    comment_id SERIAL PRIMARY KEY,
+    post_id UUID NOT NULL REFERENCES posts(post_id) ON DELETE CASCADE,
+    user_id NOT NULL REFERENCES users(user_id),
     comment_content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE,
-    parent_id INTEGER REFERENCES comments(commentid) ON DELETE CASCADE
+    parent_id INTEGER REFERENCES comments(comment_id) ON DELETE CASCADE
 );
 
 --좋아요 테이블
 CREATE TABLE likes (
-    likeid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    userid UUID NOT NULL REFERENCES users(userid) ON DELETE CASCADE,
+    like_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     target_type TEXT NOT NULL CHECK (target_type IN ('post', 'comment')),
     target_id UUID NOT NULL,
-    UNIQUE (userid, target_type, target_id)
+    UNIQUE (user_id, target_type, target_id)
 );

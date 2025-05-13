@@ -11,8 +11,8 @@ function RegisterPage() {
   const navigator = useNavigate();
 
   const handleRegist = async (
-    username,
-    nickname,
+    user_name,
+    nick_name,
     email,
     passwd,
     birthdate,
@@ -23,8 +23,8 @@ function RegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username,
-          nickname,
+          user_name,
+          nick_name,
           email,
           passwd,
           birthdate,

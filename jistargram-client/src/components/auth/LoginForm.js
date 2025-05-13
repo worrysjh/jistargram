@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
 function LoginForm({ onLogin }) {
-  const [username, setUsername] = useState("");
+  const [user_name, setUsername] = useState("");
   const [passwd, setPasswd] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onLogin(username, passwd);
+    onLogin(user_name, passwd);
   };
 
   return (
@@ -15,7 +15,7 @@ function LoginForm({ onLogin }) {
         <input
           type="text"
           placeholder="아이디"
-          value={username}
+          value={user_name}
           onChange={(e) => setUsername(e.target.value)}
           required
           className="login-input"

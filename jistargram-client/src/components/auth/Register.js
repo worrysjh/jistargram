@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 function Register({ onRegist }) {
-  const [username, setUsername] = useState("");
-  const [nickname, setNickname] = useState("");
+  const [user_name, setUsername] = useState("");
+  const [nick_name, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [passwd, setPasswd] = useState("");
   const [birthdate, setBirthdate] = useState("");
@@ -10,20 +10,20 @@ function Register({ onRegist }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onRegist(username, nickname, email, passwd, birthdate, gender);
+    onRegist(user_name, nick_name, email, passwd, birthdate, gender);
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <input
         placeholder="아이디"
-        value={username}
+        value={user_name}
         onChange={(e) => setUsername(e.target.value)}
         required
       />
       <input
         placeholder="닉네임"
-        value={nickname}
+        value={nick_name}
         onChange={(e) => setNickname(e.target.value)}
         required
       />

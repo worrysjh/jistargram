@@ -100,8 +100,8 @@ function ProfileChangePage() {
           className="profile-edit-picture"
         />
         <div>
-          <h2 className="profile-edit-username">{profile.username}</h2>
-          <p>{profile.username}</p>
+          <h2 className="profile-edit-username">{profile.user_name}</h2>
+          <p>{profile.user_name}</p>
           <button
             className="photo-change-btn"
             onClick={() => setShowModal(true)}

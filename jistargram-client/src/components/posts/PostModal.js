@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "../../styles/PostModal.css";
 import { submitPost } from "../../actions/postUpload";
 
-function PostModal({ username, onClose, onSubmit }) {
+function PostModal({ user_name, onClose, onSubmit }) {
   const [image, setImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState("");
@@ -52,7 +52,7 @@ function PostModal({ username, onClose, onSubmit }) {
           <div className="right">
             <div className="user-info">
               <img src="/common/img/사용자이미지.jpeg" alt="프로필" />
-              <span>{username}</span>
+              <span>{user_name}</span>
             </div>
             <textarea
               placeholder="게시글 문구 입력..."

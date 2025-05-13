@@ -3,14 +3,13 @@ const bcrypt = require("bcrypt");
 
 //비밀번호 검사 로직
 async function verifyPasswd(req, res, next) {
-  console.log("req.user:", req.user);
   const { passwd } = req.body;
-  const username = req.user.username;
+  const user_name = req.user.user_name;
 
   try {
     const result = await pool.query(
-      "SELECT passwd FROM users WHERE username = $1",
-      [username]
+      "SELECT passwd FROM users WHERE user_name = $1",
+      [user_name]
     );
 
     const userpwd = result.rows[0]?.passwd;

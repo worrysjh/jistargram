@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import PostModal from "../posts/PostModal";
 
 function Layout() {
-  const username = "사용자이름";
+  const user_name = "사용자이름";
   const handleSubmit = (data) => {
     console.log("게시글 데이터", data);
   };
@@ -19,7 +19,7 @@ function Layout() {
         <Footer />
         {showPostModal && (
           <PostModal
-            username={username}
+            user_name={user_name}
             onClose={() => setShowPostModal(false)}
             onSubmit={handleSubmit}
           />

@@ -2,8 +2,8 @@ const pool = require("../../models/db");
 const bcrypt = require("bcrypt");
 
 async function registerUser({
-  username,
-  nickname,
+  user_name,
+  nick_name,
   email,
   passwd,
   birthdate,
@@ -12,8 +12,8 @@ async function registerUser({
   try {
     // 중복 id 검사
     const idCheck = await pool.query(
-      "SELECT username FROM users WHERE username = $1",
-      [username]
+      "SELECT user_name FROM users WHERE user_name = $1",
+      [user_name]
     );
     if (idCheck.rows.length > 0) {
       return { success: false, messgae: "이미 사용중인 아이디입니다." };
@@ -32,8 +32,8 @@ async function registerUser({
     const hashedPasswd = await bcrypt.hash(passwd, 10);
 
     await pool.query(
-      "INSERT INTO users (username, nickname, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
-      [username, nickname, email, hashedPasswd, birthdate, gender]
+      "INSERT INTO users (user_name, nick_name, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
+      [user_name, nick_name, email, hashedPasswd, birthdate, gender]
     );
 
     return { success: true };

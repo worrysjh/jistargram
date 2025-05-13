@@ -25,7 +25,7 @@ function PostPage() {
   return (
     <div className="post-list">
       {posts.map((post) => (
-        <div key={post.postid} className="post-card">
+        <div key={post.post_id} className="post-card">
           <div className="post-header">
             <img
               src={
@@ -36,7 +36,7 @@ function PostPage() {
               alt="프로필"
               className="profile-pic"
             />
-            <span className="username">{post.username}</span>
+            <span className="username">{post.user_name}</span>
           </div>
 
           <img
@@ -48,7 +48,7 @@ function PostPage() {
           />
 
           <div className="post-caption">
-            <strong>{post.username}</strong> {post.content}
+            <strong>{post.user_name}</strong> {post.content}
           </div>
         </div>
       ))}

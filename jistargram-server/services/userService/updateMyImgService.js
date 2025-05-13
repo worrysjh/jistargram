@@ -2,14 +2,14 @@ const pool = require("../../models/db");
 const path = require("path");
 const fs = require("fs");
 
-async function updateMyImgService({ username, filename }) {
+async function updateMyImgService({ user_name, filename }) {
   try {
     const imagePath = `/uploads/profile_imgs/${filename}`;
 
     // 기존 이미지 삭제
     const result = await pool.query(
-      "SELECT profile_img FROM users WHERE username = $1",
-      [username]
+      "SELECT profile_img FROM users WHERE user_name = $1",
+      [user_name]
     );
     const oldImage = result.rows[0]?.profile_img;
 
@@ -31,9 +31,9 @@ async function updateMyImgService({ username, filename }) {
     }
 
     // DB 업데이트
-    await pool.query("UPDATE users SET profile_img = $1 WHERE username = $2", [
+    await pool.query("UPDATE users SET profile_img = $1 WHERE user_name = $2", [
       imagePath,
-      username,
+      user_name,
     ]);
 
     return { success: true };

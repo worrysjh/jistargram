@@ -1,10 +1,10 @@
 const pool = require("../../models/db");
 
-async function uploadService({ userid, content, media_url }) {
+async function uploadService({ user_id, content, media_url }) {
   try {
     await pool.query(
-      "INSERT INTO posts (userid, content, media_url) values($1, $2, $3)",
-      [userid, content, media_url]
+      "INSERT INTO posts (user_id, content, media_url) values($1, $2, $3)",
+      [user_id, content, media_url]
     );
 
     return { success: true };

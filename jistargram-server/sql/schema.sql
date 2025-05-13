@@ -16,47 +16,37 @@ CREATE TABLE  users (
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     biography TEXT,
     profile_img VARCHAR(255),
-    user_state VARCHAR(20) DEFAULT '활성' NOT NULL;
+    user_state VARCHAR(20) DEFAULT '활성' NOT NULL
 );
 
 --게시글 테이블
 CREATE TABLE posts (
     postid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    author_id UUID REFERENCES users(userid),
+    userid UUID REFERENCES users(userid),
     content TEXT,
     media_url VARCHAR(500),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE,
+    post_state VARCHAR(20) DEFAULT '공개' NOT NULL
+);
+
+
+--댓글 테이블
+CREATE TABLE comments (
+    commentid SERIAL PRIMARY KEY,
+    postid UUID NOT NULL REFERENCES posts(postid) ON DELETE CASCADE,
+    userid NOT NULL REFERENCES users(userid),
+    comment_content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    parent_id INTEGER REFERENCES comments(commentid) ON DELETE CASCADE
 );
 
 --좋아요 테이블
---수정 필요
 CREATE TABLE likes (
-    postid INTEGER NOT NULL,
-    userid VARCHAR(255) NOT NULL,
-    liked_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (postid, userid),
-    FOREIGN KEY (postid) REFERENCES posts(postid) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
-);
-
---댓글 테이블
---수정 필요
-CREATE TABLE comments (
-    commentid SERIAL PRIMARY KEY,
-    postid INTEGER NOT NULL,
-    userid VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-    FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE
-);
-
---팔로잉 테이블
---수정 필요
-CREATE TABLE follows (
-    followerid VARCHAR(255) NOT NULL,
-    followingid VARCHAR(255) NOT NULL,
-    followed_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (followerid, followingid),
-    FOREIGN KEY (followerid) REFERENCES users(userid) ON DELETE CASCADE,
-    FOREIGN KEY (followingid) REFERENCES users(userid) ON DELETE CASCADE
+    likeid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    userid UUID NOT NULL REFERENCES users(userid) ON DELETE CASCADE,
+    target_type TEXT NOT NULL CHECK (target_type IN ('post', 'comment')),
+    target_id UUID NOT NULL,
+    UNIQUE (userid, target_type, target_id)
 );

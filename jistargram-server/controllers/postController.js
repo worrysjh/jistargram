@@ -8,11 +8,10 @@ const { getPostService } = require("../services/postService/getPostService");
 async function uploadPost(req, res) {
   const userid = req.user.userid;
   const { content } = req.body;
-  const image_url = `/uploads/post_imgs/${req.file.filename}`;
-  console.log(image_url);
+  const media_url = `/uploads/post_imgs/${req.file.filename}`;
 
   try {
-    await uploadService({ userid, content, image_url });
+    await uploadService({ userid, content, media_url });
 
     res.status(200).json({ message: "게시글 등록 성공" });
   } catch (err) {

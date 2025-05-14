@@ -116,3 +116,11 @@ html, body {
   border-top: 1px solid #ddd;
   margin: 8px 0;
 }
+
+.menu-link {
+  color: inherit;
+  text-decoration: none;
+}
+.menu-link:visited {
+  color: inherit;
+}

@@ -3,6 +3,9 @@ import ReactDOM from "react-dom";
 import "../../styles/PostDetailModal.css";
 import { authFetch } from "../../utils/authFetch";
 import { fetchComments } from "../../actions/comment/fetchComments";
+import { FcLike } from "react-icons/fc";
+
+import { RiDislikeLine } from "react-icons/ri";
 
 function PostDetailModal({ post, onClose }) {
   const [comments, setComments] = useState(null);
@@ -79,6 +82,8 @@ function PostDetailModal({ post, onClose }) {
                   <p key={comment.comment_id}>
                     <b>{comment.user_name}</b> {comment.comment_content}
                     <br />
+                    <RiDislikeLine />
+                    <FcLike />
                     {comment.created_at} 좋아요: | 답글
                   </p>
                 ))
@@ -88,11 +93,14 @@ function PostDetailModal({ post, onClose }) {
             </div>
           </div>
 
-          <div className="detail-actions">{post.post_id}여기에 좋아요...</div>
+          <div className="detail-actions">
+            <RiDislikeLine />
+            <FcLike />
+          </div>
 
           <div className="comment-input">
             <input
-              type="text"
+              type="textarea"
               placeholder="댓글 달기..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}

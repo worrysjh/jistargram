@@ -4,6 +4,8 @@ import "../styles/PostPage.css";
 import PostDetailModal from "../components/posts/PostDetailModal";
 import { getUserFromToken } from "../utils/getUserFromToken";
 
+import { FcLike } from "react-icons/fc";
+import { RiDislikeLine } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
 
 function PostPage() {
@@ -104,7 +106,10 @@ function PostPage() {
               />
 
               <div className="post-caption">
-                <strong>여기에 좋아요 버튼</strong>
+                <strong>
+                  <RiDislikeLine />
+                  <FcLike />
+                </strong>
                 <br />
                 <strong>좋아요 개</strong>
                 <br />

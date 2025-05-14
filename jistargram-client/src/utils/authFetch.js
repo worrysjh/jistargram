@@ -25,7 +25,6 @@ export async function authFetch(url, options = {}, navigate) {
       if (navigate) navigate("/login");
       return null;
     }
-
     return response;
   } catch (err) {
     console.log("네트워크 오류: ", err);

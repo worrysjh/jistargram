@@ -9,7 +9,7 @@ import { RiDislikeLine } from "react-icons/ri";
 
 function PostDetailModal({ post, onClose }) {
   const [comments, setComments] = useState(null);
-  const [newComment, setNewComment] = useState(null);
+  const [newComment, setNewComment] = useState("");
   const post_id = post.post_id;
 
   useEffect(() => {
@@ -37,7 +37,8 @@ function PostDetailModal({ post, onClose }) {
       if (!res.ok) throw new Error("댓글 등록 실패");
 
       setNewComment("");
-      fetchComments();
+      const updatedComments = await fetchComments(post.post_id);
+      setComments(updatedComments);
     } catch (err) {
       console.error("댓글 등록 에러", err);
     }

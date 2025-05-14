@@ -147,7 +147,7 @@ function PostPage() {
                 )}
               </div>
 
-              <div className="divider" />
+              <div className="comment-divider" />
               <div className="comment-area">
                 <span onClick={() => handleOpenModal(post)}>
                   댓글 개 모두 보기

@@ -43,7 +43,7 @@
   font-size: 14px;
 }
 
-.divider {
+.comment-divider {
   border-bottom: 1px solid rgb(167, 165, 165);
 }
 
@@ -75,4 +75,16 @@
   border: none;
   border-top: 1px solid #ddd;
   margin: 8px 0;
+}
+
+.post-comment-box {
+  width: 100%;
+  resize: none;              /* 사용자가 크기 조절 못하게 */
+  white-space: pre-wrap;     /* 줄바꿈 유지 */
+  word-break: break-word;     /* 단어 단위 줄바꿈 */
+  overflow-wrap: break-word; /* 최신 브라우저용 줄바꿈 */
+  box-sizing: border-box;    /* padding 포함한 width 계산 */
+  padding: 8px;
+  font-family: inherit;
+  font-size: 14px;
 }

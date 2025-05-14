@@ -6,6 +6,7 @@ export async function fetchComments(post_id) {
       method: "POST",
       body: JSON.stringify({ post_id }),
     });
+
     if (!res) return null;
     const data = await res.json();
     return data;

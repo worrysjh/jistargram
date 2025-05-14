@@ -54,9 +54,9 @@ async function updatePost(req, res) {
 
 //게시글 삭제
 async function deletePost(req, res) {
-  const { post_id } = req.body;
+  const { post_id } = req.params;
   try {
-    await cdeletePostService(post_id);
+    await deletePostService(post_id);
 
     res.json({ message: "게시글 삭제에 성공하였습니다." });
   } catch (err) {

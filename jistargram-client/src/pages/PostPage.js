@@ -53,6 +53,28 @@ function PostPage() {
     setSelectedPost(null);
   };
 
+  const handleDelete = async (post_id) => {
+    const confirmDelete = window.confirm("정말로 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await authFetch(
+        `http://localhost:4000/posts/deletePost/${post_id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!res.ok) throw new Error("삭제 실패");
+
+      alert("게시글이 삭제되었습니다.");
+      setPosts((prev) => prev.filter((post) => post.post_id !== post_id));
+    } catch (err) {
+      console.error("삭제 요청 실패:", err);
+      alert("게시글 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <>
       <div className="post-list">
@@ -88,7 +110,9 @@ function PostPage() {
                         <ul>
                           <li>수정하기</li>
                           <hr className="menu-divider" />
-                          <li>삭제하기</li>
+                          <li onClick={() => handleDelete(post.post_id)}>
+                            삭제하기
+                          </li>
                         </ul>
                       </div>
                     )}

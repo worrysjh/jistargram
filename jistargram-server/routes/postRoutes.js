@@ -18,7 +18,7 @@ router.post(
   uploadPost
 );
 router.get("/showPost", authenticateToken, showPost);
-router.get("/deletePost", authenticateToken, deletePost);
+router.delete("/deletePost/:post_id", authenticateToken, deletePost);
 router.post("/newComment", authenticateToken, newComment);
 router.post("/showAllComment", showAllComment);
 

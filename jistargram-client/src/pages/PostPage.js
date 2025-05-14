@@ -6,8 +6,8 @@ import PostDetailModal from "../components/posts/PostDetailModal";
 function PostPage() {
   const [posts, setPosts] = useState([]);
   const [expandedPosts, setExpandedPost] = useState({});
-  const [selectedPost, setSelectedPost] = useState(null); // ✅ 선택된 게시글
-  const [showDetailModal, setShowDetailModal] = useState(false); // ✅ 모달 상태
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {

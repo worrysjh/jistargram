@@ -59,7 +59,6 @@ async function login(req, res) {
 async function getMyProfile(req, res) {
   try {
     const result = await getMyProfileService(req.user.user_name);
-    console.log("getMyProfile 결과: ", result);
     res.json(result.result);
   } catch (err) {
     console.error(err);

@@ -1,4 +1,4 @@
-import { authFetch } from "../utils/authFetch";
+import { authFetch } from "../../utils/authFetch";
 
 export async function submitPost(formData, navigate) {
   try {

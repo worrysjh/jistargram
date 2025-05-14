@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostUploadModal.css";
-import { submitPost } from "../../actions/postUpload";
+import { submitPost } from "../../actions/post/postUpload";
 
 function PostUploadModal({ user_name, onClose, onSubmit }) {
   const [image, setImage] = useState(null);

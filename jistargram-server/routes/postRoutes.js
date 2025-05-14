@@ -19,7 +19,7 @@ router.post(
 );
 router.get("/showPost", showPost);
 router.get("/closePost", closePost);
-router.post("/newComment", newComment);
-router.get("/showAllComment", showAllComment);
+router.post("/newComment", authenticateToken, newComment);
+router.post("/showAllComment", showAllComment);
 
 module.exports = router;

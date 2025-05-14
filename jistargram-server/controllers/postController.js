@@ -67,7 +67,8 @@ async function closePost(req, res) {
 
 //댓글 생성
 async function newComment(req, res) {
-  const { post_id, user_id, comment_content, parent_id } = req.body;
+  const { post_id, comment_content, parent_id } = req.body;
+  const user_id = req.user.user_id;
 
   try {
     await newCommentService({
@@ -87,6 +88,11 @@ async function newComment(req, res) {
 //댓글 조회
 async function showAllComment(req, res) {
   const { post_id } = req.body;
+
+  if (!post_id) {
+    return res.status(400).json({ message: "post_id가 없습니다." });
+  }
+
   try {
     const result = await showAllCommentService(post_id);
 

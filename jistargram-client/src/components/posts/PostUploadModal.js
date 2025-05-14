@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostUploadModal.css";
 import { submitPost } from "../../actions/post/postUpload";
+import { getUserFromToken } from "../../utils/getUserFromToken";
 
 function PostUploadModal({ user_name, onClose, onSubmit }) {
   const [image, setImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState("");
+
+  const currentUser = getUserFromToken();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -51,8 +54,7 @@ function PostUploadModal({ user_name, onClose, onSubmit }) {
           </div>
           <div className="right">
             <div className="user-info">
-              <img src="/common/img/사용자이미지.jpeg" alt="프로필" />
-              <span>{user_name}</span>
+              <span>{currentUser.user_name} 님의 새로운 게시글..</span>
             </div>
             <textarea
               placeholder="게시글 문구 입력..."

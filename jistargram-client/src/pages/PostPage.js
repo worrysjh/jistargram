@@ -4,7 +4,7 @@ import "../styles/PostPage.css";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);
-  console.log(posts);
+  const [expandedPosts, setExpandedPost] = useState({});
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -22,36 +22,87 @@ function PostPage() {
     fetchPosts();
   }, []);
 
+  const toggleExpand = (post_id) => {
+    setExpandedPost((prev) => ({
+      ...prev,
+      [post_id]: !prev[post_id],
+    }));
+  };
+
   return (
     <div className="post-list">
-      {posts.map((post) => (
-        <div key={post.post_id} className="post-card">
-          <div className="post-header">
+      {posts.map((post) => {
+        const lines = post.content.split("\n");
+        const isLong = lines.length > 1;
+        const isExpanded = expandedPosts[post.post_id];
+
+        return (
+          <div key={post.post_id} className="post-card">
+            <div className="post-header">
+              <img
+                src={
+                  post.profile_img
+                    ? `http://localhost:4000${post.profile_img}`
+                    : "/common/img/사용자이미지.jpeg"
+                }
+                alt="프로필"
+                className="profile-pic"
+              />
+              <span className="username">{post.user_name}</span>
+            </div>
+
             <img
               src={
-                post.profile_img
-                  ? `http://localhost:4000${post.profile_img}`
-                  : "/common/img/사용자이미지.jpeg"
+                `http://localhost:4000${post.media_url}` || "/default-post.jpg"
               }
-              alt="프로필"
-              className="profile-pic"
+              alt="게시물"
+              className="post-image"
             />
-            <span className="username">{post.user_name}</span>
-          </div>
 
-          <img
-            src={
-              `http://localhost:4000${post.media_url}` || "/default-post.jpg"
-            }
-            alt="게시물"
-            className="post-image"
-          />
+            <div className="post-caption">
+              <strong>여기에 좋아요 버튼</strong>
+              <br />
+              <strong>좋아요 개</strong>
+              <br />
+              <strong>{post.user_name}</strong>{" "}
+              {isExpanded ? (
+                <>
+                  {lines.map((line, index) => (
+                    <React.Fragment key={index}>
+                      {line}
+                      <br />
+                    </React.Fragment>
+                  ))}
+                  {isLong && (
+                    <span
+                      onClick={() => toggleExpand(post.post_id)}
+                      style={{ color: "gray", cursor: "pointer" }}
+                    >
+                      접기
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  {lines[0]}
+                  {isLong && (
+                    <span
+                      onClick={() => toggleExpand(post.post_id)}
+                      style={{ color: "gray", cursor: "pointer" }}
+                    >
+                      {" "}
+                      ...더보기
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
 
-          <div className="post-caption">
-            <strong>{post.user_name}</strong> {post.content}
+            <div className="divider" />
+            <div className="comment-area">댓글 개 모두 보기</div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

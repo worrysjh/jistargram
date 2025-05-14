@@ -8,7 +8,7 @@ html, body {
 .layout {
   display: grid;
   grid-template-columns: 240px 1fr 300px;
-  height: 100vh;
+  height: 100%;
   font-family: Arial, sans-serif;
 }
 
@@ -70,7 +70,7 @@ html, body {
 .sidebar-bottom {
   margin-top: auto;  /* 나머지 메뉴를 위로 밀어내고 하단 고정 */
   position: relative;
-  margin-bottom: 30px; 
+  margin-bottom: 30px;
 }
 
 .hamburger {

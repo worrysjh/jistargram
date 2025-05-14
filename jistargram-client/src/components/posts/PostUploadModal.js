@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import "../../styles/PostModal.css";
+import "../../styles/PostUploadModal.css";
 import { submitPost } from "../../actions/postUpload";
 
-function PostModal({ user_name, onClose, onSubmit }) {
+function PostUploadModal({ user_name, onClose, onSubmit }) {
   const [image, setImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState("");
@@ -80,4 +80,4 @@ function PostModal({ user_name, onClose, onSubmit }) {
   );
 }
 
-export default PostModal;
+export default PostUploadModal;

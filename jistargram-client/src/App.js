@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import PostPage from "./pages/PostPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/layout/Layout";
-import PostModal from "./components/posts/PostModal";
+import PostUploadModal from "./components/posts/PostUploadModal";
 
 //import Logout from "./components/auth/Logout";
 import RegisterPage from "./pages/RegisterPage";
@@ -12,14 +12,16 @@ import ProfilePage from "./pages/ProfilePage";
 import ProfileChangePage from "./pages/ProfileChangePage";
 
 function App() {
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [isPostUploadModalOpen, setIsPostUploadModalOpen] = useState(false);
   return (
     <Router>
       <Routes>
         <Route
           element={
             <ProtectedRoute>
-              <Layout onOpenPostModal={() => setIsPostModalOpen(true)} />
+              <Layout
+                onOpenPostUploadModal={() => setIsPostUploadModalOpen(true)}
+              />
             </ProtectedRoute>
           }
         >
@@ -32,8 +34,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
 
-      {isPostModalOpen && (
-        <PostModal onClose={() => setIsPostModalOpen(false)} />
+      {isPostUploadModalOpen && (
+        <PostUploadModal onClose={() => setIsPostUploadModalOpen(false)} />
       )}
     </Router>
   );

@@ -17,8 +17,8 @@ router.post(
   upload.single("image"),
   uploadPost
 );
-router.get("/showPost", showPost);
-router.get("/deletePost", deletePost);
+router.get("/showPost", authenticateToken, showPost);
+router.get("/deletePost", authenticateToken, deletePost);
 router.post("/newComment", authenticateToken, newComment);
 router.post("/showAllComment", showAllComment);
 

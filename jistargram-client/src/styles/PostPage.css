@@ -47,3 +47,32 @@
   border-bottom: 1px solid rgb(167, 165, 165);
 }
 
+.owner-dropdown-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.owner-dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.owner-dropdown-menu li {
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.owner-dropdown-menu li:hover {
+  background-color: #f2f2f2;
+}
+
+.owner-menu-divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 8px 0;
+}

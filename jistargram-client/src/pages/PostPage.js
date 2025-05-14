@@ -2,12 +2,21 @@ import React, { useEffect, useState } from "react";
 import { authFetch } from "../utils/authFetch";
 import "../styles/PostPage.css";
 import PostDetailModal from "../components/posts/PostDetailModal";
+import { getUserFromToken } from "../utils/getUserFromToken";
+
+import { FiMenu } from "react-icons/fi";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);
   const [expandedPosts, setExpandedPost] = useState({});
   const [selectedPost, setSelectedPost] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const currentUser = getUserFromToken();
+
+  const [ownerMenuOpen, setOwnerMenuOpen] = useState(false);
+  const toggleMenu = (post_id) => {
+    setOwnerMenuOpen((prev) => (prev === post_id ? null : post_id));
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -49,6 +58,7 @@ function PostPage() {
           const lines = post.content.split("\n");
           const isLong = lines.length > 1;
           const isExpanded = expandedPosts[post.post_id];
+          const isOwner = currentUser && currentUser.user_id === post.user_id;
 
           return (
             <div key={post.post_id} className="post-card">
@@ -63,6 +73,25 @@ function PostPage() {
                   className="profile-pic"
                 />
                 <span className="username">{post.user_name}</span>
+                {isOwner && (
+                  <div className="owner-menu">
+                    <div
+                      className="hamburger"
+                      onClick={() => toggleMenu(post.post_id)}
+                    >
+                      <FiMenu size={12} />
+                    </div>
+                    {ownerMenuOpen === post.post_id && (
+                      <div className="owner-dropdown-menu">
+                        <ul>
+                          <li>수정하기</li>
+                          <hr className="menu-divider" />
+                          <li>삭제하기</li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <img

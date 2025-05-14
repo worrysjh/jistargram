@@ -3,6 +3,9 @@ import "../styles/ProfilePage.css";
 import { authFetch } from "../utils/authFetch";
 import { useNavigate } from "react-router-dom";
 
+import { CiSettings } from "react-icons/ci";
+import { FaPencilAlt } from "react-icons/fa";
+
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
@@ -62,9 +65,11 @@ function ProfilePage() {
               className="profile-button"
               onClick={() => navigate("/profile/edit")}
             >
-              프로필 편집
+              <FaPencilAlt title="프로필수정" />
             </button>
-            <span className="settings-icon">설정</span>
+            <span className="settings-icon">
+              <CiSettings title="설정" />
+            </span>
           </div>
           <ul className="profile-stats">
             <li>

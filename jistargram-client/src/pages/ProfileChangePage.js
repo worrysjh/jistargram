@@ -25,8 +25,8 @@ function ProfileChangePage() {
 
       const data = await response.json();
       setProfile(data);
+      setBio(data.biography);
     };
-
     fetchProfile();
   }, [navigate]);
 
@@ -114,7 +114,7 @@ function ProfileChangePage() {
       <form className="profile-edit-form" onSubmit={handleSubmit}>
         <label>소개</label>
         <textarea
-          value={profile.biography}
+          value={bio}
           onChange={(e) => setBio(e.target.value)}
           placeholder="작성된 자기소개가 없습니다."
           maxLength={149}

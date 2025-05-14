@@ -6,6 +6,7 @@ function Logout() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    alert("로그아웃 하였습니다.");
     navigate("/login");
   };
 

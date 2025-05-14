@@ -1,6 +1,6 @@
 const pool = require("../../models/db");
 
-async function closePostService(post_id) {
+async function deletePostService(post_id) {
   try {
     await pool.query("UPDATE posts SET post_state='삭제' WHERE post_id = $1", [
       post_id,
@@ -11,4 +11,4 @@ async function closePostService(post_id) {
   }
 }
 
-module.exports = { closePostService };
+module.exports = { deletePostService };

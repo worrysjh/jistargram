@@ -4,7 +4,7 @@ const {
   showPost,
   newComment,
   showAllComment,
-  closePost,
+  deletePost,
 } = require("../controllers/postController");
 const authenticateToken = require("../middlewares/auth");
 const upload = require("../middlewares/uploadPostImage");
@@ -18,7 +18,7 @@ router.post(
   uploadPost
 );
 router.get("/showPost", showPost);
-router.get("/closePost", closePost);
+router.get("/deletePost", deletePost);
 router.post("/newComment", authenticateToken, newComment);
 router.post("/showAllComment", showAllComment);
 

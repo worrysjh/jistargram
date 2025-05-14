@@ -1,8 +1,8 @@
 const { uploadService } = require("../services/postService/uploadService");
 const { getPostService } = require("../services/postService/getPostService");
 const {
-  closePostService,
-} = require("../services/postService/closePostService");
+  deletePostService,
+} = require("../services/postService/deletePostService");
 const {
   newCommentService,
 } = require("../services/postService/newCommentService");
@@ -53,10 +53,10 @@ async function updatePost(req, res) {
 }
 
 //게시글 삭제
-async function closePost(req, res) {
+async function deletePost(req, res) {
   const { post_id } = req.body;
   try {
-    await closePostService(post_id);
+    await cdeletePostService(post_id);
 
     res.json({ message: "게시글 삭제에 성공하였습니다." });
   } catch (err) {
@@ -110,7 +110,7 @@ async function showAllComment(req, res) {
 module.exports = {
   uploadPost,
   showPost,
-  closePost,
+  deletePost,
   newComment,
   showAllComment,
 };

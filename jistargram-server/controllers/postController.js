@@ -144,10 +144,10 @@ async function deleteComment(req, res) {
   const { comment_id } = req.params;
   try {
     await deleteCommentService(comment_id);
-    res.json({ message: "댓글 삭제에 성공하였습니다." });
+    res.json({ success: true, message: "댓글 삭제에 성공하였습니다." });
   } catch (err) {
     console.error(err);
-    res.stauts(500).json({ message: "댓글 삭제 실패" });
+    res.status(500).json({ message: "댓글 삭제 실패" });
   }
 }
 

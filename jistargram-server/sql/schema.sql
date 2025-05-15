@@ -40,7 +40,7 @@ CREATE TABLE comments (
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE,
     parent_id INTEGER REFERENCES comments(comment_id) ON DELETE CASCADE,
-    comment_state VARCHAR(20) DEFAULT '삭제' NOT NULL
+    comment_state VARCHAR(20) DEFAULT '생성' NOT NULL
 );
 
 --좋아요 테이블

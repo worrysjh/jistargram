@@ -35,7 +35,7 @@ router.get("/countPost", countPost);
 router.post("/newComment", authenticateToken, newComment);
 router.post("/showAllComment", showAllComment);
 router.delete("/deleteComment/:comment_id", authenticateToken, deleteComment);
-router.patch("/updateComment", authenticateToken, updateComment);
+router.patch("/updateComment", updateComment);
 router.get("/countComment", countComment);
 
 module.exports = router;

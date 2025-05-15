@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/layout/Footer";
-
+import { login } from "../actions/auth/login";
 import "../styles/LoginPage.css";
-import { authFetch } from "../utils/authFetch";
 import LoginForm from "../components/auth/LoginForm";
 
 function LoginPage() {
@@ -12,13 +11,7 @@ function LoginPage() {
 
   const handleLogin = async (user_name, passwd) => {
     try {
-      const response = await authFetch("http://localhost:4000/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_name, passwd }),
-      });
-
-      const data = await response.json();
+      const { response, data } = await login(user_name, passwd);
 
       if (response.ok) {
         localStorage.setItem("token", data.token);

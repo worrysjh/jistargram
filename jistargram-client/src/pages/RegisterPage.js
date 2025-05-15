@@ -4,11 +4,11 @@ import Register from "../components/auth/Register";
 import Footer from "../components/layout/Footer";
 
 import "../styles/RegisterPage.css";
-import { authFetch } from "../utils/authFetch";
+import { register } from "../actions/auth";
 
 function RegisterPage() {
   const [message, setMessage] = useState("");
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const handleRegist = async (
     user_name,
@@ -19,52 +19,44 @@ function RegisterPage() {
     gender
   ) => {
     try {
-      const response = await authFetch("http://localhost:4000/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_name,
-          nick_name,
-          email,
-          passwd,
-          birthdate,
-          gender,
-        }),
+      const { response, data } = await register({
+        user_name,
+        nick_name,
+        email,
+        passwd,
+        birthdate,
+        gender,
       });
-
-      const data = await response.json();
 
       if (response.ok) {
         setMessage("회원가입 성공");
         alert("회원가입에 성공하였습니다.");
-        navigator("/login");
+        navigate("/login");
       } else {
         setMessage(`회원가입 실패: ${data.message}`);
       }
     } catch (err) {
-      console.log("서버 오류:", err);
+      console.error("서버 오류:", err);
       setMessage("서버 연결 실패");
     }
   };
 
   return (
-    <>
-      <div className="register-container">
-        <div className="form-wrapper">
-          <div className="register-box">
-            <h2>Jistargram</h2>
-            <Register onRegist={handleRegist} />
-            <p className="register-message">{message}</p>
-          </div>
-
-          <div className="login-box">
-            계정이 있으신가요? <p />
-            <a href="/login">로그인하기</a>
-          </div>
+    <div className="register-container">
+      <div className="form-wrapper">
+        <div className="register-box">
+          <h2>Jistargram</h2>
+          <Register onRegist={handleRegist} />
+          <p className="register-message">{message}</p>
         </div>
-        <Footer />
+
+        <div className="login-box">
+          계정이 있으신가요? <br />
+          <a href="/login">로그인하기</a>
+        </div>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 

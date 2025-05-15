@@ -1,7 +1,14 @@
+// src/pages/ProfileChangePage.js
+
 import React, { useState, useEffect } from "react";
-import { authFetch } from "../utils/authFetch";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProfileChangePage.css";
+
+import {
+  fetchProfile,
+  updateProfileBio,
+  updateProfileImage,
+} from "../actions/profile";
 
 function ProfileChangePage() {
   const [profile, setProfile] = useState(null);
@@ -10,80 +17,49 @@ function ProfileChangePage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
 
+  // 프로필 로드
   useEffect(() => {
-    const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
-      const response = await authFetch(
-        "http://localhost:4000/users/getMyProfile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-        navigate
-      );
-
-      const data = await response.json();
-      setProfile(data);
-      setBio(data.biography);
-    };
-    fetchProfile();
+    (async () => {
+      try {
+        const data = await fetchProfile(navigate);
+        setProfile(data);
+        setBio(data.biography);
+      } catch (err) {
+        console.error("프로필 로딩 오류:", err);
+      }
+    })();
   }, [navigate]);
 
   if (!profile) return <p>로딩 중...</p>;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const response = await authFetch(
-      "http://localhost:4000/users/updateProfile",
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ biography: bio }),
-      },
-      navigate
-    );
-    if (!response) {
-      console.log("서버 응답 없음 또는 인증 실패");
-      return;
-    }
-
-    if (response && response.ok) {
+    try {
+      await updateProfileBio(bio, navigate);
       alert("프로필이 수정되었습니다.");
       navigate("/profile");
-    } else {
-      alert("수정 실패: 서버 오류 또는 권한 없음");
+    } catch (err) {
+      console.error("소개 수정 실패:", err);
+      alert("소개 수정 중 오류가 발생했습니다.");
     }
   };
 
+  // 파일 선택
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
+  // 이미지 업로드 핸들러
   const handleUpload = async () => {
     if (!selectedFile) return alert("파일을 선택하세요");
-
-    const formData = new FormData();
-    formData.append("profile_img", selectedFile);
-
-    const response = await authFetch(
-      "http://localhost:4000/users/updateProfileImg",
-      {
-        method: "POST",
-        body: formData,
-      },
-      navigate
-    );
-
-    if (response && response.ok) {
+    try {
+      await updateProfileImage(selectedFile, navigate);
       alert("프로필 사진이 변경되었습니다.");
       setShowModal(false);
       window.location.reload();
-    } else {
-      alert("업로드 실패");
+    } catch (err) {
+      console.error("이미지 업로드 실패:", err);
+      alert("이미지 업로드 중 오류가 발생했습니다.");
     }
   };
 
@@ -118,9 +94,8 @@ function ProfileChangePage() {
           onChange={(e) => setBio(e.target.value)}
           placeholder="작성된 자기소개가 없습니다."
           maxLength={149}
-        ></textarea>
+        />
         <small>{bio.length}/150</small>
-
         <button type="submit" className="submit-btn">
           제출
         </button>

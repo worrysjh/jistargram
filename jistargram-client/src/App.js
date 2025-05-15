@@ -5,8 +5,6 @@ import PostPage from "./pages/PostPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import PostUploadModal from "./components/posts/PostUploadModal";
-
-//import Logout from "./components/auth/Logout";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProfileChangePage from "./pages/ProfileChangePage";

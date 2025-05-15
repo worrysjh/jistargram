@@ -1,70 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostDetailModal.css";
 import { getUserFromToken } from "../../utils/getUserFromToken";
-import { authFetch } from "../../utils/authFetch";
-import { fetchComments } from "../../actions/comment/fetchComments";
-import { FcLike } from "react-icons/fc";
 
+import {
+  fetchComments,
+  addComment,
+  deleteComment,
+} from "../../actions/comment";
+
+import { FcLike } from "react-icons/fc";
 import { RiDislikeLine } from "react-icons/ri";
 
 function PostDetailModal({ post, onClose }) {
-  const [comments, setComments] = useState(null);
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const post_id = post.post_id;
-
   const currentUser = getUserFromToken();
 
+  // 댓글 조회
   useEffect(() => {
-    const loadComments = async () => {
-      const data = await fetchComments(post_id);
-      if (data) setComments(data);
-    };
-
-    loadComments();
+    (async () => {
+      try {
+        const data = await fetchComments(post_id);
+        setComments(data);
+      } catch (err) {
+        console.error("댓글 로딩 실패:", err);
+      }
+    })();
   }, [post_id]);
 
+  // 댓글 등록
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return;
-
     try {
-      const res = await authFetch("http://localhost:4000/posts/newComment", {
-        method: "POST",
-        body: JSON.stringify({
-          post_id: post.post_id,
-          comment_content: newComment,
-          parent_id: null,
-        }),
+      await addComment({
+        post_id,
+        comment_content: newComment,
+        parent_id: null,
       });
-
-      if (!res.ok) throw new Error("댓글 등록 실패");
-
       setNewComment("");
-      const updatedComments = await fetchComments(post.post_id);
-      setComments(updatedComments);
+      const updated = await fetchComments(post_id);
+      setComments(updated);
     } catch (err) {
-      console.error("댓글 등록 에러", err);
+      console.error("댓글 등록 에러:", err);
     }
   };
 
+  // 댓글 삭제
   const handleDeleteComment = async (comment_id) => {
-    console.log("삭제 요청 comment_id : ", comment_id);
-    const confirmDelete = window.confirm("댓글을 삭제하시겠습니까?");
-    if (!confirmDelete) return;
+    if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
     try {
-      const res = await authFetch(
-        `http://localhost:4000/posts/deleteComment/${comment_id}`,
-        {
-          method: "DELETE",
-        }
-      );
-      alert("댓글이 삭제되었습니다.");
-      if (!res.ok) throw new Error("댓글 삭제 실패");
-
-      const updatedComments = await fetchComments(post_id);
-      setComments(updatedComments);
+      await deleteComment(comment_id);
+      const updated = await fetchComments(post_id);
+      setComments(updated);
     } catch (err) {
-      console.error("댓글 삭제 중 에러", err);
+      console.error("댓글 삭제 에러:", err);
     }
   };
 
@@ -76,13 +67,13 @@ function PostDetailModal({ post, onClose }) {
         <div className="detail-left">
           <img src={`http://localhost:4000${post.media_url}`} alt="게시물" />
         </div>
-
         <div className="detail-right">
           <div className="detail-header">
             <img
               src={
-                `http://localhost:4000${post.profile_img}` ||
-                "/common/img/사용자이미지.jpeg"
+                post.profile_img
+                  ? `http://localhost:4000${post.profile_img}`
+                  : "/common/img/사용자이미지.jpeg"
               }
               alt="프로필"
               className="detail-profile-img"
@@ -94,43 +85,39 @@ function PostDetailModal({ post, onClose }) {
           </div>
 
           <div className="detail-content">
-            {post.content.split("\n").map((line, index) => (
-              <React.Fragment key={index}>
+            {post.content.split("\n").map((line, idx) => (
+              <React.Fragment key={idx}>
                 {line}
                 <br />
               </React.Fragment>
             ))}
             <hr />
             <div className="comments">
-              {Array.isArray(comments) && comments.length > 0 ? (
-                comments.map((comment) => (
-                  <p key={comment.comment_id}>
-                    <b>{comment.user_name}</b>{" "}
-                    {comment.comment_state === "삭제" ? (
+              {comments.length > 0 ? (
+                comments.map((c) => (
+                  <p key={c.comment_id}>
+                    <b>{c.user_name}</b>{" "}
+                    {c.comment_state === "삭제" ? (
                       <span style={{ color: "gray", fontStyle: "italic" }}>
                         삭제된 댓글입니다.
                       </span>
                     ) : (
                       <>
-                        {comment.comment_content}
+                        {c.comment_content}
                         <br />
                         <RiDislikeLine />
-                        <FcLike />
-                        {comment.created_at} 좋아요:
-                        {currentUser &&
-                          currentUser.user_id === comment.user_id && (
-                            <>
-                              {" | "}
-                              <span
-                                onClick={() =>
-                                  handleDeleteComment(comment.comment_id)
-                                }
-                                style={{ color: "red", cursor: "pointer" }}
-                              >
-                                삭제
-                              </span>
-                            </>
-                          )}
+                        <FcLike /> {c.created_at}
+                        {currentUser?.user_id === c.user_id && (
+                          <>
+                            {" | "}
+                            <span
+                              onClick={() => handleDeleteComment(c.comment_id)}
+                              style={{ color: "red", cursor: "pointer" }}
+                            >
+                              삭제
+                            </span>
+                          </>
+                        )}
                       </>
                     )}
                   </p>
@@ -150,7 +137,7 @@ function PostDetailModal({ post, onClose }) {
 
           <div className="comment-input">
             <input
-              type="textarea"
+              type="text"
               placeholder="댓글 달기..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}

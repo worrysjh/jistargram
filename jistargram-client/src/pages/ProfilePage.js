@@ -1,76 +1,52 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
-import { authFetch } from "../utils/authFetch";
 import { useNavigate } from "react-router-dom";
-import PostDetailModal from "../components/posts/PostDetailModal";
 
+import PostDetailModal from "../components/posts/PostDetailModal";
 import { CiSettings } from "react-icons/ci";
 import { FaPencilAlt } from "react-icons/fa";
 
+import { fetchProfile, fetchMyPosts } from "../actions/profile";
+
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
-  const [myPost, setMyPost] = useState([]);
-  const navigate = useNavigate();
-
+  const [myPosts, setMyPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-
-  const handleOpenDetailModal = (post) => {
-    setSelectedPost(post);
-    setShowDetailModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowDetailModal(false);
-    setSelectedPost(null);
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
-      const response = await authFetch(
-        "http://localhost:4000/users/getMyProfile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-        navigate
-      );
-
-      const postResponse = await authFetch(
-        "http://localhost:4000/posts/getMyPost",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response || !postResponse) {
-        console.log("서버 응답 없음 또는 인증 실패");
-        return;
+    (async () => {
+      try {
+        // 프로필 + 내 게시물 동시 로드
+        const [profileData, postsData] = await Promise.all([
+          fetchProfile(navigate),
+          fetchMyPosts(),
+        ]);
+        setProfile(profileData);
+        setMyPosts(postsData);
+      } catch (err) {
+        console.error("데이터 로딩 중 오류:", err);
       }
-
-      const data = await response.json();
-      setProfile(data);
-      const postData = await postResponse.json();
-      setMyPost(postData);
-    };
-
-    fetchProfile();
+    })();
   }, [navigate]);
 
   if (!profile) return <p>로딩 중...</p>;
 
-  const birthdate = profile.birthdate;
-  const date = new Date(birthdate);
-
-  const formatted = date.toLocaleDateString("ko-KR", {
+  const birthDate = new Date(profile.birthdate).toLocaleDateString("ko-KR", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
+
+  const openModal = (post) => {
+    setSelectedPost(post);
+    setShowDetailModal(true);
+  };
+  const closeModal = () => {
+    setShowDetailModal(false);
+    setSelectedPost(null);
+  };
 
   return (
     <div className="profile-container">
@@ -92,7 +68,7 @@ function ProfilePage() {
               className="profile-button"
               onClick={() => navigate("/profile/edit")}
             >
-              <FaPencilAlt title="프로필수정" />
+              <FaPencilAlt title="프로필 수정" />
             </button>
             <span className="settings-icon">
               <CiSettings title="설정" />
@@ -100,7 +76,7 @@ function ProfilePage() {
           </div>
           <ul className="profile-stats">
             <li>
-              게시물 <b>0</b>
+              게시물 <b>{myPosts.length}</b>
             </li>
             <li>
               팔로워 <b>5</b>
@@ -111,23 +87,22 @@ function ProfilePage() {
           </ul>
           <div className="profile-details">
             <strong>{profile.nick_name}</strong>
-            <p>생년월일: {formatted}</p>
+            <p>생년월일: {birthDate}</p>
             <p>{profile.biography || "작성된 자기소개가 없습니다."}</p>
           </div>
         </div>
       </div>
+
       <hr />
-      <div className="profile-tabs">
-        <span>게시물</span>
-      </div>
+
       <div className="profile-posts">
-        {myPost.length > 0 ? (
+        {myPosts.length > 0 ? (
           <div className="post-grid">
-            {myPost.map((post) => (
+            {myPosts.map((post) => (
               <div
-                className="post-item"
                 key={post.post_id}
-                onClick={() => handleOpenDetailModal(post)}
+                className="post-item"
+                onClick={() => openModal(post)}
               >
                 <img
                   src={`http://localhost:4000${post.media_url}`}
@@ -139,10 +114,11 @@ function ProfilePage() {
         ) : (
           <p className="no-post">게시물이 없습니다.</p>
         )}
-        {showDetailModal && (
-          <PostDetailModal post={selectedPost} onClose={handleCloseModal} />
-        )}
       </div>
+
+      {showDetailModal && (
+        <PostDetailModal post={selectedPost} onClose={closeModal} />
+      )}
     </div>
   );
 }

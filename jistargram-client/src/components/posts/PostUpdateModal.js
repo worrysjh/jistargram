@@ -1,7 +1,8 @@
+// src/components/posts/PostUpdateModal.js
+
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostUploadModal.css";
-//import { updatePost } from "../../actions/post/updatePost";
 import { getUserFromToken } from "../../utils/getUserFromToken";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +11,6 @@ function PostUpdateModal({ post, onClose, onUpdate }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState(post.content);
   const currentUser = getUserFromToken();
-
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
@@ -29,27 +29,33 @@ function PostUpdateModal({ post, onClose, onUpdate }) {
     formData.append("existingImage", post.media_url);
     formData.append("content", content);
     formData.append("post_id", post.post_id);
-    const success = await onUpdate(formData);
-    if (success) {
+
+    try {
+      // updatedContent 변수 없이 onUpdate 호출
+      await onUpdate(formData);
+
+      // 성공 시 모달 닫고 리다이렉트/리로드
       onClose();
       navigate("/", { replace: true });
       window.location.reload();
+    } catch (err) {
+      console.error("게시물 수정 중 오류:", err);
+      alert("게시물 수정에 실패했습니다.");
     }
   };
 
-  const modalContent = (
+  return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="post-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <button className="back-btn" onClick={onClose}>
             X
           </button>
-          <h3 className="modal-title">게시물 수정하하기</h3>
+          <h3 className="modal-title">게시물 수정하기</h3>
           <button className="post-submit-btn" onClick={handleSubmit}>
             수정하기
           </button>
         </div>
-
         <div className="modal-body">
           <div className="left">
             {image ? (
@@ -71,7 +77,6 @@ function PostUpdateModal({ post, onClose, onUpdate }) {
             <div className="counter">{content.length}/2200</div>
           </div>
         </div>
-
         <div className="modal-footer">
           <label className="upload-label">
             <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -79,11 +84,7 @@ function PostUpdateModal({ post, onClose, onUpdate }) {
           </label>
         </div>
       </div>
-    </div>
-  );
-
-  return ReactDOM.createPortal(
-    modalContent,
+    </div>,
     document.getElementById("modal-root")
   );
 }

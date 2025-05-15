@@ -1,139 +1,96 @@
 import React, { useEffect, useState } from "react";
-import { authFetch } from "../utils/authFetch";
-import "../styles/PostPage.css";
-import PostDetailModal from "../components/posts/PostDetailModal";
 import { getUserFromToken } from "../utils/getUserFromToken";
-
+import PostDetailModal from "../components/posts/PostDetailModal";
+import PostUpdateModal from "../components/posts/PostUpdateModal";
 import { FcLike } from "react-icons/fc";
 import { RiDislikeLine } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
-import PostUpdateModal from "../components/posts/PostUpdateModal";
+import "../styles/PostPage.css";
+
+import { fetchPosts, updatePost, deletePost } from "../actions/post";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);
-  const [expandedPosts, setExpandedPost] = useState({});
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [postToUpdate, setPostToUpdate] = useState(null);
-
-  const onOpenPostUpdateModal = (post) => {
-    setPostToUpdate(post);
-    setShowUpdateModal(true);
-  };
-  const onClosePostUpdateModal = () => {
-    setShowUpdateModal(false);
-    setPostToUpdate(null);
-  };
-  const handlePostUpdate = async (formData) => {
-    const post_id = formData.get("post_id");
-    try {
-      const res = await authFetch(
-        `http://localhost:4000/posts/updatePost/${post_id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-
-      if (!res.ok) throw new Error("수정 실패");
-
-      const updatedContent = formData.get("content");
-      const updatedPosts = posts.map((p) =>
-        p.post_id === post_id ? { ...p, content: updatedContent } : p
-      );
-      setPosts(updatedPosts);
-      alert("게시글이 수정되었습니다.");
-      return true;
-    } catch (err) {
-      console.error("게시글 수정 중 오류", err);
-      alert("게시글 수정 실패");
-      return false;
-    }
-  };
+  const [expanded, setExpanded] = useState({});
+  const [detailModal, setDetailModal] = useState({ open: false, post: null });
+  const [updateModal, setUpdateModal] = useState({ open: false, post: null });
+  const [menuOpenFor, setMenuOpenFor] = useState(null);
 
   const currentUser = getUserFromToken();
 
-  const [ownerMenuOpen, setOwnerMenuOpen] = useState(false);
-  const toggleMenu = (post_id) => {
-    setOwnerMenuOpen((prev) => (prev === post_id ? null : post_id));
-  };
-
   useEffect(() => {
-    const fetchPosts = async () => {
+    (async () => {
       try {
-        const res = await authFetch("http://localhost:4000/posts/showPost");
-        if (!res.ok) throw new Error("네트워크 응답 실패");
-
-        const data = await res.json();
+        const data = await fetchPosts();
         setPosts(data);
       } catch (err) {
-        console.error("게시글 로딩 실패", err);
+        console.error(err);
       }
-    };
-
-    fetchPosts();
+    })();
   }, []);
 
-  const toggleExpand = (post_id) => {
-    setExpandedPost((prev) => ({
-      ...prev,
-      [post_id]: !prev[post_id],
-    }));
+  const handleExpand = (id) => {
+    setExpanded((e) => ({ ...e, [id]: !e[id] }));
   };
 
-  const handleOpenModal = (post) => {
-    setSelectedPost(post);
-    setShowDetailModal(true);
-  };
+  const openDetail = (post) => setDetailModal({ open: true, post });
+  const closeDetail = () => setDetailModal({ open: false, post: null });
 
-  const handleCloseModal = () => {
-    setShowDetailModal(false);
-    setSelectedPost(null);
-  };
+  const openUpdate = (post) => setUpdateModal({ open: true, post });
+  const closeUpdate = () => setUpdateModal({ open: false, post: null });
 
-  const handleDelete = async (post_id) => {
-    const confirmDelete = window.confirm("정말로 삭제하시겠습니까?");
-    if (!confirmDelete) return;
-
+  const onUpdate = async (formData) => {
     try {
-      const res = await authFetch(
-        `http://localhost:4000/posts/deletePost/${post_id}`,
-        {
-          method: "DELETE",
-        }
+      const newContent = await updatePost(formData);
+      setPosts((p) =>
+        p.map((x) =>
+          x.post_id === formData.get("post_id")
+            ? { ...x, content: newContent }
+            : x
+        )
       );
-
-      if (!res.ok) throw new Error("삭제 실패");
-
-      alert("게시글이 삭제되었습니다.");
-      setPosts((prev) => prev.filter((post) => post.post_id !== post_id));
-    } catch (err) {
-      console.error("삭제 요청 실패:", err);
-      alert("게시글 삭제 중 오류가 발생했습니다.");
+      alert("수정 완료");
+      closeUpdate();
+    } catch {
+      alert("수정 실패");
     }
   };
+
+  const onDelete = async (post_id) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      await deletePost(post_id);
+      setPosts((p) => p.filter((x) => x.post_id !== post_id));
+      alert("삭제 완료");
+    } catch {
+      alert("삭제 실패");
+    }
+  };
+
+  const toggleMenu = (post_id) =>
+    setMenuOpenFor((prev) => (prev === post_id ? null : post_id));
 
   return (
     <>
       <div className="post-list">
         {posts.map((post) => {
           const lines = post.content.split("\n");
-          const isLong = lines.length > 1;
-          const isExpanded = expandedPosts[post.post_id];
-          const isOwner = currentUser && currentUser.user_id === post.user_id;
+          const long = lines.length > 1;
+          const expandedHere = expanded[post.post_id];
+          const isOwner = currentUser?.user_id === post.user_id;
 
           return (
             <div key={post.post_id} className="post-card">
+              {/* header */}
               <div className="post-header">
                 <img
+                  className="profile-pic"
                   src={
                     post.profile_img
                       ? `http://localhost:4000${post.profile_img}`
                       : "/common/img/사용자이미지.jpeg"
                   }
                   alt="프로필"
-                  className="profile-pic"
                 />
                 <span className="username">{post.user_name}</span>
                 {isOwner && (
@@ -144,14 +101,12 @@ function PostPage() {
                     >
                       <FiMenu size={12} />
                     </div>
-                    {ownerMenuOpen === post.post_id && (
+                    {menuOpenFor === post.post_id && (
                       <div className="owner-dropdown-menu">
                         <ul>
-                          <li onClick={() => onOpenPostUpdateModal(post)}>
-                            수정하기
-                          </li>
+                          <li onClick={() => openUpdate(post)}>수정하기</li>
                           <hr className="menu-divider" />
-                          <li onClick={() => handleDelete(post.post_id)}>
+                          <li onClick={() => onDelete(post.post_id)}>
                             삭제하기
                           </li>
                         </ul>
@@ -161,15 +116,14 @@ function PostPage() {
                 )}
               </div>
 
+              {/* image */}
               <img
-                src={
-                  `http://localhost:4000${post.media_url}` ||
-                  "/default-post.jpg"
-                }
-                alt="게시물"
                 className="post-image"
+                src={`http://localhost:4000${post.media_url}`}
+                alt="게시물"
               />
 
+              {/* caption */}
               <div className="post-caption">
                 <strong>
                   <RiDislikeLine />
@@ -179,18 +133,21 @@ function PostPage() {
                 <strong>좋아요 개</strong>
                 <br />
                 <strong>{post.user_name}</strong>{" "}
-                {isExpanded ? (
+                {expandedHere ? (
                   <>
-                    {lines.map((line, index) => (
-                      <React.Fragment key={index}>
-                        {line}
+                    {lines.map((l, i) => (
+                      <React.Fragment key={i}>
+                        {l}
                         <br />
                       </React.Fragment>
                     ))}
-                    {isLong && (
+                    {long && (
                       <span
-                        onClick={() => toggleExpand(post.post_id)}
-                        style={{ color: "gray", cursor: "pointer" }}
+                        onClick={() => handleExpand(post.post_id)}
+                        style={{
+                          color: "gray",
+                          cursor: "pointer",
+                        }}
                       >
                         접기
                       </span>
@@ -199,37 +156,39 @@ function PostPage() {
                 ) : (
                   <>
                     {lines[0]}
-                    {isLong && (
+                    {long && (
                       <span
-                        onClick={() => toggleExpand(post.post_id)}
-                        style={{ color: "gray", cursor: "pointer" }}
+                        onClick={() => handleExpand(post.post_id)}
+                        style={{
+                          color: "gray",
+                          cursor: "pointer",
+                        }}
                       >
-                        {" "}
-                        ...더보기
+                        …더보기
                       </span>
                     )}
                   </>
                 )}
               </div>
 
+              {/* comments */}
               <div className="comment-divider" />
               <div className="comment-area">
-                <span onClick={() => handleOpenModal(post)}>
-                  댓글 개 모두 보기
-                </span>
+                <span onClick={() => openDetail(post)}>댓글 모두 보기</span>
               </div>
             </div>
           );
         })}
       </div>
-      {showDetailModal && (
-        <PostDetailModal post={selectedPost} onClose={handleCloseModal} />
+
+      {detailModal.open && (
+        <PostDetailModal post={detailModal.post} onClose={closeDetail} />
       )}
-      {showUpdateModal && (
+      {updateModal.open && (
         <PostUpdateModal
-          post={postToUpdate}
-          onClose={onClosePostUpdateModal}
-          onUpdate={handlePostUpdate}
+          post={updateModal.post}
+          onClose={closeUpdate}
+          onUpdate={onUpdate}
         />
       )}
     </>

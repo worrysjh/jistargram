@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostUploadModal.css";
-import { submitPost } from "../../actions/post/postUpload";
+import { uploadPost } from "../../actions/post/uploadPost";
 import { getUserFromToken } from "../../utils/getUserFromToken";
 
 function PostUploadModal({ user_name, onClose, onSubmit }) {
@@ -24,7 +24,7 @@ function PostUploadModal({ user_name, onClose, onSubmit }) {
     const navigate = "/";
     formData.append("image", selectedFile);
     formData.append("content", content);
-    const success = await submitPost(formData, navigate);
+    const success = await uploadPost(formData, navigate);
     if (success) {
       onClose();
       window.location.reload();

@@ -1,6 +1,6 @@
 import { authFetch } from "../../utils/authFetch";
 
-export async function submitPost(formData, navigate) {
+export async function uploadPost(formData, navigate) {
   try {
     const token = localStorage.getItem("token");
     const response = await authFetch(

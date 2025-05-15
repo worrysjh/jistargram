@@ -4,6 +4,7 @@ const {
   showPost,
   newComment,
   showAllComment,
+  updatePost,
   deletePost,
   deleteComment,
   updateComment,
@@ -22,6 +23,12 @@ router.post(
   uploadPost
 );
 router.get("/showPost", authenticateToken, showPost);
+router.put(
+  "/updatePost/:post_id",
+  authenticateToken,
+  upload.single("image"),
+  updatePost
+);
 router.delete("/deletePost/:post_id", authenticateToken, deletePost);
 router.get("/countPost", countPost);
 

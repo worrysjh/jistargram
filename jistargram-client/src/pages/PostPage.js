@@ -7,12 +7,51 @@ import { getUserFromToken } from "../utils/getUserFromToken";
 import { FcLike } from "react-icons/fc";
 import { RiDislikeLine } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
+import PostUpdateModal from "../components/posts/PostUpdateModal";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);
   const [expandedPosts, setExpandedPost] = useState({});
   const [selectedPost, setSelectedPost] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [postToUpdate, setPostToUpdate] = useState(null);
+
+  const onOpenPostUpdateModal = (post) => {
+    setPostToUpdate(post);
+    setShowUpdateModal(true);
+  };
+  const onClosePostUpdateModal = () => {
+    setShowUpdateModal(false);
+    setPostToUpdate(null);
+  };
+  const handlePostUpdate = async (formData) => {
+    const post_id = formData.get("post_id");
+    try {
+      const res = await authFetch(
+        `http://localhost:4000/posts/updatePost/${post_id}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
+
+      if (!res.ok) throw new Error("수정 실패");
+
+      const updatedContent = formData.get("content");
+      const updatedPosts = posts.map((p) =>
+        p.post_id === post_id ? { ...p, content: updatedContent } : p
+      );
+      setPosts(updatedPosts);
+      alert("게시글이 수정되었습니다.");
+      return true;
+    } catch (err) {
+      console.error("게시글 수정 중 오류", err);
+      alert("게시글 수정 실패");
+      return false;
+    }
+  };
+
   const currentUser = getUserFromToken();
 
   const [ownerMenuOpen, setOwnerMenuOpen] = useState(false);
@@ -108,7 +147,9 @@ function PostPage() {
                     {ownerMenuOpen === post.post_id && (
                       <div className="owner-dropdown-menu">
                         <ul>
-                          <li>수정하기</li>
+                          <li onClick={() => onOpenPostUpdateModal(post)}>
+                            수정하기
+                          </li>
                           <hr className="menu-divider" />
                           <li onClick={() => handleDelete(post.post_id)}>
                             삭제하기
@@ -183,6 +224,13 @@ function PostPage() {
       </div>
       {showDetailModal && (
         <PostDetailModal post={selectedPost} onClose={handleCloseModal} />
+      )}
+      {showUpdateModal && (
+        <PostUpdateModal
+          post={postToUpdate}
+          onClose={onClosePostUpdateModal}
+          onUpdate={handlePostUpdate}
+        />
       )}
     </>
   );

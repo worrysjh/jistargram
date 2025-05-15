@@ -75,7 +75,7 @@ function PostUpdateModal({ post, onClose, onUpdate }) {
         <div className="modal-footer">
           <label className="upload-label">
             <input type="file" accept="image/*" onChange={handleImageChange} />
-            사진 추가
+            사진 변경
           </label>
         </div>
       </div>

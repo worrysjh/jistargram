@@ -136,7 +136,9 @@ function PostDetailModal({ post, onClose }) {
                   </p>
                 ))
               ) : (
-                <p>아직 작성된 댓글이 없습니다...</p>
+                <p style={{ color: "gray", fontStyle: "italic" }}>
+                  아직 작성된 댓글이 없습니다...
+                </p>
               )}
             </div>
           </div>

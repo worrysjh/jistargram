@@ -2,13 +2,28 @@ import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
 import { authFetch } from "../utils/authFetch";
 import { useNavigate } from "react-router-dom";
+import PostDetailModal from "../components/posts/PostDetailModal";
 
 import { CiSettings } from "react-icons/ci";
 import { FaPencilAlt } from "react-icons/fa";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
+  const [myPost, setMyPost] = useState([]);
   const navigate = useNavigate();
+
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  const handleOpenDetailModal = (post) => {
+    setSelectedPost(post);
+    setShowDetailModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowDetailModal(false);
+    setSelectedPost(null);
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -22,13 +37,25 @@ function ProfilePage() {
         },
         navigate
       );
-      if (!response) {
+
+      const postResponse = await authFetch(
+        "http://localhost:4000/posts/getMyPost",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response || !postResponse) {
         console.log("서버 응답 없음 또는 인증 실패");
         return;
       }
 
       const data = await response.json();
       setProfile(data);
+      const postData = await postResponse.json();
+      setMyPost(postData);
     };
 
     fetchProfile();
@@ -93,7 +120,29 @@ function ProfilePage() {
       <div className="profile-tabs">
         <span>게시물</span>
       </div>
-      <div className="profile-posts"></div>
+      <div className="profile-posts">
+        {myPost.length > 0 ? (
+          <div className="post-grid">
+            {myPost.map((post) => (
+              <div
+                className="post-item"
+                key={post.post_id}
+                onClick={() => handleOpenDetailModal(post)}
+              >
+                <img
+                  src={`http://localhost:4000${post.media_url}`}
+                  alt="post"
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="no-post">게시물이 없습니다.</p>
+        )}
+        {showDetailModal && (
+          <PostDetailModal post={selectedPost} onClose={handleCloseModal} />
+        )}
+      </div>
     </div>
   );
 }

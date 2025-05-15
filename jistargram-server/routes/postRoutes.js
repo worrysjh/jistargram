@@ -10,6 +10,7 @@ const {
   updateComment,
   countPost,
   countComment,
+  getMyPost,
 } = require("../controllers/postController");
 const authenticateToken = require("../middlewares/auth");
 const upload = require("../middlewares/uploadPostImage");
@@ -31,6 +32,7 @@ router.put(
 );
 router.delete("/deletePost/:post_id", authenticateToken, deletePost);
 router.get("/countPost", countPost);
+router.get("/getMyPost", authenticateToken, getMyPost);
 
 router.post("/newComment", authenticateToken, newComment);
 router.post("/showAllComment", showAllComment);

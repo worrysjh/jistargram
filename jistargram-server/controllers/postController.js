@@ -18,6 +18,9 @@ const {
 const {
   updatePostService,
 } = require("../services/postService/updatePostService");
+const {
+  getMyPostService,
+} = require("../services/postService/getMyPostService");
 
 //게시글 등록
 async function uploadPost(req, res) {
@@ -77,6 +80,19 @@ async function deletePost(req, res) {
   }
 }
 
+//내 게시글 조회
+async function getMyPost(req, res) {
+  const user_id = req.user.user_id;
+  try {
+    const result = await getMyPostService(user_id);
+
+    res.json(result.result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "게시물 조회 실패" });
+  }
+}
+
 //게시글 카운트
 async function countPost(req, res) {
   const { user_id } = req.body;
@@ -131,7 +147,7 @@ async function showAllComment(req, res) {
 async function updateComment(req, res) {
   const { comment_id, comment_content } = req.body;
   try {
-    await updateCommentService(commet_id, comment_content);
+    await updateCommentService(comment_id, comment_content);
     res.json({ message: "댓글 수정에 성공하였습니다." });
   } catch (err) {
     console.error(err);
@@ -168,6 +184,7 @@ module.exports = {
   showPost,
   deletePost,
   updatePost,
+  getMyPost,
   newComment,
   showAllComment,
   deleteComment,

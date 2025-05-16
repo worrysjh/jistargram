@@ -34,19 +34,19 @@ CREATE TABLE posts (
 --댓글 테이블
 CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
-    post_id UUID NOT NULL REFERENCES posts(post_id) ON DELETE CASCADE,
+    post_id UUID NOT NULL REFERENCES posts(post_id),
     user_id NOT NULL REFERENCES users(user_id),
     comment_content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE,
-    parent_id INTEGER REFERENCES comments(comment_id) ON DELETE CASCADE,
+    parent_id INTEGER REFERENCES comments(comment_id),
     comment_state VARCHAR(20) DEFAULT '생성' NOT NULL
 );
 
 --좋아요 테이블
 CREATE TABLE likes (
     like_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(user_id),
     target_type TEXT NOT NULL CHECK (target_type IN ('post', 'comment')),
     target_id UUID NOT NULL,
     UNIQUE (user_id, target_type, target_id)

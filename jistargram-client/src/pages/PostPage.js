@@ -175,7 +175,9 @@ function PostPage() {
               {/* comments */}
               <div className="comment-divider" />
               <div className="comment-area">
-                <span onClick={() => openDetail(post)}>댓글 모두 보기</span>
+                <span onClick={() => openDetail(post)}>
+                  댓글 {post.comment_count}개 모두 보기
+                </span>
               </div>
             </div>
           );

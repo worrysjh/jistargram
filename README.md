@@ -16,14 +16,17 @@
 # 1차 리뷰
 
 - **Server**
+
   - Controller / services 로직 분리
   - app.js에 pool 확인해 연결여부 체크
   - Upload는 기능 / multer는 middleware
 
 - **Client**
+
   - bcrypt 중 secret 없음
 
 - **DataBase**
+
   - users Table : userid / username 구분
 
 - **etc.**
@@ -31,6 +34,8 @@
   - 최상단 코드는 무조건 간단하게
   - 로그인시 정규식 추가
   - vh 회피
+  - 삭제 회피 (상태 변경)
+  - 명명 규칙
 
 # 2차 리뷰
 
@@ -140,10 +145,10 @@ jistargram/
 ## DB 관계도
 
 - **수정전**
-![엔티티관계도](https://github.com/user-attachments/assets/40c8f22b-dedf-4cd0-bc9c-c847c1030e69)
+  ![엔티티관계도](https://github.com/user-attachments/assets/40c8f22b-dedf-4cd0-bc9c-c847c1030e69)
 
 - **수정후**
-![엔티티관계도](./docs/다이어그램/ER%20다이어그램.png)
+  ![엔티티관계도](./docs/다이어그램/ER%20다이어그램.png)
 
 ---
 
@@ -158,10 +163,11 @@ jistargram/
   ![회원가입](https://github.com/user-attachments/assets/d635db13-29ed-46cf-8965-881469ffc60b)
 
 - **메인**
+
   - 수정 전
-  ![메인화면](https://github.com/user-attachments/assets/d973f90e-2577-44a3-8546-83f2b4eab454)
+    ![메인화면](https://github.com/user-attachments/assets/d973f90e-2577-44a3-8546-83f2b4eab454)
   - 수정 후
-  ![메인화면](./docs/개발화면/메인화면.png)
+    ![메인화면](./docs/개발화면/메인화면.png)
 
 - **게시글**
   ![게시글화면](./docs/개발화면/게시글화면.png)
@@ -169,13 +175,17 @@ jistargram/
   ![게시글수정](./docs/개발화면/게시글수정.png)
 
 - **프로필**
+
   - 수정 전
-  ![프로필화면](https://github.com/user-attachments/assets/527c5df9-09ce-40a0-9e9d-c8906a8ba850)
+    ![프로필화면](https://github.com/user-attachments/assets/527c5df9-09ce-40a0-9e9d-c8906a8ba850)
   - 수정 후
-  ![프로필화면](./docs/개발화면/프로필화면.png)
+    ![프로필화면](./docs/개발화면/프로필화면.png)
 
 - **프로필수정**
-  ![프로필수정](https://github.com/user-attachments/assets/278582eb-25ca-4cba-9d00-7267dc587ee9)
-  ![프로필사진수정](https://github.com/user-attachments/assets/0283b9ff-f09b-4586-9dfa-ea5ad986cd87)
+  - 수정 전
+    ![프로필수정](https://github.com/user-attachments/assets/278582eb-25ca-4cba-9d00-7267dc587ee9)
+  - 수정 후
+    ![프로필수정](./docs//개발화면/프로필변경.png)
+    ![프로필사진수정](https://github.com/user-attachments/assets/0283b9ff-f09b-4586-9dfa-ea5ad986cd87)
 
 ---

@@ -16,6 +16,7 @@ function PostDetailModal({ post, onClose }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const post_id = post.post_id;
+  const post_created_at = post.created_at;
   const currentUser = getUserFromToken();
 
   // 댓글 조회
@@ -133,6 +134,10 @@ function PostDetailModal({ post, onClose }) {
           <div className="detail-actions">
             <RiDislikeLine />
             <FcLike />
+            <br />
+            <span className="created-date">
+              작성일: {new Date(post_created_at).toLocaleDateString("ko-KR")}
+            </span>
           </div>
 
           <div className="comment-input">

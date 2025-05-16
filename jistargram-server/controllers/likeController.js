@@ -1,36 +1,42 @@
-// 좋아요 생성
-async function pressLike(req, res){
-    const {user_id, target_type, target_id} = req.body;
+const {
+  checkLike,
+  addLike,
+  removeLike,
+  countLike,
+} = require("../services/like.service");
 
-    try{
-        await pressLikeController(user_id, target_type, target_id);
-        res.status(201).json({ message: "좋아요 등록 성공" });
-    } catch(err) {
-        res.status(500).json({ message: "좋아요 등록 실패" });
-    }
+// 좋아요 check 여부 판별
+async function check(req, res) {
+  const user_id = req.user.user_id;
+  const { target_type, target_id } = req.body;
+
+  const liked = await checkLike(user_id, target_type, target_id);
+  res.json({ liked });
+}
+
+// 좋아요 생성
+async function add(req, res) {
+  const user_id = req.user.user_id;
+  const { target_type, target_id } = req.body;
+
+  await addLike(user_id, target_type, target_id);
+  res.status(201).json({ message: "좋아요 등록 성공" });
 }
 
 // 좋아요 취소
-async function cancleLike(req, res){
-    const {like_id} = req.body;
-
-    try{
-        await cancleLikeController(like_id);
-        res.status(201).json({ message: "좋아요 등록취소 성공" });
-    } catch(err) {
-        res.status(500).json({ message: "좋아요 등록취소 실패" });
-    }
+async function remove(req, res) {
+  const user_id = req.user.user_id;
+  const { target_type, target_id } = req.body;
+  await removeLike(user_id, target_type, target_id);
+  res.status(201).json({ message: "좋아요 등록취소 성공" });
 }
 
 // 좋아요 카운팅
-async function countLike(req, res){
-    const target_id = req.body;
-    try{
-        const result = await countLikeService(target_id);
-        res.json(result.result);
-    } catch(err) {
-        res.status(500).json({ message: "좋아요 카운팅 실패" });
-    }
+async function count(req, res) {
+  const { target_type, target_id } = req.body;
+  const result = await countLike(target_type, target_id);
+  const count = Number(result.result.rows[0].count);
+  res.json({ count });
 }
 
-module.exports = {pressLike, cancleLike, countLike};
+module.exports = { check, add, remove, count };

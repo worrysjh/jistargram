@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getUserFromToken } from "../utils/getUserFromToken";
 import PostDetailModal from "../components/posts/PostDetailModal";
 import PostUpdateModal from "../components/posts/PostUpdateModal";
-import { FcLike } from "react-icons/fc";
-import { RiDislikeLine } from "react-icons/ri";
+import LikeButton from "../components/common/LikeButton";
 import { FiMenu } from "react-icons/fi";
 import "../styles/PostPage.css";
 
@@ -126,13 +125,7 @@ function PostPage() {
 
               {/* caption */}
               <div className="post-caption">
-                <strong>
-                  <RiDislikeLine />
-                  <FcLike />
-                </strong>
-                <br />
-                <strong>좋아요 개</strong>
-                <br />
+                <LikeButton target_id={post.post_id} target_type="post" />
                 <strong>{post.user_name}</strong>{" "}
                 {expandedHere ? (
                   <>

@@ -11,6 +11,7 @@ import {
 
 import { FcLike } from "react-icons/fc";
 import { RiDislikeLine } from "react-icons/ri";
+import LikeButton from "../common/LikeButton";
 
 function PostDetailModal({ post, onClose }) {
   const [comments, setComments] = useState([]);
@@ -105,9 +106,11 @@ function PostDetailModal({ post, onClose }) {
                     ) : (
                       <>
                         {c.comment_content}
-                        <br />
-                        <RiDislikeLine />
-                        <FcLike /> {c.created_at}
+                        <LikeButton
+                          target_id={c.comment_id}
+                          target_type="comment"
+                        />
+                        {c.created_at}
                         {currentUser?.user_id === c.user_id && (
                           <>
                             {" | "}

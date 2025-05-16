@@ -33,13 +33,13 @@ CREATE TABLE posts (
 
 --댓글 테이블
 CREATE TABLE comments (
-    comment_id SERIAL PRIMARY KEY,
+    comment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     post_id UUID NOT NULL REFERENCES posts(post_id),
-    user_id NOT NULL REFERENCES users(user_id),
+    user_id UUID NOT NULL REFERENCES users(user_id),
     comment_content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE,
-    parent_id INTEGER REFERENCES comments(comment_id),
+    parent_id UUID REFERENCES comments(comment_id),
     comment_state VARCHAR(20) DEFAULT '생성' NOT NULL
 );
 

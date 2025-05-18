@@ -3,7 +3,7 @@ const pool = require("../../models/db");
 async function getMyProfileService(user_name) {
   try {
     const result = await pool.query(
-      "SELECT * FROM users WHERE user_name = $1",
+      `SELECT * FROM users WHERE user_name = $1`,
       [user_name]
     );
 

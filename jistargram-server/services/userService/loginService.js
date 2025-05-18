@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 async function loginService({ user_name, passwd }) {
   try {
     const result = await pool.query(
-      "SELECT * FROM users WHERE user_name = $1",
+      `SELECT * FROM users WHERE user_name = $1`,
       [user_name]
     );
     const user = result.rows[0];

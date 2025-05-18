@@ -12,7 +12,7 @@ async function registerUser({
   try {
     // 중복 id 검사
     const idCheck = await pool.query(
-      "SELECT user_name FROM users WHERE user_name = $1",
+      `SELECT user_name FROM users WHERE user_name = $1`,
       [user_name]
     );
     if (idCheck.rows.length > 0) {
@@ -21,7 +21,7 @@ async function registerUser({
 
     // 중복 email 검사
     const emailCheck = await pool.query(
-      "SELECT email FROM users WHERE email = $1",
+      `SELECT email FROM users WHERE email = $1`,
       [email]
     );
     if (emailCheck.rows.length > 0) {
@@ -32,7 +32,7 @@ async function registerUser({
     const hashedPasswd = await bcrypt.hash(passwd, 10);
 
     await pool.query(
-      "INSERT INTO users (user_name, nick_name, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)",
+      `INSERT INTO users (user_name, nick_name, email, passwd, birthdate, gender) values ($1, $2, $3, $4, $5, $6)`,
       [user_name, nick_name, email, hashedPasswd, birthdate, gender]
     );
 

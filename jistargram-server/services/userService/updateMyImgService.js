@@ -8,7 +8,7 @@ async function updateMyImgService({ user_name, filename }) {
 
     // 기존 이미지 삭제
     const result = await pool.query(
-      "SELECT profile_img FROM users WHERE user_name = $1",
+      `SELECT profile_img FROM users WHERE user_name = $1`,
       [user_name]
     );
     const oldImage = result.rows[0]?.profile_img;
@@ -19,7 +19,7 @@ async function updateMyImgService({ user_name, filename }) {
         if (err) {
           return {
             success: false,
-            message: "기존 이미지 삭제 실패 또는 존재하지 않음:",
+            message: "기존 이미지 삭제 실패 또는 존재하지 않음: ",
           };
         } else {
           return {
@@ -31,7 +31,7 @@ async function updateMyImgService({ user_name, filename }) {
     }
 
     // DB 업데이트
-    await pool.query("UPDATE users SET profile_img = $1 WHERE user_name = $2", [
+    await pool.query(`UPDATE users SET profile_img = $1 WHERE user_name = $2`, [
       imagePath,
       user_name,
     ]);

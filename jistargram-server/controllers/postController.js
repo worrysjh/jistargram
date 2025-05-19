@@ -1,26 +1,19 @@
-const { uploadService } = require("../services/postService/uploadService");
-const { getPostService } = require("../services/postService/getPostService");
 const {
+  uploadService,
+  getPostService,
+  updatePostService,
   deletePostService,
-} = require("../services/postService/deletePostService");
+  getMyPostService,
+  countPostService,
+} = require("../services/postService/post.service");
+
 const {
   newCommentService,
-} = require("../services/postService/newCommentService");
-const {
   showAllCommentService,
-} = require("../services/postService/showAllCommentService");
-const {
-  deleteCommentService,
-} = require("../services/postService/deleteCommentService");
-const {
   updateCommentService,
-} = require("../services/postService/updateCommentService");
-const {
-  updatePostService,
-} = require("../services/postService/updatePostService");
-const {
-  getMyPostService,
-} = require("../services/postService/getMyPostService");
+  deleteCommentService,
+  countCommentService,
+} = require("../services/postService/comment.service");
 
 //게시글 등록
 async function uploadPost(req, res) {
@@ -39,7 +32,7 @@ async function uploadPost(req, res) {
 }
 
 //게시글 전체 조회
-async function showPost(req, res) {
+async function showPost(_req, res) {
   try {
     const result = await getPostService();
 
@@ -97,7 +90,7 @@ async function getMyPost(req, res) {
 async function countPost(req, res) {
   const { user_id } = req.body;
   try {
-    const result = await countPost(user_id);
+    const result = await countPostService(user_id);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -171,7 +164,7 @@ async function deleteComment(req, res) {
 async function countComment(req, res) {
   const { post_id } = req.body;
   try {
-    const result = await countComment(post_id);
+    const result = await countCommentService(post_id);
     res.json(result.result);
   } catch (err) {
     console.error(err);

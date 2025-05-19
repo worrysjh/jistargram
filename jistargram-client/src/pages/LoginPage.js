@@ -16,7 +16,7 @@ function LoginPage() {
       if (response.ok) {
         localStorage.setItem("token", data.token);
         setMessage("로그인 성공");
-        navigator("/");
+        navigator("/home");
       } else {
         setMessage(`로그인 실패: ${data.message}`);
       }

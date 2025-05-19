@@ -14,6 +14,8 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<LoginPage />} />
+
         <Route
           element={
             <ProtectedRoute>
@@ -23,7 +25,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/" element={<PostPage />} />
+          <Route path="/home" element={<PostPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<ProfileChangePage />} />
         </Route>

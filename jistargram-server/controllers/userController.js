@@ -1,17 +1,11 @@
-const { registerUser } = require("../services/userService/registerService");
-const { loginService } = require("../services/userService/loginService");
 const {
+  registerUser,
+  loginService,
   getMyProfileService,
-} = require("../services/userService/getMyProfileService");
-const {
   updateMyBioService,
-} = require("../services/userService/updateMyBioService");
-const {
   updateMyImgService,
-} = require("../services/userService/updateMyImgService");
-const {
   changeStateService,
-} = require("../services/userService/changeStateService");
+} = require("../services/user.service");
 
 // 회원가입
 async function register(req, res) {

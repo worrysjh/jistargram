@@ -73,7 +73,6 @@ function PostPage() {
     <>
       <div className="post-list">
         {posts.map((post) => {
-          console.log("게시글 정보 : ", post);
           const lines = post.content.split("\n");
           const long = lines.length > 1;
           const expandedHere = expanded[post.post_id];

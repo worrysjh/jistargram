@@ -21,7 +21,7 @@ function PostUploadModal({ user_name, onClose, onSubmit }) {
 
   const handleSubmit = async () => {
     const formData = new FormData();
-    const navigate = "/";
+    const navigate = "/home";
     formData.append("image", selectedFile);
     formData.append("content", content);
     const success = await uploadPost(formData, navigate);

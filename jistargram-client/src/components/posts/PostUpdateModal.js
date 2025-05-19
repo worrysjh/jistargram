@@ -36,7 +36,7 @@ function PostUpdateModal({ post, onClose, onUpdate }) {
 
       // 성공 시 모달 닫고 리다이렉트/리로드
       onClose();
-      navigate("/", { replace: true });
+      navigate("/home", { replace: true });
       window.location.reload();
     } catch (err) {
       console.error("게시물 수정 중 오류:", err);

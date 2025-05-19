@@ -12,6 +12,7 @@ async function newCommentService({
       `INSERT INTO comments (post_id, user_id, comment_content, parent_id) VALUES ($1, $2, $3, $4)`,
       [post_id, user_id, comment_content, parent_id]
     );
+
     return { success: true };
   } catch (err) {
     throw err;
@@ -25,6 +26,7 @@ async function deleteCommentService(comment_id) {
       `UPDATE comments SET comment_state = '삭제' WHERE comment_id = $1`,
       [comment_id]
     );
+
     return { success: true };
   } catch (err) {
     throw err;
@@ -39,6 +41,7 @@ async function updateCommentService(comment_id, comment_content) {
       `UPDATE comments SET comment_content = $1 WHERE comment_id = $2`,
       [comment_content, comment_id]
     );
+
     return { success: true };
   } catch (err) {
     throw err;
@@ -70,6 +73,7 @@ async function countCommentService(post_id) {
       `SELECT COUNT(*) FROM comments WHERE post_id = $1`,
       [post_id]
     );
+
     return { success: true, result };
   } catch (err) {
     throw err;

@@ -13,7 +13,6 @@ async function verifyPasswd(req, res, next) {
     );
 
     const userpwd = result.rows[0]?.passwd;
-
     if (!userpwd) return res.status(404).json({ message: "User not found" });
 
     const valid = await bcrypt.compare(passwd, userpwd);

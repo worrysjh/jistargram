@@ -89,3 +89,7 @@
   font-family: inherit;
   font-size: 14px;
 }
+
+.post-owner-name {
+  font-weight: bold;
+}

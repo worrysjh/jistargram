@@ -86,7 +86,7 @@ function ProfilePage() {
             </li>
           </ul>
           <div className="profile-details">
-            <strong>{profile.nick_name}</strong>
+            <span className="profile-user-nick-name">{profile.nick_name}</span>
             <p>생년월일: {birthDate}</p>
             <p>{profile.biography || "작성된 자기소개가 없습니다."}</p>
           </div>

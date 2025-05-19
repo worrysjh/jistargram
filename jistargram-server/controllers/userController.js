@@ -20,11 +20,9 @@ async function register(req, res) {
       birthdate,
       gender,
     });
-
     if (!result.success) {
       return res.status(400).json({ message: result.messgae });
     }
-
     res.status(201).json({ message: "회원가입 성공" });
   } catch (err) {
     console.error(err);
@@ -41,7 +39,6 @@ async function login(req, res) {
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
-
     res.json({ message: "로그인 성공", token: result.token });
   } catch (err) {
     console.error(err);
@@ -51,8 +48,10 @@ async function login(req, res) {
 
 // 내 프로필 조회
 async function getMyProfile(req, res) {
+  const user_name = req.user.user_name;
+
   try {
-    const result = await getMyProfileService(req.user.user_name);
+    const result = await getMyProfileService(user_name);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -64,9 +63,9 @@ async function getMyProfile(req, res) {
 async function updateProfile(req, res) {
   const { biography } = req.body;
   const user_name = req.user.user_name;
+
   try {
     await updateMyBioService({ biography, user_name });
-
     res.json({ message: "자기소개가 업데이트되었습니다." });
   } catch (err) {
     console.error(err);

@@ -19,7 +19,7 @@ function Aside({ onOpenPostUploadModal }) {
     <aside className="sidebar">
       <h2>Jistargram</h2>
       <ul>
-        <Link to="/" className="menu-link">
+        <Link to="/home" className="menu-link">
           <li>
             <FaHome /> 홈
           </li>

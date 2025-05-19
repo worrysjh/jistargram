@@ -23,7 +23,6 @@ async function uploadPost(req, res) {
 
   try {
     await uploadService({ user_id, content, media_url });
-
     res.status(200).json({ message: "게시글 등록 성공" });
   } catch (err) {
     console.error(err);
@@ -35,7 +34,6 @@ async function uploadPost(req, res) {
 async function showPost(_req, res) {
   try {
     const result = await getPostService();
-
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -50,9 +48,9 @@ async function updatePost(req, res) {
   const media_url = req.file
     ? `/uploads/post_imgs/${req.file.filename}`
     : existingImage;
+
   try {
     await updatePostService({ content, media_url, post_id });
-
     res.json({ message: "게시글 수정에 성공하였습니다." });
   } catch (err) {
     console.error(err);
@@ -63,9 +61,9 @@ async function updatePost(req, res) {
 //게시글 삭제
 async function deletePost(req, res) {
   const { post_id } = req.params;
+
   try {
     await deletePostService(post_id);
-
     res.json({ message: "게시글 삭제에 성공하였습니다." });
   } catch (err) {
     console.error(err);
@@ -76,9 +74,9 @@ async function deletePost(req, res) {
 //내 게시글 조회
 async function getMyPost(req, res) {
   const user_id = req.user.user_id;
+
   try {
     const result = await getMyPostService(user_id);
-
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -89,6 +87,7 @@ async function getMyPost(req, res) {
 //게시글 카운트
 async function countPost(req, res) {
   const { user_id } = req.body;
+
   try {
     const result = await countPostService(user_id);
     res.json(result.result);
@@ -110,7 +109,6 @@ async function newComment(req, res) {
       comment_content,
       parent_id: parent_id || null,
     });
-
     res.json({ message: "(대)댓글 작성 성공" });
   } catch (err) {
     console.error(err);
@@ -128,7 +126,6 @@ async function showAllComment(req, res) {
 
   try {
     const result = await showAllCommentService(post_id);
-
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -139,6 +136,7 @@ async function showAllComment(req, res) {
 //댓글 수정
 async function updateComment(req, res) {
   const { comment_id, comment_content } = req.body;
+
   try {
     await updateCommentService(comment_id, comment_content);
     res.json({ message: "댓글 수정에 성공하였습니다." });
@@ -151,6 +149,7 @@ async function updateComment(req, res) {
 //댓글 삭제
 async function deleteComment(req, res) {
   const { comment_id } = req.params;
+
   try {
     await deleteCommentService(comment_id);
     res.json({ success: true, message: "댓글 삭제에 성공하였습니다." });
@@ -163,6 +162,7 @@ async function deleteComment(req, res) {
 //댓글 카운트
 async function countComment(req, res) {
   const { post_id } = req.body;
+
   try {
     const result = await countCommentService(post_id);
     res.json(result.result);

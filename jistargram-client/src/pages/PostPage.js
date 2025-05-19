@@ -125,7 +125,7 @@ function PostPage() {
               {/* caption */}
               <div className="post-caption">
                 <LikeButton target_id={post.post_id} target_type="post" />
-                <strong>{post.user_name}</strong>{" "}
+                <span className="post-owner-name">{post.user_name}</span>{" "}
                 {expandedHere ? (
                   <>
                     {lines.map((l, i) => (

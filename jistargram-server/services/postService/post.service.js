@@ -35,6 +35,7 @@ async function deletePostService(post_id) {
       `UPDATE posts SET post_state = '삭제' WHERE post_id = $1`,
       [post_id]
     );
+
     return { success: true };
   } catch (err) {
     throw err;
@@ -65,6 +66,7 @@ async function getPostService() {
       ORDER BY p.created_at DESC;
       `
     );
+
     return { success: true, result: result.rows };
   } catch (err) {
     throw err;
@@ -104,6 +106,7 @@ async function countPostService(user_id) {
        WHERE user_id = $1 && post_state = '공개'`,
       [user_id]
     );
+
     return { success: true, result };
   } catch (err) {
     throw err;

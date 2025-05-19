@@ -7,6 +7,7 @@ async function checkLike(user_id, target_type, target_id) {
      WHERE user_id = $1 AND target_type = $2 AND target_id = $3`,
     [user_id, target_type, target_id]
   );
+
   return result.rowCount > 0;
 }
 
@@ -16,6 +17,7 @@ async function addLike(user_id, target_type, target_id) {
     `INSERT INTO likes (user_id, target_type, target_id) VALUES ($1, $2, $3)`,
     [user_id, target_type, target_id]
   );
+
   return { success: true };
 }
 
@@ -26,6 +28,7 @@ async function removeLike(user_id, target_type, target_id) {
          WHERE user_id = $1 AND target_type = $2 AND target_id = $3`,
     [user_id, target_type, target_id]
   );
+
   return { success: true };
 }
 

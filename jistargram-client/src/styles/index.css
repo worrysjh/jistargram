@@ -1,126 +1,194 @@
-/* 전체 레이아웃 */
+/* src/styles/index.css */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
 }
 
 .layout {
   display: grid;
   grid-template-columns: 240px 1fr 300px;
   height: 100%;
-  font-family: Arial, sans-serif;
+  transition: grid-template-columns 0.3s ease;
 }
 
-/* 왼쪽 사이드바 */
+/* Sidebar base */
 .sidebar {
-  background-color: white;
+  background: #fff;
+  height: 100vh;
   padding: 20px;
   border-right: 1px solid #ddd;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 0;
+  width: auto;
+  transition: width 0.3s ease;
 }
 
-.sidebar h2 {
-  font-size: 24px;
+/* Logo: show full text on large, collapse to centered "J" on small */
+.logo {
+  position: relative;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+.logo .short-text {
+  font-size: 24px;
+}
+.logo .full-text {
+  font-size: 24px;
+  margin-left: 4px;
+  opacity: 1; /* visible by default for large screens */
+  transition: opacity 0.2s;
 }
 
+/* Small screens: only show short-text and center it */
+@media (max-width: 768px) {
+  .logo .full-text {
+    display: none;
+  }
+  .sidebar {
+    align-items: center;
+  }
+  .logo {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* Menu items */
 .sidebar ul {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
-
-.sidebar li {
-  padding: 12px 8px;
-  font-size: 18px;
-  cursor: pointer;
-  border-radius: 8px;
+.menu-link {
+  color: inherit;
+  text-decoration: none;
 }
-
-.sidebar li:hover {
-  background-color: #f2f2f2;
-}
-
-/* 가운데 메인 피드 */
-.main-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100vh;
-  padding: 40px;
-  background-color: #fafafa;
-  overflow-y: auto;
-}
-
-/* 오른쪽 추천영역 */
-.recommend-section {
-  background-color: #fff;
-  border-left: 1px solid #ddd;
-  padding: 20px;
-  height: 100vh;
-}
-
-
-/* sidebar 하단 영역 (햄버거 버튼 위치) */
-.sidebar-bottom {
-  margin-top: auto;  /* 나머지 메뉴를 위로 밀어내고 하단 고정 */
-  position: relative;
-  margin-bottom: 30px;
-}
-
-.hamburger {
-  cursor: pointer;
+.menu-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
-  padding: 8px;
+  padding: 12px;
+  position: relative;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: width 0.3s ease;
+}
+.menu-item:hover {
+  background: #f2f2f2;
+}
+.menu-icon {
+  font-size: 24px;
+}
+.label {
+  display: inline-block;
 }
 
-/* 드롭다운 메뉴 */
+/* Sidebar bottom */
+.sidebar-bottom {
+  margin-top: auto;
+  margin-bottom: 30px;
+  position: relative;
+}
+.hamburger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Dropdown */
 .dropdown-menu {
   position: absolute;
-  bottom: 50px; /* 햄버거 버튼 위로 */
+  bottom: 50px;
   left: 0;
-  background-color: white;
+  background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
   width: 180px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-
 .dropdown-menu ul {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
-
 .dropdown-menu li {
   padding: 8px 12px;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
 }
-
 .dropdown-menu li:hover {
-  background-color: #f2f2f2;
+  background: #f2f2f2;
 }
-
 .menu-divider {
   border: none;
   border-top: 1px solid #ddd;
   margin: 8px 0;
 }
 
-.menu-link {
-  color: inherit;
-  text-decoration: none;
+/* Right section */
+.recommend-section {
+  background: #fff;
+  border-left: 1px solid #ddd;
+  padding: 20px;
+  height: 100vh;
 }
-.menu-link:visited {
-  color: inherit;
+
+/* Responsive: remove right column */
+@media (max-width: 1200px) {
+  .layout {
+    grid-template-columns: 240px 1fr;
+  }
+  .recommend-section {
+    display: none;
+  }
+}
+
+/* Responsive: collapse sidebar */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 60px 1fr;
+  }
+  .sidebar {
+    width: 60px;
+    padding: 0;
+  }
+  .sidebar ul {
+    align-items: center;
+  }
+  .menu-item {
+    justify-content: center;
+    gap: 0;
+    padding: 16px 0;
+  }
+
+  /* hide labels */
+  .label {
+    display: none;
+  }
+
+  /* tooltips on hover */
+  .menu-item:hover {
+    width: auto;
+    background: #f2f2f2;
+  }
+  .menu-item:hover .label {
+    display: inline-block;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translate(8px, -50%);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 12px;
+  }
 }

@@ -22,41 +22,61 @@ function Aside({ onOpenPostUploadModal }) {
 
   return (
     <aside className="sidebar">
-      <h2>Jistargram</h2>
+      <h2 className="logo" data-tooltip="Jistargram">
+        <span className="short-text">J</span>
+        <span className="full-text">istargram</span>
+      </h2>
       <ul>
         <Link to="/home" className="menu-link">
-          <li>
-            <FaHome /> 홈
+          <li className="menu-item" data-tooltip="홈">
+            <FaHome className="menu-icon" />
+            <span className="label">홈</span>
           </li>
         </Link>
-        <li>
-          <FaSearch /> 검색
+        <li className="menu-item" data-tooltip="검색">
+          <FaSearch className="menu-icon" />
+          <span className="label">검색</span>
         </li>
-        <li>
-          <FaRegCompass /> 탐색 탭
+        <li className="menu-item" data-tooltip="탐색 탭">
+          <FaRegCompass className="menu-icon" />
+          <span className="label">탐색 탭</span>
         </li>
-        <li>
-          <BiMoviePlay /> 릴스
+        <li className="menu-item" data-tooltip="릴스">
+          <BiMoviePlay className="menu-icon" />
+          <span className="label">릴스</span>
         </li>
-        <li>
-          <FaRegMessage /> 메시지
+        <li className="menu-item" data-tooltip="메시지">
+          <FaRegMessage className="menu-icon" />
+          <span className="label">메시지</span>
         </li>
-        <li>
-          <CiHeart /> 알림
+        <li className="menu-item" data-tooltip="알림">
+          <CiHeart className="menu-icon" />
+          <span className="label">알림</span>
         </li>
-        <li onClick={onOpenPostUploadModal}>
-          <IoIosCreate /> 만들기
+        <li
+          onClick={onOpenPostUploadModal}
+          className="menu-item"
+          data-tooltip="만들기"
+        >
+          <IoIosCreate className="menu-icon" />
+          <span className="label">만들기</span>
         </li>
         <Link to="/profile" className="menu-link">
-          <li>
-            <PiUserCircleDuotone /> 프로필
+          <li className="menu-item" data-tooltip="프로필">
+            <PiUserCircleDuotone className="menu-icon" />
+            <span className="label">프로필</span>
           </li>
         </Link>
       </ul>
 
       <div className="sidebar-bottom">
-        <div className="hamburger" onClick={toggleMenu}>
-          <FiMenu size={24} /> 더 보기
+        <div
+          className="hamburger menu-item"
+          data-tooltip="더 보기"
+          onClick={toggleMenu}
+        >
+          <FiMenu size={24} className="menu-icon" />
+          <span className="label">더 보기</span>
         </div>
 
         {menuOpen && (

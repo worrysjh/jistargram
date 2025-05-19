@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostDetailModal.css";
 import { getUserFromToken } from "../../utils/getUserFromToken";
+import { flattenComments } from "../../utils/commentUtils";
 
 import {
   fetchComments,
@@ -9,13 +10,14 @@ import {
   deleteComment,
 } from "../../actions/comment";
 
-import { FcLike } from "react-icons/fc";
-import { RiDislikeLine } from "react-icons/ri";
 import LikeButton from "../common/LikeButton";
 
 function PostDetailModal({ post, onClose }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [replyTarget, setReplyTarget] = useState(null);
+  const [replyContent, setReplyContent] = useState("");
+
   const post_id = post.post_id;
   const post_created_at = post.created_at;
   const currentUser = getUserFromToken();
@@ -25,14 +27,15 @@ function PostDetailModal({ post, onClose }) {
     (async () => {
       try {
         const data = await fetchComments(post_id);
-        setComments(data);
+        const sorted = flattenComments(data);
+        setComments(sorted);
       } catch (err) {
         console.error("댓글 로딩 실패:", err);
       }
     })();
   }, [post_id]);
 
-  // 댓글 등록
+  // 새 댓글 등록
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return;
     try {
@@ -42,10 +45,26 @@ function PostDetailModal({ post, onClose }) {
         parent_id: null,
       });
       setNewComment("");
-      const updated = await fetchComments(post_id);
-      setComments(updated);
+      setComments(await fetchComments(post_id));
     } catch (err) {
       console.error("댓글 등록 에러:", err);
+    }
+  };
+
+  // 답글 등록
+  const handleReplySubmit = async () => {
+    if (!replyContent.trim()) return;
+    try {
+      await addComment({
+        post_id,
+        comment_content: replyContent,
+        parent_id: replyTarget,
+      });
+      setReplyContent("");
+      setReplyTarget(null);
+      setComments(await fetchComments(post_id));
+    } catch (err) {
+      console.error("답글 등록 에러:", err);
     }
   };
 
@@ -54,8 +73,7 @@ function PostDetailModal({ post, onClose }) {
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
     try {
       await deleteComment(comment_id);
-      const updated = await fetchComments(post_id);
-      setComments(updated);
+      setComments(await fetchComments(post_id));
     } catch (err) {
       console.error("댓글 삭제 에러:", err);
     }
@@ -66,10 +84,13 @@ function PostDetailModal({ post, onClose }) {
   return ReactDOM.createPortal(
     <div className="detail-modal-overlay" onClick={onClose}>
       <div className="detail-modal" onClick={(e) => e.stopPropagation()}>
+        {/* 좌측 이미지 */}
         <div className="detail-left">
           <img src={`http://localhost:4000${post.media_url}`} alt="게시물" />
         </div>
+        {/* 우측 콘텐츠 */}
         <div className="detail-right">
+          {/* 헤더 */}
           <div className="detail-header">
             <img
               src={
@@ -86,6 +107,7 @@ function PostDetailModal({ post, onClose }) {
             </button>
           </div>
 
+          {/* 본문 + 댓글 목록 */}
           <div className="detail-content">
             {post.content.split("\n").map((line, idx) => (
               <React.Fragment key={idx}>
@@ -94,37 +116,74 @@ function PostDetailModal({ post, onClose }) {
               </React.Fragment>
             ))}
             <hr />
+
             <div className="comments">
               {comments.length > 0 ? (
                 comments.map((c) => (
-                  <p key={c.comment_id}>
-                    <b>{c.user_name}</b>{" "}
-                    {c.comment_state === "삭제" ? (
-                      <span style={{ color: "gray", fontStyle: "italic" }}>
-                        삭제된 댓글입니다.
-                      </span>
-                    ) : (
-                      <>
-                        {c.comment_content}
-                        <LikeButton
-                          target_id={c.comment_id}
-                          target_type="comment"
+                  <div
+                    key={c.comment_id}
+                    className={`comment-block${c.parent_id ? " reply-comment" : ""}`}
+                  >
+                    <p>
+                      <b>{c.user_name}</b>{" "}
+                      {c.comment_state === "삭제" ? (
+                        <span style={{ color: "gray", fontStyle: "italic" }}>
+                          삭제된 댓글입니다.
+                        </span>
+                      ) : (
+                        <>
+                          {c.comment_content}
+                          <LikeButton
+                            target_id={c.comment_id}
+                            target_type="comment"
+                          />
+                          <small className="comment-date">
+                            {new Date(c.created_at).toLocaleString("ko-KR")}
+                          </small>
+                          {" | "}
+                          <span
+                            className="comment-action reply-text"
+                            onClick={() =>
+                              setReplyTarget((prev) =>
+                                prev === c.comment_id ? null : c.comment_id
+                              )
+                            }
+                          >
+                            답글
+                          </span>
+                          {currentUser?.user_id === c.user_id && (
+                            <>
+                              {" | "}
+                              <span
+                                className="comment-action delete-text"
+                                onClick={() =>
+                                  handleDeleteComment(c.comment_id)
+                                }
+                              >
+                                삭제
+                              </span>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </p>
+
+                    {/* replyTarget과 맞을 때만 렌더링 */}
+                    {replyTarget === c.comment_id && (
+                      <div className="reply-input">
+                        <input
+                          type="text"
+                          placeholder="답글 달기..."
+                          value={replyContent}
+                          onChange={(e) => setReplyContent(e.target.value)}
                         />
-                        {c.created_at}
-                        {currentUser?.user_id === c.user_id && (
-                          <>
-                            {" | "}
-                            <span
-                              onClick={() => handleDeleteComment(c.comment_id)}
-                              style={{ color: "red", cursor: "pointer" }}
-                            >
-                              삭제
-                            </span>
-                          </>
-                        )}
-                      </>
+                        <button onClick={handleReplySubmit}>등록</button>
+                        <button onClick={() => setReplyTarget(null)}>
+                          취소
+                        </button>
+                      </div>
                     )}
-                  </p>
+                  </div>
                 ))
               ) : (
                 <p style={{ color: "gray", fontStyle: "italic" }}>
@@ -134,15 +193,15 @@ function PostDetailModal({ post, onClose }) {
             </div>
           </div>
 
+          {/* 좋아요, 작성일 */}
           <div className="detail-actions">
-            <RiDislikeLine />
-            <FcLike />
-            <br />
+            <LikeButton target_id={post.post_id} target_type="post" />
             <span className="created-date">
               작성일: {new Date(post_created_at).toLocaleDateString("ko-KR")}
             </span>
           </div>
 
+          {/* 새 댓글 입력창 */}
           <div className="comment-input">
             <input
               type="text"

@@ -52,11 +52,14 @@ async function updateCommentService(comment_id, comment_content) {
 async function showAllCommentService(post_id) {
   try {
     const result = await pool.query(
-      `SELECT comments.*, users.user_name
-       FROM comments 
-       JOIN users 
-        ON comments.user_id = users.user_id 
-       WHERE post_id = $1 ORDER BY comments.created_at DESC`,
+      `SELECT
+        c.*,
+        u.user_id,
+        u.user_name
+      FROM comments c
+      JOIN users u
+        ON c.user_id = u.user_id
+      WHERE c.post_id = $1`,
       [post_id]
     );
 

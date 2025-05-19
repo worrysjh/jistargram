@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostDetailModal.css";
 import { getUserFromToken } from "../../utils/getUserFromToken";
-import { flattenComments } from "../../utils/commentUtils";
 
 import {
-  fetchComments,
   addComment,
   deleteComment,
 } from "../../actions/comment/commentActions";
+
+import { fetchAndFlattenComments } from "../../utils/commentUtils";
 
 import LikeButton from "../common/LikeButton";
 
@@ -26,9 +26,8 @@ function PostDetailModal({ post, onClose }) {
   useEffect(() => {
     (async () => {
       try {
-        const data = await fetchComments(post_id);
-        const sorted = flattenComments(data);
-        setComments(sorted);
+        const data = await fetchAndFlattenComments(post_id);
+        setComments(data);
       } catch (err) {
         console.error("댓글 로딩 실패:", err);
       }
@@ -45,7 +44,8 @@ function PostDetailModal({ post, onClose }) {
         parent_id: null,
       });
       setNewComment("");
-      setComments(await fetchComments(post_id));
+      const data = await fetchAndFlattenComments(post_id);
+      setComments(data);
     } catch (err) {
       console.error("댓글 등록 에러:", err);
     }
@@ -62,7 +62,8 @@ function PostDetailModal({ post, onClose }) {
       });
       setReplyContent("");
       setReplyTarget(null);
-      setComments(await fetchComments(post_id));
+      const data = await fetchAndFlattenComments(post_id);
+      setComments(data);
     } catch (err) {
       console.error("답글 등록 에러:", err);
     }
@@ -73,7 +74,8 @@ function PostDetailModal({ post, onClose }) {
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
     try {
       await deleteComment(comment_id);
-      setComments(await fetchComments(post_id));
+      const data = await fetchAndFlattenComments(post_id);
+      setComments(data);
     } catch (err) {
       console.error("댓글 삭제 에러:", err);
     }

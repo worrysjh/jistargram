@@ -1,4 +1,6 @@
-export function flattenComments(comments) {
+import { fetchComments } from "../actions/comment/commentActions";
+
+function flattenComments(comments) {
   const map = new Map();
   comments.forEach((c) => {
     map.set(c.comment_id, { ...c, children: [] });
@@ -32,4 +34,9 @@ export function flattenComments(comments) {
   }
 
   return dfs(roots, true);
+}
+
+export async function fetchAndFlattenComments(post_id) {
+  const data = await fetchComments(post_id);
+  return flattenComments(data);
 }

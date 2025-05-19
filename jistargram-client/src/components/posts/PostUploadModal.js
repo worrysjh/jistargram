@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostUploadModal.css";
-import { uploadPost } from "../../actions/post/uploadPost";
+import { uploadPost } from "../../actions/post/postActions";
 import { getUserFromToken } from "../../utils/getUserFromToken";
 
 function PostUploadModal({ user_name, onClose, onSubmit }) {

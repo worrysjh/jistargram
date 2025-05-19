@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/layout/Footer";
-import { login } from "../actions/auth/login";
+import { login } from "../actions/auth/authActions";
 import "../styles/LoginPage.css";
 import LoginForm from "../components/auth/LoginForm";
 

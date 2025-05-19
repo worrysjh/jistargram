@@ -8,7 +8,7 @@ import {
   fetchComments,
   addComment,
   deleteComment,
-} from "../../actions/comment";
+} from "../../actions/comment/commentActions";
 
 import LikeButton from "../common/LikeButton";
 

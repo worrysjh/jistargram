@@ -7,6 +7,11 @@ import Logout from "../auth/Logout";
 import { FaHome } from "react-icons/fa";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { IoIosCreate } from "react-icons/io";
+import { FaSearch } from "react-icons/fa";
+import { FaRegCompass } from "react-icons/fa";
+import { BiMoviePlay } from "react-icons/bi";
+import { FaRegMessage } from "react-icons/fa6";
+import { CiHeart } from "react-icons/ci";
 
 function Aside({ onOpenPostUploadModal }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -24,11 +29,21 @@ function Aside({ onOpenPostUploadModal }) {
             <FaHome /> 홈
           </li>
         </Link>
-        <li>검색</li>
-        <li>탐색 탭</li>
-        <li>릴스</li>
-        <li>메시지</li>
-        <li>알림</li>
+        <li>
+          <FaSearch /> 검색
+        </li>
+        <li>
+          <FaRegCompass /> 탐색 탭
+        </li>
+        <li>
+          <BiMoviePlay /> 릴스
+        </li>
+        <li>
+          <FaRegMessage /> 메시지
+        </li>
+        <li>
+          <CiHeart /> 알림
+        </li>
         <li onClick={onOpenPostUploadModal}>
           <IoIosCreate /> 만들기
         </li>

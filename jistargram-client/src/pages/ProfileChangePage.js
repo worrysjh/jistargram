@@ -8,7 +8,7 @@ import {
   fetchProfile,
   updateProfileBio,
   updateProfileImage,
-} from "../actions/profile";
+} from "../actions/profile/profileActions";
 
 function ProfileChangePage() {
   const [profile, setProfile] = useState(null);

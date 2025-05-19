@@ -6,7 +6,7 @@ import PostDetailModal from "../components/posts/PostDetailModal";
 import { CiSettings } from "react-icons/ci";
 import { FaPencilAlt } from "react-icons/fa";
 
-import { fetchProfile, fetchMyPosts } from "../actions/profile";
+import { fetchProfile, fetchMyPosts } from "../actions/profile/profileActions";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);

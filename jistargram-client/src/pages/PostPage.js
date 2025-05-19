@@ -6,7 +6,11 @@ import LikeButton from "../components/common/LikeButton";
 import { FiMenu } from "react-icons/fi";
 import "../styles/PostPage.css";
 
-import { fetchPosts, updatePost, deletePost } from "../actions/post";
+import {
+  fetchPosts,
+  updatePost,
+  deletePost,
+} from "../actions/post/postActions";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);

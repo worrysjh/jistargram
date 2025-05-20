@@ -7,21 +7,26 @@ import LoginForm from "../components/auth/LoginForm";
 
 function LoginPage() {
   const [message, setMessage] = useState("");
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const handleLogin = async (user_name, passwd) => {
+    console.log("로그인 시도:", user_name);
+
     try {
       const { response, data } = await login(user_name, passwd);
+      console.log("서버 응답:", response.status, data);
 
-      if (response.ok) {
+      if (response.ok && data.access_token) {
         localStorage.setItem("access_token", data.access_token);
         setMessage("로그인 성공");
-        navigator("/home");
+        console.log("로그인 성공, 이동 중...");
+        navigate("/home");
       } else {
-        setMessage(`로그인 실패: ${data.message}`);
+        setMessage(`로그인 실패: ${data.message || "알 수 없는 오류"}`);
+        console.log("로그인 실패:", data.message);
       }
     } catch (err) {
-      console.log("서버 오류: ", err);
+      console.error("서버 요청 중 오류:", err);
       setMessage("서버 연결 실패");
     }
   };

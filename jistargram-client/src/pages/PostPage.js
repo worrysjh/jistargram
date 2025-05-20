@@ -24,7 +24,6 @@ function PostPage() {
     (async () => {
       try {
         const data = await fetchPosts();
-        console.log("응답 확인 : ", data);
         setCurrentUser(data.user);
         setPosts(data.result);
       } catch (err) {

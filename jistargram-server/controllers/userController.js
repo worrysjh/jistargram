@@ -39,6 +39,12 @@ async function login(req, res) {
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
+    res.cookie("refresh_token", result.refresh_token, {
+      httpOnly: true,
+      secure: false, //process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 60 * 60 * 24 * 7 * 1000,
+    });
     res.json({ message: "로그인 성공", access_token: result.access_token });
   } catch (err) {
     console.error(err);

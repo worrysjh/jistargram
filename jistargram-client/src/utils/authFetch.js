@@ -9,25 +9,38 @@ export async function authFetch(url, options = {}, navigate) {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
   };
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
+  let res = await fetch(url, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+
+  if (res.status === 401 || res.status === 403) {
+    const refreshRes = await fetch("http://localhost:4000/auth/refresh", {
+      method: "POST",
+      credentials: "include",
     });
 
-    if (
-      (response.status === 401 || response.status === 403) &&
-      !url.includes("/login") &&
-      !url.includes("/register")
-    ) {
-      alert("세션이 만료되었습니다. 다시 로그인해주세요");
+    if (refreshRes.ok) {
+      const { access_token } = await refreshRes.json();
+      localStorage.setItem("access_token", access_token);
+
+      const retryHeaders = {
+        ...headers,
+        Authorization: `Bearer ${access_token}`,
+      };
+
+      res = await fetch(url, {
+        ...options,
+        headers: retryHeaders,
+        credentials: "include",
+      });
+    } else {
+      //리프레시 실패시 로그아웃 처리
       localStorage.removeItem("access_token");
       if (navigate) navigate("/login");
       return null;
     }
-    return response;
-  } catch (err) {
-    console.log("네트워크 오류: ", err);
-    return null;
   }
+  return res;
 }

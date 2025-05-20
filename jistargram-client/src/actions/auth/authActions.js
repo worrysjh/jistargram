@@ -1,13 +1,22 @@
 import { authFetch } from "../../utils/authFetch";
 
 export async function login(user_name, passwd) {
-  const response = await authFetch("http://localhost:4000/users/login", {
+  const response = await fetch("http://localhost:4000/users/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    credentials: "include", // refresh_token 쿠키를 위한 설정
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ user_name, passwd }),
   });
 
-  const data = await response.json();
+  let data = {};
+  try {
+    data = await response.json();
+  } catch {
+    data = { message: "응답 파싱 실패" };
+  }
+
   return { response, data };
 }
 

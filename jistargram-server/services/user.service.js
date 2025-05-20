@@ -28,12 +28,30 @@ async function loginService({ user_name, passwd }) {
     });
 
     const access_token = jwt.sign({ data, iv, tag }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "1m",
     });
+
+    const refresh_token = jwt.sign(
+      { data, iv, tag, type: "refresh" },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const decoded = jwt.decode(refresh_token);
+    const expires_at = new Date(decoded.exp * 1000);
+
+    await pool.query(
+      `
+      INSERT INTO refresh_tokens (user_id, payload, expires_at)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (user_id) DO UPDATE SET payload = $2, expires_at = $3`,
+      [user.user_id, refresh_token, expires_at]
+    );
 
     return {
       success: true,
       access_token,
+      refresh_token,
     };
   } catch (err) {
     throw err;

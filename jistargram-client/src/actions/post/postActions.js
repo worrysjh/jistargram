@@ -28,14 +28,14 @@ export async function updatePost(formData) {
 
 export async function uploadPost(formData, navigate) {
   try {
-    const token = localStorage.getItem("token");
+    const access_token = localStorage.getItem("access_token");
     const response = await authFetch(
       "http://localhost:4000/posts/uploadPost",
       {
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${access_token}`,
         },
       },
       navigate

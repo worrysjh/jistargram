@@ -1,11 +1,11 @@
 export async function authFetch(url, options = {}, navigate) {
-  const token = localStorage.getItem("token");
+  const access_token = localStorage.getItem("access_token");
 
   const isFormData = options.body instanceof FormData;
 
   const headers = {
     ...options.headers,
-    Authorization: token ? `Bearer ${token}` : undefined,
+    Authorization: access_token ? `Bearer ${access_token}` : undefined,
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
   };
 
@@ -21,7 +21,7 @@ export async function authFetch(url, options = {}, navigate) {
       !url.includes("/register")
     ) {
       alert("세션이 만료되었습니다. 다시 로그인해주세요");
-      localStorage.removeItem("token");
+      localStorage.removeItem("access_token");
       if (navigate) navigate("/login");
       return null;
     }

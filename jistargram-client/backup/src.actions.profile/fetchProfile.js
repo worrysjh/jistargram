@@ -1,12 +1,12 @@
 import { authFetch } from "../../utils/authFetch";
 
 export async function fetchProfile(navigate) {
-  const token = localStorage.getItem("token");
+  const access_token = localStorage.getItem("access_token");
   const response = await authFetch(
     "http://localhost:4000/users/getMyProfile",
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${access_token}`,
       },
     },
     navigate

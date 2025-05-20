@@ -14,7 +14,7 @@ function LoginPage() {
       const { response, data } = await login(user_name, passwd);
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("access_token", data.access_token);
         setMessage("로그인 성공");
         navigator("/home");
       } else {

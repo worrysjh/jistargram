@@ -76,7 +76,7 @@ function ProfilePage() {
           </div>
           <ul className="profile-stats">
             <li>
-              게시물 <b>{myPosts.length}</b>
+              게시물 <b>{myPosts.length ? myPosts.length : "0"}</b>
             </li>
             <li>
               팔로워 <b>5</b>
@@ -112,7 +112,7 @@ function ProfilePage() {
             ))}
           </div>
         ) : (
-          <p className="no-post">게시물이 없습니다.</p>
+          <p className="no-post">등록한 게시물이 없습니다.</p>
         )}
       </div>
 

@@ -20,7 +20,7 @@ async function loginService({ user_name, passwd }) {
       return { success: false, message: "잘못된 아이디 또는 비밀번호입니다." };
     }
 
-    const token = jwt.sign(
+    const access_token = jwt.sign(
       { user_id: user.user_id, user_name: user.user_name },
       process.env.JWT_SECRET,
       {
@@ -30,7 +30,7 @@ async function loginService({ user_name, passwd }) {
 
     return {
       success: true,
-      token,
+      access_token,
       user: {
         user_name: user.user_name,
         user_id: user.user_id,

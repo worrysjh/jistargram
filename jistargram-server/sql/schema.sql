@@ -51,3 +51,12 @@ CREATE TABLE likes (
     target_id UUID NOT NULL,
     UNIQUE (user_id, target_type, target_id)
 );
+
+--refreshToken 테이블
+create table refresh_tokens (
+	token_id UUID PRIMARY KEY default gen_random_uuid(),
+	user_id UUID not null references users(user_id),
+	payload text not null,
+	expires_at timestamp not null,
+	created_at timestamp default now()
+);

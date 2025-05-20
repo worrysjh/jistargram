@@ -39,7 +39,7 @@ async function login(req, res) {
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
-    res.json({ message: "로그인 성공", token: result.token });
+    res.json({ message: "로그인 성공", access_token: result.access_token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "로그인 실패" });

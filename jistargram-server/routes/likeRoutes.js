@@ -6,6 +6,6 @@ const router = express.Router();
 router.post("/check", authenticateToken, check);
 router.post("/add", authenticateToken, add);
 router.delete("/remove", authenticateToken, remove);
-router.post("/count", count);
+router.post("/count", authenticateToken, count);
 
 module.exports = router;

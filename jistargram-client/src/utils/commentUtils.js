@@ -1,6 +1,11 @@
 import { fetchComments } from "../actions/comment/commentActions";
 
 function flattenComments(comments) {
+  if (!Array.isArray(comments)) {
+    console.warn("flattenComments: comments가 배열이 아님", comments);
+    return [];
+  }
+
   const map = new Map();
   comments.forEach((c) => {
     map.set(c.comment_id, { ...c, children: [] });
@@ -38,5 +43,9 @@ function flattenComments(comments) {
 
 export async function fetchAndFlattenComments(post_id) {
   const data = await fetchComments(post_id);
-  return flattenComments(data);
+  const comments = Array.isArray(data.result) ? data.result : [];
+  return {
+    comments: flattenComments(comments),
+    user: data.user,
+  };
 }

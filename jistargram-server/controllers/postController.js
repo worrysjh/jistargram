@@ -31,10 +31,13 @@ async function uploadPost(req, res) {
 }
 
 //게시글 전체 조회
-async function showPost(_req, res) {
+async function showPost(req, res) {
   try {
     const result = await getPostService();
-    res.json(result.result);
+    res.json({
+      user: { user_id: req.user.user_id, user_name: req.user.user_name },
+      result: result.result,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "서버 에러" });
@@ -77,7 +80,10 @@ async function getMyPost(req, res) {
 
   try {
     const result = await getMyPostService(user_id);
-    res.json(result.result);
+    res.json({
+      user: { user_id: req.user.user_id, user_name: req.user.user_name },
+      result: result.result,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "게시물 조회 실패" });
@@ -126,7 +132,10 @@ async function showAllComment(req, res) {
 
   try {
     const result = await showAllCommentService(post_id);
-    res.json(result.result);
+    res.json({
+      user: { user_id: req.user.user_id, user_name: req.user.user_name },
+      result: result.result,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "서버 에러" });

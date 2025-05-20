@@ -1,6 +1,7 @@
 const pool = require("../models/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { encryptData } = require("../utils/cryptoUtils");
 
 // 로그인
 async function loginService({ user_name, passwd }) {
@@ -21,21 +22,18 @@ async function loginService({ user_name, passwd }) {
       return { success: false, message: "잘못된 아이디 또는 비밀번호입니다." };
     }
 
-    const token = jwt.sign(
-      { user_id: user.user_id, user_name: user.user_name },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1h",
-      }
-    );
+    const { data, iv, tag } = encryptData({
+      user_id: user.user_id,
+      user_name: user.user_name,
+    });
+
+    const access_token = jwt.sign({ data, iv, tag }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     return {
       success: true,
-      token,
-      user: {
-        user_name: user.user_name,
-        user_id: user.user_id,
-      },
+      access_token,
     };
   } catch (err) {
     throw err;

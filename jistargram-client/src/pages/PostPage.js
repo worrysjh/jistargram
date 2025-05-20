@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getUserFromToken } from "../utils/getUserFromToken";
 import PostDetailModal from "../components/posts/PostDetailModal";
 import PostUpdateModal from "../components/posts/PostUpdateModal";
 import LikeButton from "../components/common/LikeButton";
@@ -19,13 +18,15 @@ function PostPage() {
   const [updateModal, setUpdateModal] = useState({ open: false, post: null });
   const [menuOpenFor, setMenuOpenFor] = useState(null);
 
-  const currentUser = getUserFromToken();
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     (async () => {
       try {
         const data = await fetchPosts();
-        setPosts(data);
+        console.log("응답 확인 : ", data);
+        setCurrentUser(data.user);
+        setPosts(data.result);
       } catch (err) {
         console.error(err);
       }
@@ -80,7 +81,8 @@ function PostPage() {
           const lines = post.content.split("\n");
           const long = lines.length > 1;
           const expandedHere = expanded[post.post_id];
-          const isOwner = currentUser?.user_id === post.user_id;
+          if (!currentUser) return <div>로딩 중...</div>;
+          const isOwner = currentUser.user_id === post.user_id;
 
           return (
             <div key={post.post_id} className="post-card">
@@ -188,6 +190,7 @@ function PostPage() {
           post={updateModal.post}
           onClose={closeUpdate}
           onUpdate={onUpdate}
+          currentUser={currentUser}
         />
       )}
     </>

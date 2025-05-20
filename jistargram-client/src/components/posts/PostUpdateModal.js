@@ -3,14 +3,12 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostUploadModal.css";
-import { getUserFromToken } from "../../utils/getUserFromToken";
 import { useNavigate } from "react-router-dom";
 
-function PostUpdateModal({ post, onClose, onUpdate }) {
+function PostUpdateModal({ post, onClose, onUpdate, currentUser }) {
   const [image, setImage] = useState(`http://localhost:4000${post.media_url}`);
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState(post.content);
-  const currentUser = getUserFromToken();
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {

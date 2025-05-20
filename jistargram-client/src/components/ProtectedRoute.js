@@ -2,9 +2,9 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("token");
+  const access_token = localStorage.getItem("access_token");
 
-  if (!token) {
+  if (!access_token) {
     alert("로그인이 필요한 페이지입니다.");
     return <Navigate to="/login" replace />;
   }

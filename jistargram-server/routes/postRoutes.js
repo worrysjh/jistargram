@@ -31,13 +31,13 @@ router.put(
   updatePost
 );
 router.delete("/deletePost/:post_id", authenticateToken, deletePost);
-router.get("/countPost", countPost);
+router.get("/countPost", authenticateToken, countPost);
 router.get("/getMyPost", authenticateToken, getMyPost);
 
 router.post("/newComment", authenticateToken, newComment);
-router.post("/showAllComment", showAllComment);
+router.post("/showAllComment", authenticateToken, showAllComment);
 router.delete("/deleteComment/:comment_id", authenticateToken, deleteComment);
-router.patch("/updateComment", updateComment);
-router.get("/countComment", countComment);
+router.patch("/updateComment", authenticateToken, updateComment);
+router.get("/countComment", authenticateToken, countComment);
 
 module.exports = router;

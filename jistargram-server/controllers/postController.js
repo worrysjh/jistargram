@@ -76,13 +76,13 @@ async function deletePost(req, res) {
 
 //내 게시글 조회
 async function getMyPost(req, res) {
-  const user_id = req.user.user_id;
+  const { user_id, user_name } = req.user;
 
   try {
-    const result = await getMyPostService(user_id);
+    const posts = await getMyPostService(user_id);
     res.json({
-      user: { user_id: req.user.user_id, user_name: req.user.user_name },
-      result: result.result,
+      user: { user_id, user_name },
+      posts,
     });
   } catch (err) {
     console.error(err);

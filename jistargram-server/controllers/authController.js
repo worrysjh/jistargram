@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const getRefreshToken = require("../services/auth.service");
+const { getRefreshToken } = require("../services/auth.service");
 
 async function refreshToken(req, res) {
   const token = req.cookies.refresh_token;
@@ -8,6 +8,7 @@ async function refreshToken(req, res) {
   try {
     //refresh 토큰 검증
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    console.log("decoded JWT payload:", decoded);
     const { data, iv, tag } = decoded;
 
     // DB에 저장된 토큰과 일치하는지 확인

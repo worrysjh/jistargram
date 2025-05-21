@@ -28,7 +28,7 @@ async function loginService({ user_name, passwd }) {
     });
 
     const access_token = jwt.sign({ data, iv, tag }, process.env.JWT_SECRET, {
-      expiresIn: "1m",
+      expiresIn: "1h",
     });
 
     const refresh_token = jwt.sign(

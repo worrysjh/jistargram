@@ -35,7 +35,8 @@ html, body {
   align-items: center;
 }
 .logo .short-text {
-  font-size: 24px;
+  font-size: 28px;
+  font-style: italic;
 }
 .logo .full-text {
   font-size: 24px;

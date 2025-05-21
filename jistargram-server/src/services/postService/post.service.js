@@ -30,7 +30,7 @@ async function deletePostService(post_id) {
 }
 
 // 전체 게시글 조회
-async function getPostService() {
+async function getPostService(limit) {
   const result = await pool.query(
     `SELECT
         p.post_id,
@@ -49,8 +49,9 @@ async function getPostService() {
       GROUP BY
         p.post_id, p.content, p.media_url, p.created_at,
         u.user_id, u.user_name, u.profile_img
-      ORDER BY p.created_at DESC;
-      `
+      ORDER BY p.created_at DESC LIMIT $1;
+      `,
+    [limit]
   );
 
   return { success: true, result: result.rows };

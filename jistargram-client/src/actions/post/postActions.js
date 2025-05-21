@@ -10,8 +10,10 @@ export async function deletePost(post_id) {
   if (!res.ok) throw new Error("삭제 실패");
 }
 
-export async function fetchPosts() {
-  const res = await authFetch("http://localhost:4000/posts/showPost");
+export async function fetchPosts(limit) {
+  const res = await authFetch(
+    `http://localhost:4000/posts/showPost?limit=${limit}`
+  );
   if (!res.ok) throw new Error("네트워크 응답 실패");
   return res.json();
 }

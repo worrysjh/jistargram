@@ -93,3 +93,22 @@
 .post-owner-name {
   font-weight: bold;
 }
+
+.load-more-button{
+  display: block;
+  margin: 20px auto; /* 위아래 여백 + 중앙정렬 */
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.load-more-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}

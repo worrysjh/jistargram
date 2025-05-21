@@ -20,17 +20,21 @@ function PostPage() {
 
   const [currentUser, setCurrentUser] = useState(null);
 
+  const [limit, setLimit] = useState(3);
+  const [isLast, setIsLast] = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
-        const data = await fetchPosts();
+        const data = await fetchPosts(limit);
         setCurrentUser(data.user);
         setPosts(data.result);
+        setIsLast(data.result.length < limit);
       } catch (err) {
         console.error(err);
       }
     })();
-  }, []);
+  }, [limit]);
 
   const handleExpand = (id) => {
     setExpanded((e) => ({ ...e, [id]: !e[id] }));
@@ -57,6 +61,10 @@ function PostPage() {
     } catch {
       alert("수정 실패");
     }
+  };
+
+  const handleLoadMore = () => {
+    setLimit((prev) => prev + 3);
   };
 
   const onDelete = async (post_id) => {
@@ -179,6 +187,13 @@ function PostPage() {
             </div>
           );
         })}
+      </div>
+      <div>
+        {!isLast && (
+          <button className="load-more-btn" onClick={handleLoadMore}>
+            게시글 더보기
+          </button>
+        )}
       </div>
 
       {detailModal.open && (

@@ -19,7 +19,7 @@ function LoginPage() {
 
     // 입력값 유효성 검사
     if (!USERNAME_REGEX.test(user_name)) {
-      setMessage("아이디는 영문/숫자/밑줄 포함 4~20자여야 합니다.");
+      setMessage("아이디는 영문/숫자/밑줄 한정 4~20자여야 합니다.");
       return;
     }
     if (!PASSWORD_REGEX.test(passwd)) {

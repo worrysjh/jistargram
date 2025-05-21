@@ -32,8 +32,9 @@ async function uploadPost(req, res) {
 
 //게시글 전체 조회
 async function showPost(req, res) {
+  const limit = parseInt(req.query.limit) || 3;
   try {
-    const result = await getPostService();
+    const result = await getPostService(limit);
     res.json({
       user: { user_id: req.user.user_id, user_name: req.user.user_name },
       result: result.result,

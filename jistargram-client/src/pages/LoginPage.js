@@ -12,6 +12,22 @@ function LoginPage() {
   const handleLogin = async (user_name, passwd) => {
     console.log("로그인 시도:", user_name);
 
+    // 정규식
+    const USERNAME_REGEX = /^[a-zA-Z0-9_]{4,20}$/;
+    const PASSWORD_REGEX = /^[a-zA-Z0-9!@#$%^&*]{6,30}$/;
+
+    // 입력값 유효성 검사
+    if (!USERNAME_REGEX.test(user_name)) {
+      setMessage("아이디는 영문/숫자/밑줄 포함 4~20자여야 합니다.");
+      return;
+    }
+    if (!PASSWORD_REGEX.test(passwd)) {
+      setMessage(
+        "비밀번호는 6~30자 영문/숫자/특수문자(!@#$%^&*)만 가능합니다."
+      );
+      return;
+    }
+
     try {
       const { response, data } = await login(user_name, passwd);
       console.log("서버 응답:", response.status, data);

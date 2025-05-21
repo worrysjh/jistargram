@@ -34,6 +34,18 @@ async function register(req, res) {
 async function login(req, res) {
   const { user_name, passwd } = req.body;
 
+  const USERNAME_REGEX = /^[a-zA-Z0-9_]{4,20}$/;
+  const PASSWORD_REGEX = /^[a-zA-Z0-9!@#\$%\^&\*]{6,30}$/;
+
+  if (!USERNAME_REGEX.test(user_name)) {
+    return res
+      .status(400)
+      .json({ message: "아이디는 영문/숫자 4~20자여야 합니다." });
+  }
+  if (!PASSWORD_REGEX.test(passwd)) {
+    return res.status(400).json({ message: "비밀번호는 6~30자여야 합니다." });
+  }
+
   try {
     const result = await loginService({ user_name, passwd });
     if (!result.success) {

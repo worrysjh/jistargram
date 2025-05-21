@@ -3,6 +3,9 @@ version: "3.8"
 services:
   jistargram-client:
     build: ./jistargram-client
+    volumes:
+      - ./jistargram-client:/app
+      - /app/node_modules
     ports:
       - "3000:80"
     depends_on:

@@ -59,11 +59,10 @@
 | ✅       | 답글 기능          | 답글 작성          | 기존 댓글의 답글 내용 작성 가능                | 로그인 필요                                |
 | ✅       | 게시글 좋아요 기능 | 좋아요/좋아요 취소 | 게시글에 좋아요 토글 기능 제공                 | 로그인 필요                                |
 | ✅       | 댓글 좋아요 기능   | 좋아요/좋아요 취소 | 댓글에 좋아요 토글 기능 제공                   | 로그인 필요                                |
-| ✅       | 인증 기능          | 로그인             | 사용자 인증 처리                               | JWT 기반 토큰 발급 및 쿠키 저장            |
+| ✅       | 인증 기능          | 로그아웃           | 서버와 클라이언트 쿠키/토큰 제거               | refresh token 무효화 및 쿠키 제거          |
 | ✅       | 인증 기능          | 인증 보호 라우트   | 로그인 사용자만 접근 가능한 페이지 제한        | JWT 인증 검사                              |
 | ✅       | 인증 기능          | 토큰 암호화        | JWT를 AES-256으로 암호화                       |                                            |
 | ✅       | 인증 기능          | 토큰 자동 갱신     | refresh token을 통한 자동 갱신                 | refresh token 검사 후 new access token발급 |
-| ✅       | 인증 기능          | 로그아웃           | 서버와 클라이언트 쿠키/토큰 제거               | refresh token 무효화 및 쿠키 제거          |
 | ✅       | 기타 기능          | 에러 처리          | 일관된 에러 코드 및 메시지 제공                | 400, 401, 404, 500 구분                    |
 
 ---
@@ -97,7 +96,7 @@ jistargram/
 │   ├── src/
 │   │   ├── actions/
 │   │   │   ├── auth/
-│   │   │   ├── layout/
+│   │   │   ├── comment/
 │   │   │   ├── post/
 │   │   │   └── profile/
 │   │   ├── components/    # 공통 UI 컴포넌트 (Navbar, Logout 등)
@@ -114,8 +113,7 @@ jistargram/
 │   │   ├── styles/
 │   │   ├── utils/         # fetch 래퍼 등 유틸 함수
 │   │   │   ├── authFetch.js
-│   │   │   ├── commentUtils.js
-│   │   │   └── getUserFormToken.js
+│   │   │   └── commentUtils.js
 │   │   ├── App.js         # 라우터 설정 포함 메인 컴포넌트
 │   │   └── index.js       # React 엔트리 포인트
 │   └── package.json       # 프론트엔드 패키지 설정
@@ -124,25 +122,33 @@ jistargram/
 │   ├── public/
 │   │   └── uploads/       # 업로드된 프로필 이미지 저장소
 │   │       └── profile_imgs/
-│   ├── routes/            # API 라우터 정의
-│   │   ├── likeRoutes.js
-│   │   ├── postRoutes.js
-│   │   └── userRoutes.js
-│   ├── middleware/        # 인증 관련 미들웨어
-│   │   ├── auth.js
-│   │   ├── uploadPostImage.js
-│   │   ├── uploadProfileImage.js
-│   │   └── verifyPasswd.js
-│   ├── controllers/       # 비즈니스 로직
-│   │   ├── likeController.js
-│   │   ├── postController.js
-│   │   └── userController.js
-│   ├── services/          # 서비스 로직
-│   │   ├── likeService/
-│   │   ├── postService/
-│   │   └── userService/
-│   ├── models/            # PostgreSQL 연결 설정
-│   │   └── db.js          # pool 관리
+│   ├── src
+│   │   ├── controllers/       # 비즈니스 로직
+│   │   │   ├── authController.js
+│   │   │   ├── likeController.js
+│   │   │   ├── postController.js
+│   │   │   └── userController.js
+│   │   ├── middleware/        # 인증 관련 미들웨어
+│   │   │   ├── auth.js
+│   │   │   ├── uploadPostImage.js
+│   │   │   ├── uploadProfileImage.js
+│   │   │   └── verifyPasswd.js
+│   │   ├── models/            # PostgreSQL 연결 설정
+│   │   │   └── db.js          # pool 관리
+│   │   ├── routes/            # API 라우터 정의
+│   │   │   ├── authRoutes.js
+│   │   │   ├── likeRoutes.js
+│   │   │   ├── postRoutes.js
+│   │   │   └── userRoutes.js
+│   │   ├── services/          # 서비스 로직
+│   │   │   ├── postService/
+│   │   │   │   ├── comment.service.js
+│   │   │   │   └── post.service.js
+│   │   │   ├── like.service.js
+│   │   │   ├── post.service.js
+│   │   │   └── user.service.js
+│   │   └── utils/             # 암호화/복호화 로직직
+│   │       └── cryptoUtils.js
 │   ├── app.js             # Express 서버 설정 진입점
 │   └── package.json       # 백엔드 패키지 설정
 │

@@ -1,9 +1,3 @@
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS posts;
-DROP TABLE IF EXISTS likes;
-DROP TABLE IF EXISTS comments;
-DROP TABLE IF EXISTS follows;
-
 --사용자 테이블
 CREATE TABLE  users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -55,7 +49,7 @@ CREATE TABLE likes (
 --refreshToken 테이블
 create table refresh_tokens (
 	token_id UUID PRIMARY KEY default gen_random_uuid(),
-	user_id UUID not null references users(user_id) UNIQUE,
+	user_id UUID UNIQUE not null references users(user_id),
 	payload text not null,
 	expires_at timestamp not null,
 	created_at timestamp default now()

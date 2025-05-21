@@ -4,6 +4,7 @@ import Footer from "../components/layout/Footer";
 import { login } from "../actions/auth/authActions";
 import "../styles/LoginPage.css";
 import LoginForm from "../components/auth/LoginForm";
+import { Link } from "react-router-dom";
 
 function LoginPage() {
   const [message, setMessage] = useState("");
@@ -62,7 +63,7 @@ function LoginPage() {
           </div>
 
           <div className="signup-box">
-            계정이 없으신가요? <a href="/register">가입하기</a>
+            계정이 없으신가요? <Link to="/register">가입하기</Link>
           </div>
         </div>
 

@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  jistargram-client:
+    build: ./jistargram-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - jistargram-server
+
+  jistargram-server:
+    build: ./jistargram-server
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./jistargram-server/.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - ./jistargram-server/.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

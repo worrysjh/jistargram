@@ -9,7 +9,6 @@ function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(access_token, process.env.JWT_SECRET);
-    console.log("decoded JWT payload:", decoded);
     const user = decryptData(decoded);
     req.user = user;
     next();

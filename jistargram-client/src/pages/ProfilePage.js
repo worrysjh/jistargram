@@ -24,7 +24,7 @@ function ProfilePage() {
           fetchMyPosts(),
         ]);
         setProfile(profileData);
-        setMyPosts(postsData);
+        setMyPosts(postsData.posts.result);
       } catch (err) {
         console.error("데이터 로딩 중 오류:", err);
       }

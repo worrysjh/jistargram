@@ -95,7 +95,7 @@ function ProfileChangePage() {
           placeholder="작성된 자기소개가 없습니다."
           maxLength={149}
         />
-        <small>{bio.length}/150</small>
+        <small>{bio ? bio.length : 0}/150</small>
         <button type="submit" className="submit-btn">
           제출
         </button>

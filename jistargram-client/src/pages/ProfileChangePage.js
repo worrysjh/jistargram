@@ -69,7 +69,7 @@ function ProfileChangePage() {
         <img
           src={
             profile.profile_img
-              ? `http://localhost:4000${profile.profile_img}`
+              ? `${process.env.REACT_APP_API_URL}${profile.profile_img}`
               : "/common/img/사용자이미지.jpeg"
           }
           alt="프로필 이미지"

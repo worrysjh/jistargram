@@ -91,7 +91,10 @@ function PostDetailModal({ post, onClose }) {
       <div className="detail-modal" onClick={(e) => e.stopPropagation()}>
         {/* 좌측 이미지 */}
         <div className="detail-left">
-          <img src={`http://localhost:4000${post.media_url}`} alt="게시물" />
+          <img
+            src={`${process.env.REACT_APP_API_URL}${post.media_url}`}
+            alt="게시물"
+          />
         </div>
         {/* 우측 콘텐츠 */}
         <div className="detail-right">
@@ -100,7 +103,7 @@ function PostDetailModal({ post, onClose }) {
             <img
               src={
                 post.profile_img
-                  ? `http://localhost:4000${post.profile_img}`
+                  ? `${process.env.REACT_APP_API_URL}${post.profile_img}`
                   : "/common/img/사용자이미지.jpeg"
               }
               alt="프로필"

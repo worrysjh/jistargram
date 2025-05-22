@@ -2,7 +2,7 @@ import { authFetch } from "../../utils/authFetch";
 
 export async function deletePost(post_id) {
   const res = await authFetch(
-    `http://localhost:4000/posts/deletePost/${post_id}`,
+    `${process.env.REACT_APP_API_URL}/posts/deletePost/${post_id}`,
     {
       method: "DELETE",
     }
@@ -12,7 +12,7 @@ export async function deletePost(post_id) {
 
 export async function fetchPosts(limit) {
   const res = await authFetch(
-    `http://localhost:4000/posts/showPost?limit=${limit}`
+    `${process.env.REACT_APP_API_URL}/posts/showPost?limit=${limit}`
   );
   if (!res.ok) throw new Error("네트워크 응답 실패");
   return res.json();
@@ -21,7 +21,7 @@ export async function fetchPosts(limit) {
 export async function updatePost(formData) {
   const post_id = formData.get("post_id");
   const res = await authFetch(
-    `http://localhost:4000/posts/updatePost/${post_id}`,
+    `${process.env.REACT_APP_API_URL}/posts/updatePost/${post_id}`,
     { method: "PUT", body: formData }
   );
   if (!res.ok) throw new Error("수정 실패");
@@ -32,7 +32,7 @@ export async function uploadPost(formData, navigate) {
   try {
     const access_token = localStorage.getItem("access_token");
     const response = await authFetch(
-      "http://localhost:4000/posts/uploadPost",
+      `${process.env.REACT_APP_API_URL}/posts/uploadPost`,
       {
         method: "POST",
         body: formData,

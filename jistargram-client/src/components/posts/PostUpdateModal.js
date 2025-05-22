@@ -6,7 +6,9 @@ import "../../styles/PostUploadModal.css";
 import { useNavigate } from "react-router-dom";
 
 function PostUpdateModal({ post, onClose, onUpdate, currentUser }) {
-  const [image, setImage] = useState(`http://localhost:4000${post.media_url}`);
+  const [image, setImage] = useState(
+    `${process.env.REACT_APP_API_URL}${post.media_url}`
+  );
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState(post.content);
   const navigate = useNavigate();

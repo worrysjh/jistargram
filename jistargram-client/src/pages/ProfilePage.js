@@ -55,7 +55,7 @@ function ProfilePage() {
           <img
             src={
               profile.profile_img
-                ? `http://localhost:4000${profile.profile_img}`
+                ? `${process.env.REACT_APP_API_URL}${profile.profile_img}`
                 : "/common/img/사용자이미지.jpeg"
             }
             alt="프로필 이미지"
@@ -105,7 +105,7 @@ function ProfilePage() {
                 onClick={() => openModal(post)}
               >
                 <img
-                  src={`http://localhost:4000${post.media_url}`}
+                  src={`${process.env.REACT_APP_API_URL}${post.media_url}`}
                   alt="post"
                 />
               </div>

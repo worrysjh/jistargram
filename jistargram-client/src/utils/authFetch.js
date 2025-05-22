@@ -16,10 +16,13 @@ export async function authFetch(url, options = {}, navigate) {
   });
 
   if (res.status === 401 || res.status === 403) {
-    const refreshRes = await fetch("http://localhost:4000/auth/refresh", {
-      method: "POST",
-      credentials: "include",
-    });
+    const refreshRes = await fetch(
+      `${process.env.REACT_APP_API_URL}/auth/refresh`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
 
     if (refreshRes.ok) {
       const { access_token } = await refreshRes.json();

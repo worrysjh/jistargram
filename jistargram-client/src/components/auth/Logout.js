@@ -7,7 +7,7 @@ function Logout() {
   const handleLogout = async () => {
     try {
       // 서버에 로그아웃 요청 (refresh_token 쿠키 삭제)
-      await fetch("http://localhost:4000/auth/logout", {
+      await fetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include", // 쿠키 포함 필수
       });

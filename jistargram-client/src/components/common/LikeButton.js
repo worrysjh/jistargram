@@ -13,21 +13,27 @@ function LikeButton({ target_id, target_type }) {
 
       try {
         // 1. 좋아요 여부 확인
-        const res = await authFetch("http://localhost:4000/likes/check", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ target_id, target_type }),
-        });
+        const res = await authFetch(
+          `${process.env.REACT_APP_API_URL}/likes/check`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ target_id, target_type }),
+          }
+        );
 
         const data = await res.json();
         setLiked(data.liked);
 
         // 2. 좋아요 수 확인
-        const countRes = await authFetch("http://localhost:4000/likes/count", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ target_id, target_type }),
-        });
+        const countRes = await authFetch(
+          `${process.env.REACT_APP_API_URL}/likes/count`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ target_id, target_type }),
+          }
+        );
 
         const countData = await countRes.json();
         setLikeCount(countData.count);
@@ -43,8 +49,8 @@ function LikeButton({ target_id, target_type }) {
     try {
       const method = liked ? "DELETE" : "POST";
       const endpoint = liked
-        ? "http://localhost:4000/likes/remove"
-        : "http://localhost:4000/likes/add";
+        ? `${process.env.REACT_APP_API_URL}/likes/remove`
+        : `${process.env.REACT_APP_API_URL}/likes/add`;
 
       const res = await authFetch(endpoint, {
         method,

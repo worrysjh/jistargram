@@ -2,11 +2,14 @@ import { authFetch } from "../../utils/authFetch";
 
 export async function fetchMyPosts() {
   const access_token = localStorage.getItem("access_token");
-  const response = await authFetch("http://localhost:4000/posts/getMyPost", {
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
+  const response = await authFetch(
+    `${process.env.REACT_APP_API_URL}/posts/getMyPost`,
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+  );
   if (!response.ok) throw new Error("내 게시물 로딩 실패");
   return response.json();
 }
@@ -14,7 +17,7 @@ export async function fetchMyPosts() {
 export async function fetchProfile(navigate) {
   const access_token = localStorage.getItem("access_token");
   const response = await authFetch(
-    "http://localhost:4000/users/getMyProfile",
+    `${process.env.REACT_APP_API_URL}/users/getMyProfile`,
     {
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -28,7 +31,7 @@ export async function fetchProfile(navigate) {
 
 export async function updateProfileBio(biography, navigate) {
   const response = await authFetch(
-    "http://localhost:4000/users/updateProfile",
+    `${process.env.REACT_APP_API_URL}/users/updateProfile`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -44,7 +47,7 @@ export async function updateProfileImage(file, navigate) {
   formData.append("profile_img", file);
 
   const response = await authFetch(
-    "http://localhost:4000/users/updateProfileImg",
+    `${process.env.REACT_APP_API_URL}/users/updateProfileImg`,
     {
       method: "POST",
       body: formData,

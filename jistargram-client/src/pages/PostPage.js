@@ -99,7 +99,7 @@ function PostPage() {
                   className="profile-pic"
                   src={
                     post.profile_img
-                      ? `http://localhost:4000${post.profile_img}`
+                      ? `${process.env.REACT_APP_API_URL}${post.profile_img}`
                       : "/common/img/사용자이미지.jpeg"
                   }
                   alt="프로필"
@@ -131,7 +131,7 @@ function PostPage() {
               {/* image */}
               <img
                 className="post-image"
-                src={`http://localhost:4000${post.media_url}`}
+                src={`${process.env.REACT_APP_API_URL}${post.media_url}`}
                 alt="게시물"
               />
 

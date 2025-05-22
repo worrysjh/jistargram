@@ -7,9 +7,14 @@
 
 ---
 
-## 🚀 주요 기능
+## 🚀 배포 및 실행행
 
-- ***
+> 1. git-hub에서 code clone
+> 2. clone 받은 라이브러리에서
+> 3. docker-compose up --build 실행
+> 4. 웹 브라우저에서 localhost:3000 접속속
+
+---
 
 ## 코드 리뷰
 

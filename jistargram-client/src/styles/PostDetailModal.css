@@ -135,4 +135,8 @@
 .reply-input {
   margin-top: 2px;
   margin-left: 16px;      /* 부모 블록만큼 들여쓰기 */
+  padding: 10px 10px 10px 20px;
+  border-left: 2px solid #eee; /* 선형 구분 */
+  font-size: 14px;
+  background-color: #fafafa; /* 약간의 배경만 */
 }

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/index.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import Logout from "../auth/Logout";
 
@@ -13,8 +13,19 @@ import { BiMoviePlay } from "react-icons/bi";
 import { FaRegMessage } from "react-icons/fa6";
 import { CiHeart } from "react-icons/ci";
 
+import { getUserFromToken } from "../../utils/getUserFromToken";
+
 function Aside({ onOpenPostUploadModal }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      const user = await getUserFromToken();
+      setUserId(user.user_id);
+    })();
+  }, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -62,7 +73,11 @@ function Aside({ onOpenPostUploadModal }) {
           <span className="label">만들기</span>
         </li>
         <Link to="/profile" className="menu-link">
-          <li className="menu-item" data-tooltip="프로필">
+          <li
+            className="menu-item"
+            data-tooltip="프로필"
+            onClick={() => navigate(`/profile/${userId}`)}
+          >
             <PiUserCircleDuotone className="menu-icon" />
             <span className="label">프로필</span>
           </li>

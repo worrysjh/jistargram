@@ -1,7 +1,7 @@
 const {
   registerUser,
   loginService,
-  getMyProfileService,
+  getUserProfileByIdService,
   updateMyBioService,
   updateMyImgService,
   changeStateService,
@@ -65,11 +65,14 @@ async function login(req, res) {
 }
 
 // 내 프로필 조회
-async function getMyProfile(req, res) {
-  const user_name = req.user.user_name;
+async function getUserProfile(req, res) {
+  const { user_id } = req.params;
 
   try {
-    const result = await getMyProfileService(user_name);
+    const result = await getUserProfileByIdService(user_id);
+    if (!result.success) {
+      return res.status(404).json({ message: "유저를 찾을 수 없습니다" });
+    }
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -126,6 +129,6 @@ module.exports = {
   login,
   updateProfile,
   resignUser,
-  getMyProfile,
+  getUserProfile,
   updateProfileImg,
 };

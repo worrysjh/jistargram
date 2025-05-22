@@ -10,6 +10,7 @@ import {
   updatePost,
   deletePost,
 } from "../actions/post/postActions";
+import { useNavigate } from "react-router-dom";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);
@@ -22,6 +23,8 @@ function PostPage() {
 
   const [limit, setLimit] = useState(3);
   const [isLast, setIsLast] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -104,7 +107,13 @@ function PostPage() {
                   }
                   alt="프로필"
                 />
-                <span className="username">{post.user_name}</span>
+                <span
+                  className="username"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => navigate(`/profile/${post.user_id}`)}
+                >
+                  {post.user_name}
+                </span>
                 {isOwner && (
                   <div className="owner-menu">
                     <div

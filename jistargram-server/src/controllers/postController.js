@@ -5,6 +5,7 @@ const {
   deletePostService,
   getMyPostService,
   countPostService,
+  getPostsByUserService,
 } = require("../services/postService/post.service");
 
 const {
@@ -88,6 +89,20 @@ async function getMyPost(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "게시물 조회 실패" });
+  }
+}
+
+async function getPostsByUser(req, res) {
+  const { user_id } = req.params;
+
+  try {
+    const posts = await getPostsByUserService(user_id);
+    res.json({
+      posts,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "특정 사용자 게시물 조회 실패" });
   }
 }
 
@@ -194,4 +209,5 @@ module.exports = {
   updateComment,
   countPost,
   countComment,
+  getPostsByUser,
 };

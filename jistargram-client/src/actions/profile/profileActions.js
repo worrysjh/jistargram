@@ -1,34 +1,28 @@
 import { authFetch } from "../../utils/authFetch";
 
-export async function fetchMyPosts() {
-  const access_token = localStorage.getItem("access_token");
-  const response = await authFetch(
-    `${process.env.REACT_APP_API_URL}/posts/getMyPost`,
-    {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    }
-  );
-  if (!response.ok) throw new Error("내 게시물 로딩 실패");
-  return response.json();
+// 특정 사용자 게시물 조회
+export async function fetchMyPosts(user_id) {
+  const endpoint = user_id
+    ? `${process.env.REACT_APP_API_URL}/posts/user/${user_id}`
+    : `${process.env.REACT_APP_API_URL}/posts/getMyPost`;
+
+  const response = await authFetch(endpoint);
+  if (!response.ok) throw new Error("게시물 로딩 실패");
+  return await response.json();
 }
 
-export async function fetchProfile(navigate) {
-  const access_token = localStorage.getItem("access_token");
-  const response = await authFetch(
-    `${process.env.REACT_APP_API_URL}/users/getMyProfile`,
-    {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    },
-    navigate
-  );
-  if (!response) throw new Error("인증 실패 또는 서버 응답 없음");
-  return response.json();
+// 특정 사용자 프로필 조회
+export async function fetchProfile(user_id, navigate) {
+  const endpoint = user_id
+    ? `${process.env.REACT_APP_API_URL}/users/${user_id}`
+    : `${process.env.REACT_APP_API_URL}/users/getMyProfile`;
+
+  const response = await authFetch(endpoint, {}, navigate);
+  if (!response) throw new Error("프로필 로딩 실패");
+  return await response.json();
 }
 
+// 자기소개 업데이트 (로그인 사용자만 가능)
 export async function updateProfileBio(biography, navigate) {
   const response = await authFetch(
     `${process.env.REACT_APP_API_URL}/users/updateProfile`,
@@ -42,6 +36,7 @@ export async function updateProfileBio(biography, navigate) {
   if (!response) throw new Error("소개 수정 실패");
 }
 
+// 프로필 이미지 업데이트 (로그인 사용자만 가능)
 export async function updateProfileImage(file, navigate) {
   const formData = new FormData();
   formData.append("profile_img", file);

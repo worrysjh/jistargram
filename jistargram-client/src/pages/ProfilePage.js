@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import PostDetailModal from "../components/posts/PostDetailModal";
 import { CiSettings } from "react-icons/ci";
@@ -8,7 +8,10 @@ import { FaPencilAlt } from "react-icons/fa";
 
 import { fetchProfile, fetchMyPosts } from "../actions/profile/profileActions";
 
+import { getUserFromToken } from "../utils/getUserFromToken";
+
 function ProfilePage() {
+  const { user_id } = useParams();
   const [profile, setProfile] = useState(null);
   const [myPosts, setMyPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -18,10 +21,16 @@ function ProfilePage() {
   useEffect(() => {
     (async () => {
       try {
-        // 프로필 + 내 게시물 동시 로드
+        let actualUserId = user_id;
+        if (!actualUserId) {
+          const user = await getUserFromToken();
+          actualUserId = user.user_id;
+        }
+
+        // 프로필 + 게시물 동시 로드
         const [profileData, postsData] = await Promise.all([
-          fetchProfile(navigate),
-          fetchMyPosts(),
+          fetchProfile(actualUserId),
+          fetchMyPosts(actualUserId),
         ]);
         setProfile(profileData);
         setMyPosts(postsData.posts.result);
@@ -29,7 +38,7 @@ function ProfilePage() {
         console.error("데이터 로딩 중 오류:", err);
       }
     })();
-  }, [navigate]);
+  }, [user_id, navigate]);
 
   if (!profile) return <p>로딩 중...</p>;
 

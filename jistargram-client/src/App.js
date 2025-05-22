@@ -27,6 +27,7 @@ function App() {
         >
           <Route path="/home" element={<PostPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/:user_id" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<ProfileChangePage />} />
         </Route>
 

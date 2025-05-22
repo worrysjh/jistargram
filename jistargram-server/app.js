@@ -6,7 +6,12 @@ const likeRoutes = require("./src/routes/likeRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const cookieParser = require("cookie-parser");
 
-require("dotenv").config();
+require("dotenv").config({
+  path:
+    process.env.NODE_ENV === "production"
+      ? "../.env.production"
+      : "../.env.development",
+});
 
 const app = express();
 
@@ -14,9 +19,10 @@ const app = express();
 app.use("/uploads", express.static("public/uploads"));
 
 // CORS 설정
+const allowedOrigin = process.env.CLIENT_ORIGIN;
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigin,
     credentials: true,
   })
 );

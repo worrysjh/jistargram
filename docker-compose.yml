@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   jistargram-client:
     build: ./jistargram-client
@@ -16,7 +14,7 @@ services:
     ports:
       - "4000:4000"
     env_file:
-      - ./jistargram-server/.env
+      - .env.production
     depends_on:
       - db
 
@@ -24,11 +22,7 @@ services:
     image: postgres:15
     restart: always
     env_file:
-      - ./jistargram-server/.env
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - ./.env.production
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./jistargram-server/sql/init.sql:/docker-entrypoint-initdb.d/init.sql

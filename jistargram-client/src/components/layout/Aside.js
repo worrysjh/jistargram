@@ -84,9 +84,7 @@ function Aside({ onOpenPostUploadModal }) {
             <ul>
               <li>모드 설정</li>
               <hr className="menu-divider" />
-              <li>
-                <Logout />
-              </li>
+              <Logout />
             </ul>
           </div>
         )}

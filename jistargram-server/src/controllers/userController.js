@@ -53,7 +53,7 @@ async function login(req, res) {
     }
     res.cookie("refresh_token", result.refresh_token, {
       httpOnly: true,
-      secure: false, //process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
       maxAge: 60 * 60 * 24 * 7 * 1000,
     });

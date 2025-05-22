@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Logout() {
   const navigate = useNavigate();
@@ -22,15 +22,9 @@ function Logout() {
   };
 
   return (
-    <Link
-      to="#"
-      onClick={(e) => {
-        e.preventDefault();
-        handleLogout();
-      }}
-    >
+    <li onClick={handleLogout} style={{ cursor: "pointer" }} role="button">
       로그아웃
-    </Link>
+    </li>
   );
 }
 

@@ -9,9 +9,7 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-console.log("🔍 DB_PASSWORD = ", process.env.DB_PASSWORD);
-console.log("🔍 typeof DB_PASSWORD =", typeof process.env.DB_PASSWORD);
-//연결 확인 (에러 있으면 경고 처리)
+
 pool
   .connect()
   .then(() => console.log("Connected to PostgreSQL"))

@@ -6,6 +6,7 @@ const {
   resignUser,
   getMyProfile,
   updateProfileImg,
+  getUserProfile,
 } = require("../controllers/userController");
 
 const authenticateToken = require("../middlewares/auth");
@@ -28,5 +29,7 @@ router.post(
 router.delete("/resignUser", authenticateToken, verifyPasswd, resignUser);
 router.get("/getMyProfile", authenticateToken, getMyProfile);
 router.patch("/updateProfile", authenticateToken, updateProfile);
+
+router.get("/targetProfile/:user_id", getUserProfile);
 
 module.exports = router;

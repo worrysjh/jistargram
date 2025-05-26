@@ -11,6 +11,7 @@ const {
   countPost,
   countComment,
   getMyPost,
+  getUserPost,
 } = require("../controllers/postController");
 const authenticateToken = require("../middlewares/auth");
 const upload = require("../middlewares/uploadPostImage");
@@ -30,6 +31,9 @@ router.put(
   upload.single("image"),
   updatePost
 );
+
+router.get("/targetPost/:user_id", getUserPost);
+
 router.delete("/deletePost/:post_id", authenticateToken, deletePost);
 router.get("/countPost", authenticateToken, countPost);
 router.get("/getMyPost", authenticateToken, getMyPost);

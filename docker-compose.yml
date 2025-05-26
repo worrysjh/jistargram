@@ -14,7 +14,7 @@ services:
     ports:
       - "4000:4000"
     env_file:
-      - .env.production
+      - .env.development
     depends_on:
       - db
 
@@ -22,7 +22,7 @@ services:
     image: postgres:15
     restart: always
     env_file:
-      - ./.env.production
+      - ./.env.development
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./jistargram-server/sql/init.sql:/docker-entrypoint-initdb.d/init.sql

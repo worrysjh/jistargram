@@ -5,6 +5,8 @@ import LikeButton from "../components/common/LikeButton";
 import { FiMenu } from "react-icons/fi";
 import "../styles/PostPage.css";
 
+import { Link } from "react-router-dom";
+
 import {
   fetchPosts,
   updatePost,
@@ -104,7 +106,12 @@ function PostPage() {
                   }
                   alt="프로필"
                 />
-                <span className="username">{post.user_name}</span>
+                <Link
+                  to={`/profile?user_id=${post.user_id}`}
+                  className="username"
+                >
+                  {post.user_name}
+                </Link>
                 {isOwner && (
                   <div className="owner-menu">
                     <div

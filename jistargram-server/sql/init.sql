@@ -1,3 +1,4 @@
+
 --사용자 테이블
 CREATE TABLE  users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

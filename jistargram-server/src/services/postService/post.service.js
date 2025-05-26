@@ -58,7 +58,7 @@ async function getPostService(limit) {
 }
 
 // 소유 게시글 조회
-async function getMyPostService(user_id) {
+async function getUserPostService(user_id) {
   const result = await pool.query(
     `SELECT 
         p.post_id, 
@@ -94,6 +94,6 @@ module.exports = {
   deletePostService,
   countPostService,
   getPostService,
-  getMyPostService,
+  getUserPostService,
   updatePostService,
 };

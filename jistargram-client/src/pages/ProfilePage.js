@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import PostDetailModal from "../components/posts/PostDetailModal";
 import { CiSettings } from "react-icons/ci";
 import { FaPencilAlt } from "react-icons/fa";
 
-import { fetchProfile, fetchMyPosts } from "../actions/profile/profileActions";
+import {
+  fetchProfile,
+  fetchMyPosts,
+  fetchUserProfile,
+  fetchUserPosts,
+} from "../actions/profile/profileActions";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -15,21 +20,35 @@ function ProfilePage() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const target_user_id = searchParams.get("user_id");
+
   useEffect(() => {
     (async () => {
       try {
-        // 프로필 + 내 게시물 동시 로드
-        const [profileData, postsData] = await Promise.all([
-          fetchProfile(navigate),
-          fetchMyPosts(),
-        ]);
-        setProfile(profileData);
-        setMyPosts(postsData.posts.result);
+        if (target_user_id) {
+          const [profileData, postsData] = await Promise.all([
+            fetchUserProfile(target_user_id),
+            fetchUserPosts(target_user_id),
+          ]);
+
+          setProfile(profileData);
+          setMyPosts(postsData.posts.result);
+        } else {
+          // 프로필 + 내 게시물 동시 로드
+          const [profileData, postsData] = await Promise.all([
+            fetchProfile(navigate),
+            fetchMyPosts(),
+          ]);
+
+          setProfile(profileData);
+          setMyPosts(postsData.posts.result);
+        }
       } catch (err) {
         console.error("데이터 로딩 중 오류:", err);
       }
     })();
-  }, [navigate]);
+  }, [target_user_id, navigate]);
 
   if (!profile) return <p>로딩 중...</p>;
 
@@ -79,10 +98,10 @@ function ProfilePage() {
               게시물 <b>{myPosts.length ? myPosts.length : "0"}</b>
             </li>
             <li>
-              팔로워 <b>5</b>
+              팔로워 <b>0</b>
             </li>
             <li>
-              팔로우 <b>6</b>
+              팔로우 <b>0</b>
             </li>
           </ul>
           <div className="profile-details">

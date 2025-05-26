@@ -14,6 +14,14 @@ export async function fetchMyPosts() {
   return response.json();
 }
 
+export async function fetchUserPosts(target_user_id) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/posts/targetPost/${target_user_id}`
+  );
+  if (!response.ok) throw new Error("해당 유저 게시물 로딩 실패");
+  return response.json();
+}
+
 export async function fetchProfile(navigate) {
   const access_token = localStorage.getItem("access_token");
   const response = await authFetch(
@@ -26,6 +34,13 @@ export async function fetchProfile(navigate) {
     navigate
   );
   if (!response) throw new Error("인증 실패 또는 서버 응답 없음");
+  return response.json();
+}
+
+export async function fetchUserProfile(target_user_id) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/users/targetProfile/${target_user_id}`
+  );
   return response.json();
 }
 

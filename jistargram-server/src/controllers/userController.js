@@ -1,7 +1,7 @@
 const {
   registerUser,
   loginService,
-  getMyProfileService,
+  getProfileService,
   updateMyBioService,
   updateMyImgService,
   changeStateService,
@@ -66,10 +66,23 @@ async function login(req, res) {
 
 // 내 프로필 조회
 async function getMyProfile(req, res) {
-  const user_name = req.user.user_name;
+  const user_id = req.user.user_id;
 
   try {
-    const result = await getMyProfileService(user_name);
+    const result = await getProfileService(user_id);
+    res.json(result.result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "서버 에러" });
+  }
+}
+
+// 선택 대상 프로필 조회
+async function getUserProfile(req, res) {
+  const { user_id } = req.params;
+
+  try {
+    const result = await getProfileService(user_id);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -128,4 +141,5 @@ module.exports = {
   resignUser,
   getMyProfile,
   updateProfileImg,
+  getUserProfile,
 };

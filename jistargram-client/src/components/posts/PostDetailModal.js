@@ -8,6 +8,7 @@ import {
 } from "../../actions/comment/commentActions";
 
 import { fetchAndFlattenComments } from "../../utils/commentUtils";
+import PostOwnerMenu from "./PostOwnerMenu";
 
 import LikeButton from "../common/LikeButton";
 
@@ -20,6 +21,27 @@ function PostDetailModal({ post, onClose }) {
   const post_id = post.post_id;
   const post_created_at = post.created_at;
   const [currentUser, setCurrentUser] = useState(null);
+
+  const [menuOpenFor, setMenuOpenFor] = useState(null);
+
+  const toggleMenu = (post_id) =>
+    setMenuOpenFor((prev) => (prev === post_id ? null : post_id));
+
+  const openUpdate = (post) => {
+    alert("수정 기능은 아직 구현되지 않았습니다.");
+  };
+
+  const onDelete = async (post_id) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      alert("삭제 기능은 아직 구현되지 않았습니다.");
+      onClose(); // 모달 닫기
+    } catch {
+      alert("삭제 실패");
+    }
+  };
+
+  const isOwner = currentUser?.user_id === post.user_id;
 
   // 댓글 조회
   useEffect(() => {
@@ -110,6 +132,15 @@ function PostDetailModal({ post, onClose }) {
               className="detail-profile-img"
             />
             <span className="detail-username">{post.user_name}</span>
+            <PostOwnerMenu
+              post={post}
+              isOwner={isOwner}
+              menuOpenFor={menuOpenFor}
+              toggleMenu={toggleMenu}
+              onUpdate={openUpdate}
+              onDelete={onDelete}
+            />
+
             <button className="close-btn" onClick={onClose}>
               X
             </button>

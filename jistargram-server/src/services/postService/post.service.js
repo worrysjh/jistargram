@@ -70,7 +70,7 @@ async function getUserPostService(user_id) {
        FROM posts p 
        JOIN users u 
         ON p.user_id = u.user_id 
-       WHERE p.user_id = $1 
+       WHERE p.user_id = $1 AND p.post_state = '공개'
        ORDER BY p.created_at DESC`,
     [user_id]
   );

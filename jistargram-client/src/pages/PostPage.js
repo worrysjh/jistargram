@@ -86,7 +86,8 @@ function PostPage() {
   return (
     <>
       <div className="post-list">
-        {posts.map((post) => {
+        {posts.length>0 ? (
+        posts.map((post) => {
           const lines = post.content.split("\n");
           const long = lines.length > 1;
           const expandedHere = expanded[post.post_id];
@@ -193,8 +194,11 @@ function PostPage() {
               </div>
             </div>
           );
-        })}
-      </div>
+        })) : (
+          <div className="no-posts">작성된 게시글이 없습니다...</div>
+        )}
+      </div> 
+      
       <div>
         {!isLast && (
           <button className="load-more-btn" onClick={handleLoadMore}>

@@ -12,7 +12,7 @@ services:
       - ./jistargram-server/public/uploads/post_imgs:/app/public/uploads/post_imgs
       - ./jistargram-server/public/uploads/profile_imgs:/app/public/uploads/profile_imgs
     ports:
-      - "4000:4000"
+      - "4001:4000"
     env_file:
       - .env.development
     depends_on:

@@ -1,5 +1,6 @@
 .profile-container {
   padding: 40px;
+  flex: 1;
 }
 
 .profile-header {

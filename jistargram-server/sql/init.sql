@@ -1,6 +1,6 @@
 
 --사용자 테이블
-CREATE TABLE  users (
+CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_name VARCHAR(255) UNIQUE NOT NULL,
     nick_name VARCHAR(255) NOT NULL,

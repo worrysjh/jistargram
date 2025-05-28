@@ -5,6 +5,7 @@ const postRoutes = require("./src/routes/postRoutes");
 const likeRoutes = require("./src/routes/likeRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const cookieParser = require("cookie-parser");
+const pool = require("./src/models/db");
 
 require("dotenv").config({
   path:
@@ -41,6 +42,35 @@ app.get("/", (_req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`);
-});
+
+// DB 연결 후 서버 시작
+const MAX_RETRIES = 5;
+
+async function connectToDBWithExponentialBackoff(retry = 0) {
+  const delay = Math.pow(2, retry) * 1000;
+  try {
+    const client = await pool.connect();
+    console.log("Connected to PostgreSQL");
+    client.release();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error(
+      `PostgreSQL connection failed (attempt ${retry + 1}): `,
+      err.message
+    );
+    if (retry < MAX_RETRIES) {
+      console.log(`Retrying in ${delay / 1000} seconds...`);
+      setTimeout(() => connectToDBWithExponentialBackoff(retry + 1), delay);
+    } else {
+      console.error("All DB connection attempts failed. Exiting.");
+      process.exit(1);
+    }
+  } finally {
+    if (client) client.release();
+  }
+}
+
+connectToDBWithExponentialBackoff();

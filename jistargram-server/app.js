@@ -44,14 +44,14 @@ app.get("/", (_req, res) => {
 const PORT = process.env.PORT || 4000;
 
 // DB 연결 후 서버 시작
+let client;
 const MAX_RETRIES = 5;
-
+// 지수 백오프
 async function connectToDBWithExponentialBackoff(retry = 0) {
   const delay = Math.pow(2, retry) * 1000;
   try {
-    const client = await pool.connect();
+    client = await pool.connect();
     console.log("Connected to PostgreSQL");
-    client.release();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

@@ -17,6 +17,12 @@ const {
 
 //게시글 등록
 async function uploadPost(req, res) {
+  if (!req.file || !req.file.filename) {
+    return res
+      .status(400)
+      .json({ message: "이미지 파일이 포함되지 않았습니다." });
+  }
+
   const user_id = req.user.user_id;
   const { content } = req.body;
   const media_url = `/uploads/post_imgs/${req.file.filename}`;

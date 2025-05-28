@@ -19,6 +19,10 @@ function PostUploadModal({ onClose, onSubmit }) {
   const handleSubmit = async () => {
     const formData = new FormData();
     const navigate = "/home";
+    if (!selectedFile) {
+      alert("사진을 한장 등록하여야 합니다");
+      return;
+    }
     formData.append("image", selectedFile);
     formData.append("content", content);
     const success = await uploadPost(formData, navigate);

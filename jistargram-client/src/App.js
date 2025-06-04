@@ -5,12 +5,14 @@ import PostPage from "./pages/PostPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import PostUploadModal from "./components/posts/PostUploadModal";
+import MessageModal from "./components/messages/MessageModal";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProfileChangePage from "./pages/ProfileChangePage";
 
 function App() {
   const [isPostUploadModalOpen, setIsPostUploadModalOpen] = useState(false);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   return (
     <Router>
       <Routes>
@@ -21,6 +23,7 @@ function App() {
             <ProtectedRoute>
               <Layout
                 onOpenPostUploadModal={() => setIsPostUploadModalOpen(true)}
+                onOpenMessageModal={() => setIsMessageModalOpen(true)}
               />
             </ProtectedRoute>
           }
@@ -36,6 +39,9 @@ function App() {
 
       {isPostUploadModalOpen && (
         <PostUploadModal onClose={() => setIsPostUploadModalOpen(false)} />
+      )}
+      {isMessageModalOpen && (
+        <MessageModal onClose={() => setIsMessageModalOpen(false)} />
       )}
     </Router>
   );

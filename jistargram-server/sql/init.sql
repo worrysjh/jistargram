@@ -55,3 +55,12 @@ create table refresh_tokens (
 	expires_at timestamp not null,
 	created_at timestamp default now()
 );
+
+--메시지 테이블
+create table messages (
+	message_id SERIAL primary key,
+	sender_id UUID references users(user_id),
+	receiver_id UUID references users(user_id),
+	content TEXT not null,
+	timestamp timestamptz default now()
+);

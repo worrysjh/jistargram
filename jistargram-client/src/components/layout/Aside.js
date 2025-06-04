@@ -13,7 +13,7 @@ import { BiMoviePlay } from "react-icons/bi";
 import { FaRegMessage } from "react-icons/fa6";
 import { CiHeart } from "react-icons/ci";
 
-function Aside({ onOpenPostUploadModal }) {
+function Aside({ onOpenPostUploadModal, onOpenMessageModal }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -45,14 +45,21 @@ function Aside({ onOpenPostUploadModal }) {
           <BiMoviePlay className="menu-icon" />
           <span className="label">릴스</span>
         </li>
-        <li className="menu-item" data-tooltip="메시지">
+
+        <li
+          onClick={onOpenMessageModal}
+          className="menu-item"
+          data-tooltip="메시지"
+        >
           <FaRegMessage className="menu-icon" />
           <span className="label">메시지</span>
         </li>
+
         <li className="menu-item" data-tooltip="알림">
           <CiHeart className="menu-icon" />
           <span className="label">알림</span>
         </li>
+
         <li
           onClick={onOpenPostUploadModal}
           className="menu-item"
@@ -61,6 +68,7 @@ function Aside({ onOpenPostUploadModal }) {
           <IoIosCreate className="menu-icon" />
           <span className="label">만들기</span>
         </li>
+
         <Link to="/profile" className="menu-link">
           <li className="menu-item" data-tooltip="프로필">
             <PiUserCircleDuotone className="menu-icon" />

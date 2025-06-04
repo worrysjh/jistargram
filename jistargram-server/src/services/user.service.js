@@ -159,6 +159,12 @@ async function changeStateService(user_id) {
   return { success: true };
 }
 
+async function getAllUserInfo() {
+  const result = await pool.query(`SELECT user_id, user_name FROM users`);
+
+  return result.rows;
+}
+
 module.exports = {
   loginService,
   registerUser,
@@ -166,4 +172,5 @@ module.exports = {
   updateMyImgService,
   updateMyBioService,
   changeStateService,
+  getAllUserInfo,
 };

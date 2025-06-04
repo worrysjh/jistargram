@@ -7,6 +7,7 @@ const {
   getMyProfile,
   updateProfileImg,
   getUserProfile,
+  fetchAllUser,
 } = require("../controllers/userController");
 
 const authenticateToken = require("../middlewares/auth");
@@ -31,5 +32,8 @@ router.get("/getMyProfile", authenticateToken, getMyProfile);
 router.patch("/updateProfile", authenticateToken, updateProfile);
 
 router.get("/targetProfile/:user_id", getUserProfile);
+
+router.get("/me", authenticateToken, getMyProfile);
+router.get("/all", authenticateToken, fetchAllUser);
 
 module.exports = router;

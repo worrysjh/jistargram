@@ -32,13 +32,13 @@ export default function UserList({ onSelectUser, currentUser }) {
 
   return (
     <div className="user-list">
-      <h3>Users</h3>
+      <h3>사용자 목록</h3>
       <ul>
         {users
           .filter((user) => user.user_id !== currentUser.user_id)
           .map((user) => (
             <li key={user.user_id} onClick={() => onSelectUser(user)}>
-              {user.user_name}
+              {user.user_name} : {user.nick_name}
             </li>
           ))}
       </ul>

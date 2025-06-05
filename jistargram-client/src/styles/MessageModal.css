@@ -42,3 +42,130 @@
   }
 }
 
+.empty-window {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 16px;
+  color: #777;
+  height: 100%;
+}
+
+
+.user-list h3 {
+  margin: 12px;
+}
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 600px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  font-family: Arial, sans-serif;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.chat-header h3 {
+  margin: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 버튼은 중앙 정렬되도록 */
+.close-button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+  line-height: 1;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+  margin-left: auto;
+}
+
+.close-button:hover {
+  color: #ff4d4f;
+}
+
+
+.message-box {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #f9f9f9;
+}
+
+.my-msg,
+.their-msg {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 12px;
+  word-break: break-word;
+  font-size: 14px;
+}
+
+.my-msg {
+  align-self: flex-end;
+  background-color: #d1e7ff;
+  color: #003366;
+}
+
+.their-msg {
+  align-self: flex-start;
+  background-color: #eeeeee;
+  color: #333;
+}
+
+.no-message {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-right: 10px;
+  outline: none;
+}
+
+.chat-input button {
+  padding: 10px 16px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #0056b3;
+}

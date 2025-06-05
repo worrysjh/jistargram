@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { socket } from "../../utils/socket";
 import "../../styles/MessageModal.css";
 
-export default function ChatWindow({ selectedUser, currentUser }) {
+export default function ChatWindow({ selectedUser, currentUser, onClose }) {
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState("");
 
@@ -70,11 +70,25 @@ export default function ChatWindow({ selectedUser, currentUser }) {
   };
 
   if (!selectedUser)
-    return <div className="chat-window">대화할 사용자를 선택하세요.</div>;
+    return (
+      <div className="chat-window">
+        <div className="chat-header">
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <div className="empty-window">대화할 사용자를 선택하세요.</div>
+      </div>
+    );
 
   return (
     <div className="chat-window">
-      <h3>{selectedUser.user_name}와의 대화</h3>
+      <div className="chat-header">
+        <h3>{selectedUser.nick_name} 님과의 대화</h3>
+        <button className="close-button" onClick={onClose}>
+          ×
+        </button>
+      </div>
       <div className="message-box">
         {messages.length === 0 ? (
           <div className="no-message">대화 내역이 없습니다.</div>

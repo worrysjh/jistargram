@@ -34,7 +34,11 @@ function MessageModal({ onClose, onSubmit }) {
     <div className="modal-backdrop">
       <div className="chat-page">
         <UserList onSelectUser={setSelectedUser} currentUser={currentUser} />
-        <ChatWindow selectedUser={selectedUser} currentUser={currentUser} />
+        <ChatWindow
+          selectedUser={selectedUser}
+          currentUser={currentUser}
+          onClose={onClose}
+        />
       </div>
     </div>
   );

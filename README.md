@@ -16,36 +16,6 @@
 
 ---
 
-## 코드 리뷰
-
-# 1차 리뷰
-
-- **Server**
-
-  - Controller / services 로직 분리
-  - app.js에 pool 확인해 연결여부 체크
-  - Upload는 기능 / multer는 middleware
-
-- **Client**
-
-  - bcrypt 중 secret 없음
-
-- **DataBase**
-
-  - users Table : userid / username 구분
-
-- **etc.**
-  - 함수같은 파일명 변경(Form 등)
-  - 최상단 코드는 무조건 간단하게
-  - 로그인시 정규식 추가
-  - vh 회피
-  - 삭제 회피 (상태 변경)
-  - 명명 규칙
-
-# 2차 리뷰
-
----
-
 ## ✅ 기능 명세
 
 | 구현여부 | 구분               | 기능명             | 설명                                           | 비고                                       |
@@ -69,6 +39,9 @@
 | ✅       | 인증 기능          | 토큰 암호화        | JWT를 AES-256으로 암호화                       |                                            |
 | ✅       | 인증 기능          | 토큰 자동 갱신     | refresh token을 통한 자동 갱신                 | refresh token 검사 후 new access token발급 |
 | ✅       | 기타 기능          | 에러 처리          | 일관된 에러 코드 및 메시지 제공                | 400, 401, 404, 500 구분                    |
+| ✅       | 채팅 기능          | 사용자 조회        | 가입된 모든 사용자에 대해 조회 기능 제공       |                                            |
+| ✅       | 채팅 기능          | 실시간 채팅        | Socket.io를 통한 실시간 전송 및 수신           | socket io 사용                             |
+| ✅       | 채팅 기능          | 이전 대화 불러오기 | 저장된 메시지 이력 조회                        | PostgreSQL messages 테이블                 |
 
 ---
 
@@ -78,7 +51,7 @@
 | :-------------------- | :------------------------------------------ |
 | API 통신 방식         | RESTful API (GET, POST, PUT, DELETE)        |
 | 프론트엔드 프레임워크 | React.js (Create React App 기반)            |
-| 백엔드 프레임워크     | Express.js (Node.js)                        |
+| 백엔드 프레임워크     | Express.js (Node.js) + Socket.IO            |
 | 인증 방식             | JWT (Json Web Token)                        |
 | 비밀번호 보안         | bcrypt로 비밀번호 해싱                      |
 | 데이터베이스          | PostgreSQL                                  |
@@ -108,6 +81,7 @@ jistargram/
 │   │   │   ├── auth/
 │   │   │   ├── common/    # 좋아요 UI 컴포넌트
 │   │   │   ├── layout/    # 페이지 공통 레이아웃 (Header, Footer, Outlet 등)
+│   │   │   ├── messages/  # 채팅 화면면 레이아웃
 │   │   │   └── posts/     # 게시글 모달 컴포넌트
 │   │   ├── pages/         # 주요 라우팅 페이지 컴포넌트
 │   │   │   ├── LoginPage.js
@@ -118,7 +92,8 @@ jistargram/
 │   │   ├── styles/
 │   │   ├── utils/         # fetch 래퍼 등 유틸 함수
 │   │   │   ├── authFetch.js
-│   │   │   └── commentUtils.js
+│   │   │   ├── commentUtils.js
+│   │   │   └── socket.js  # 단일 소캣 인스턴스 관리
 │   │   ├── App.js         # 라우터 설정 포함 메인 컴포넌트
 │   │   └── index.js       # React 엔트리 포인트
 │   └── package.json       # 프론트엔드 패키지 설정
@@ -127,10 +102,13 @@ jistargram/
 │   ├── public/
 │   │   └── uploads/       # 업로드된 프로필 이미지 저장소
 │   │       └── profile_imgs/
+│   ├── sql
+│   │   └── init.sql       # 배포용 초기 DB 테이블 생성쿼리리
 │   ├── src
 │   │   ├── controllers/       # 비즈니스 로직
 │   │   │   ├── authController.js
 │   │   │   ├── likeController.js
+│   │   │   ├── messageController.js
 │   │   │   ├── postController.js
 │   │   │   └── userController.js
 │   │   ├── middleware/        # 인증 관련 미들웨어
@@ -143,18 +121,21 @@ jistargram/
 │   │   ├── routes/            # API 라우터 정의
 │   │   │   ├── authRoutes.js
 │   │   │   ├── likeRoutes.js
+│   │   │   ├── messageRoutes.js
 │   │   │   ├── postRoutes.js
 │   │   │   └── userRoutes.js
 │   │   ├── services/          # 서비스 로직
 │   │   │   ├── postService/
 │   │   │   │   ├── comment.service.js
 │   │   │   │   └── post.service.js
+│   │   │   ├── auth.service.js
 │   │   │   ├── like.service.js
-│   │   │   ├── post.service.js
+│   │   │   ├── message.service.js
 │   │   │   └── user.service.js
-│   │   └── utils/             # 암호화/복호화 로직직
+│   │   └── utils/             # 암호화/복호화 로직
 │   │       └── cryptoUtils.js
-│   ├── app.js             # Express 서버 설정 진입점
+│   ├── app.js             # router 연결 관리
+│   ├── index.js           # socket.io 및 db connection 연결시도 (진입점)
 │   └── package.json       # 백엔드 패키지 설정
 │
 ├── README.md              # 프로젝트 설명 문서
@@ -179,8 +160,7 @@ jistargram/
 
 - **메인**
 
-  - 수정 후
-    ![메인화면](./docs/개발화면/메인화면.png)
+  ![메인화면](./docs/개발화면/메인화면.png)
 
 - **게시글**
   ![게시글화면](./docs/개발화면/게시글화면.png)
@@ -189,12 +169,14 @@ jistargram/
 
 - **프로필**
 
-  - 수정 후
-    ![프로필화면](./docs/개발화면/프로필화면.png)
+  ![프로필화면](./docs/개발화면/프로필화면.png)
 
 - **프로필수정**
-  - 수정 후
-    ![프로필수정](./docs//개발화면/프로필변경.png)
-    ![프로필사진수정](https://github.com/user-attachments/assets/0283b9ff-f09b-4586-9dfa-ea5ad986cd87)
+
+  ![프로필수정](./docs//개발화면/프로필변경.png)
+  ![프로필사진수정](https://github.com/user-attachments/assets/0283b9ff-f09b-4586-9dfa-ea5ad986cd87)
+
+- **채팅**
+  ![채팅화면](./docs/개발화면/채팅화면.png)
 
 ---

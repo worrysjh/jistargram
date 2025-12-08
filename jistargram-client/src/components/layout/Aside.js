@@ -33,10 +33,12 @@ function Aside({ onOpenPostUploadModal, onOpenMessageModal }) {
             <span className="label">홈</span>
           </li>
         </Link>
-        <li className="menu-item" data-tooltip="검색">
-          <FaSearch className="menu-icon" />
-          <span className="label">검색</span>
-        </li>
+        <Link to="/search" className="menu-link">
+          <li className="menu-item" data-tooltip="검색">
+            <FaSearch className="menu-icon" />
+            <span className="label">검색</span>
+          </li>
+        </Link>
         <li className="menu-item" data-tooltip="탐색 탭">
           <FaRegCompass className="menu-icon" />
           <span className="label">탐색 탭</span>

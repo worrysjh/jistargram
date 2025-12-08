@@ -1,12 +1,4 @@
 // app.js
-const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const userRoutes = require("./src/routes/userRoutes");
-const postRoutes = require("./src/routes/postRoutes");
-const likeRoutes = require("./src/routes/likeRoutes");
-const authRoutes = require("./src/routes/authRoutes");
-const messageRoutes = require("./src/routes/messageRoutes");
 const path = require("path");
 
 require("dotenv").config({
@@ -15,6 +7,14 @@ require("dotenv").config({
       ? path.resolve(__dirname, "../.env.production")
       : path.resolve(__dirname, "../.env.development"),
 });
+const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const userRoutes = require("./src/routes/userRoutes");
+const postRoutes = require("./src/routes/postRoutes");
+const likeRoutes = require("./src/routes/likeRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+const messageRoutes = require("./src/routes/messageRoutes");
 
 const app = express();
 

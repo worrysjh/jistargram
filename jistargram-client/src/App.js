@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import PostPage from "./pages/PostPage";
+import UserSearchPage from "./pages/UserSearchPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import PostUploadModal from "./components/posts/PostUploadModal";
@@ -29,6 +30,7 @@ function App() {
           }
         >
           <Route path="/home" element={<PostPage />} />
+          <Route path="/search" element={<UserSearchPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<ProfileChangePage />} />
         </Route>

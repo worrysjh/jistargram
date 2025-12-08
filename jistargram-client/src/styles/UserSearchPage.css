@@ -1,0 +1,156 @@
+.user-search-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px;
+  background-color: #fff;
+}
+
+.user-search-header {
+  padding: 16px 0;
+  border-bottom: 1px solid #dbdbdb;
+  margin-bottom: 16px;
+}
+
+.user-search-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 32px;
+  transition: background-color 0.2s;
+}
+
+.user-item:hover {
+  background-color: #fafafa;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-fullname {
+  font-size: 14px;
+  color: #8e8e8e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-bio {
+  font-size: 12px;
+  color: #8e8e8e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.follow-button {
+  padding: 7px 16px;
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  margin-left: 28px
+}
+
+.follow-button:hover {
+  background-color: #1877f2;
+}
+
+.follow-button.following {
+  background-color: #ed4956;
+  color: white;
+}
+
+.follow-button.following:hover {
+  background-color: #c13540;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #8e8e8e;
+  font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .user-search-container {
+    padding: 16px;
+  }
+
+  .user-item {
+    padding: 8px 0;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .follow-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}

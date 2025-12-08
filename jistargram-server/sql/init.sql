@@ -14,6 +14,14 @@ CREATE TABLE users (
     user_state VARCHAR(20) DEFAULT '활성' NOT NULL
 );
 
+--팔로워 테이블
+CREATE TABLE followers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    follower_id UUID NOT NULL REFERENCES users(user_id),
+    following_id UUID NOT NULL REFERENCES users(user_id),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 --게시글 테이블
 CREATE TABLE posts (
     post_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

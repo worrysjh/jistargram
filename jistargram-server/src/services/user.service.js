@@ -53,7 +53,7 @@ async function loginService({ user_name, passwd }) {
   };
 }
 
-// 회원가입입
+// 회원가입
 async function registerUser({
   user_name,
   nick_name,
@@ -93,9 +93,10 @@ async function registerUser({
 
 // 프로필 정보 불러오기
 async function getProfileService(user_id) {
-  const result = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [
-    user_id,
-  ]);
+  const result = await pool.query(
+    `SELECT user_id, user_name, nick_name, email, birthdate, gender, created_at, biography, profile_img FROM users WHERE user_id = $1`,
+    [user_id]
+  );
   if (result.rows.length === 0) {
     return { success: false, message: "유저를 찾을 수 없음" };
   }
@@ -159,9 +160,13 @@ async function changeStateService(user_id) {
   return { success: true };
 }
 
-async function getAllUserInfo() {
+async function getAllUserInfo(keyword = "") {
   const result = await pool.query(
-    `SELECT user_id, user_name, nick_name FROM users`
+    `SELECT user_id, user_name, nick_name, biography, profile_img 
+FROM users 
+WHERE user_state = '활성' 
+AND (user_name LIKE '%' || $1 || '%' OR nick_name LIKE '%' || $1 || '%');`,
+    [keyword]
   );
 
   return result.rows;

@@ -1,90 +1,132 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { fetchUserList } from "../actions/user/userActions";
+
 import "../styles/UserSearchPage.css";
 
 function UserSearchPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  // 디바운스: search 값이 변경되고 1초 후에 debouncedSearch 업데이트
   useEffect(() => {
-    // TODO: API 호출하여 사용자 목록 가져오기
-    // 예시 데이터
-    const mockUsers = [
-      {
-        id: 1,
-        username: "testuser1",
-        fullname: "testuser1",
-        bio: "@alien_gz님이 팔로우중입니다",
-        profileImage: null,
-        isFollowing: false,
-      },
-      {
-        id: 2,
-        username: "testuser2",
-        fullname: "testuser2",
-        bio: "",
-        profileImage: null,
-        isFollowing: false,
-      },
-      {
-        id: 3,
-        username: "testuser3",
-        fullname: "testuser3",
-        bio: "",
-        profileImage: null,
-        isFollowing: true,
-      },
-    ];
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 1000);
 
-    setUsers(mockUsers);
-    setLoading(false);
-  }, []);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search]);
+
+  // 검색기능: debouncedSearch가 변경될 때만 API 호출
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+
+    (async () => {
+      try {
+        const userData = await fetchUserList(debouncedSearch);
+        if (mounted) setUsers(userData);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [debouncedSearch]);
+
+  const handleSearchChange = (e) => {
+    // 모든 경우에 즉시 입력값 반영 (화면에 표시)
+    setSearch(e.target.value);
+  };
+
+  const handleClear = () => {
+    setSearch("");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
   const handleFollow = (userId) => {
-    // TODO: 팔로우/언팔로우 API 호출
     console.log("Follow user:", userId);
   };
 
-  if (loading) {
-    return (
-      <div className="user-search-container">
-        <div className="loading">로딩 중...</div>
-      </div>
-    );
-  }
+  const isTyping = search !== debouncedSearch;
 
   return (
     <div className="user-search-container">
       <div className="user-search-header">
-        <h2>추천</h2>
+        <h2>사용자 검색</h2>
+
+        <form className="search-form" onSubmit={handleSubmit}>
+          <input
+            className="search-input"
+            type="text"
+            placeholder="닉네임, ID 검색"
+            value={search}
+            onChange={handleSearchChange}
+            aria-label="사용자 검색"
+          />
+          {search && (
+            <button
+              type="button"
+              className="clear-button"
+              onClick={handleClear}
+              aria-label="검색 지우기"
+            >
+              ×
+            </button>
+          )}
+        </form>
       </div>
 
       <div className="user-list">
-        {users.map((user) => (
-          <div key={user.id} className="user-item">
-            <div className="user-info">
-              <div className="user-avatar">
-                {user.profileImage ? (
-                  <img src={user.profileImage} alt={user.username} />
-                ) : (
-                  <div className="default-avatar"></div>
-                )}
-              </div>
-
-              <div className="user-details">
-                <div className="username">{user.username}</div>
-                <div className="user-fullname">{user.fullname}</div>
-                {user.bio && <div className="user-bio">{user.bio}</div>}
-              </div>
-            </div>
-
-            <button
-              className={`follow-button ${user.isFollowing ? "following" : ""}`}
-              onClick={() => handleFollow(user.id)}
-            >
-              {user.isFollowing ? "언팔로우" : "팔로우"}
-            </button>
+        {loading || isTyping ? (
+          <div className="loading" role="status" aria-live="polite">
+            <span className="spinner" aria-hidden="true"></span>
           </div>
-        ))}
+        ) : users.length === 0 ? (
+          <div className="no-results">검색된 결과가 없습니다.</div>
+        ) : (
+          users.map((user) => (
+            <div key={user.user_id} className="user-item">
+              <div className="user-info">
+                <div className="user-avatar">
+                  {user.profile_img ? (
+                    <img
+                      src={`${process.env.REACT_APP_API_URL}${user.profile_img}`}
+                      alt={user.user_name}
+                    />
+                  ) : (
+                    <div className="default-avatar"></div>
+                  )}
+                </div>
+
+                <div className="user-details">
+                  <div className="username">{user.user_name}</div>
+                  <div className="user-nickname">{user.nick_name}</div>
+                  {user.biography && (
+                    <div className="user-bio">{user.biography}</div>
+                  )}
+                </div>
+              </div>
+
+              <button
+                className={`follow-button ${user.isFollowing ? "following" : ""}`}
+                onClick={() => handleFollow(user.user_id)}
+              >
+                {user.isFollowing ? "팔로잉" : "팔로우"}
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

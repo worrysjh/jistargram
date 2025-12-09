@@ -83,7 +83,7 @@
   white-space: nowrap;
 }
 
-.user-fullname {
+.user-nickname {
   font-size: 14px;
   color: #8e8e8e;
   overflow: hidden;
@@ -111,7 +111,7 @@
   cursor: pointer;
   transition: background-color 0.2s;
   flex-shrink: 0;
-  margin-left: 28px
+  margin-left: 64px
 }
 
 .follow-button:hover {
@@ -119,8 +119,8 @@
 }
 
 .follow-button.following {
-  background-color: #ed4956;
-  color: white;
+  background-color: #d3d3d3;
+  color: black;
 }
 
 .follow-button.following:hover {
@@ -153,4 +153,85 @@
     padding: 6px 12px;
     font-size: 13px;
   }
+}
+
+.user-search-header {
+  padding: 16px 0;
+  border-bottom: 1px solid #dbdbdb;
+  margin-bottom: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* 검색 폼 */
+.search-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 300px;
+  max-width: 60vw;
+  padding: 8px 36px 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #e6e6e6;
+  background: #fafafa;
+  font-size: 14px;
+  color: #262626;
+  outline: none;
+  transition: box-shadow 0.12s, border-color 0.12s;
+}
+
+.search-input::placeholder {
+  color: #8e8e8e;
+}
+
+/* 오른쪽의 지우기 버튼 (x) */
+.clear-button {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: #8e8e8e;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+.clear-button:hover {
+  color: #333;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: #8e8e8e;
+  font-size: 14px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* 스피너 */
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 4px solid rgba(0,0,0,0.08);
+  border-top-color: rgba(0,0,0,0.6);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

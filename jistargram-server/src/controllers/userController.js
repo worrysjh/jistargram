@@ -135,9 +135,12 @@ async function resignUser(req, res) {
   }
 }
 
+// 사용자 조회
 async function fetchAllUser(req, res) {
   try {
-    const result = await getAllUserInfo();
+    const searchKeyword = req.query && req.query.search ? req.query.search : "";
+    console.log("Search Keyword:", searchKeyword);
+    const result = await getAllUserInfo(searchKeyword);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ message: "가입 유저 정보 조회실패" });

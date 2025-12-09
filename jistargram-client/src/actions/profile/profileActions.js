@@ -1,14 +1,8 @@
 import { authFetch } from "../../utils/authFetch";
 
 export async function fetchMyPosts() {
-  const access_token = localStorage.getItem("access_token");
   const response = await authFetch(
-    `${process.env.REACT_APP_API_URL}/posts/getMyPost`,
-    {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    }
+    `${process.env.REACT_APP_API_URL}/posts/getMyPost`
   );
   if (!response.ok) throw new Error("내 게시물 로딩 실패");
   return response.json();
@@ -23,14 +17,9 @@ export async function fetchUserPosts(target_user_id) {
 }
 
 export async function fetchProfile(navigate) {
-  const access_token = localStorage.getItem("access_token");
   const response = await authFetch(
     `${process.env.REACT_APP_API_URL}/users/getMyProfile`,
-    {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    },
+    {},
     navigate
   );
   if (!response) throw new Error("인증 실패 또는 서버 응답 없음");

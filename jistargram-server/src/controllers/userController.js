@@ -52,6 +52,12 @@ async function login(req, res) {
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
+    res.cookie("access_token", result.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 60 * 60 * 1000,
+    });
     res.cookie("refresh_token", result.refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

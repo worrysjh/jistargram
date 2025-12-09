@@ -34,7 +34,7 @@ function LoginPage() {
       console.log("서버 응답:", response.status, data);
 
       if (response.ok && data.access_token) {
-        localStorage.setItem("access_token", data.access_token);
+        // TODO: 로컬 스토리지 대신 쿠키에 엑세스, 리프레쉬 토큰 저장
         setMessage("로그인 성공");
         console.log("로그인 성공, 이동 중...");
         navigate("/home");

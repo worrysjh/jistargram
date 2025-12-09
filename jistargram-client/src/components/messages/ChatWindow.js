@@ -17,11 +17,7 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
     if (!selectedUser) return;
 
     //fetch previous messages
-    fetch(`${process.env.REACT_APP_API_URL}/messages/${selectedUser.user_id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-    })
+    fetch(`${process.env.REACT_APP_API_URL}/messages/${selectedUser.user_id}`)
       .then((res) => res.json())
       .then((data) => setMessages(data));
   }, [selectedUser]);
@@ -57,7 +53,6 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify(message),
       });

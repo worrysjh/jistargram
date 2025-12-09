@@ -33,6 +33,11 @@ async function refreshToken(req, res) {
 }
 
 function logout(_req, res) {
+  res.clearCookie("access_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
   res.clearCookie("refresh_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

@@ -30,15 +30,11 @@ export async function updatePost(formData) {
 
 export async function uploadPost(formData, navigate) {
   try {
-    const access_token = localStorage.getItem("access_token");
     const response = await authFetch(
       `${process.env.REACT_APP_API_URL}/posts/uploadPost`,
       {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
       },
       navigate
     );

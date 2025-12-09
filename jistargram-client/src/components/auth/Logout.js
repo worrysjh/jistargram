@@ -15,8 +15,6 @@ function Logout() {
       console.error("서버 로그아웃 실패", err);
     }
 
-    // 클라이언트 access_token 제거
-    localStorage.removeItem("access_token");
     alert("로그아웃 하였습니다.");
     navigate("/login");
   };

@@ -160,16 +160,62 @@ async function changeStateService(user_id) {
   return { success: true };
 }
 
-async function getAllUserInfo(keyword = "") {
-  const result = await pool.query(
-    `SELECT user_id, user_name, nick_name, biography, profile_img 
-FROM users 
-WHERE user_state = '활성' 
-AND (user_name LIKE '%' || $1 || '%' OR nick_name LIKE '%' || $1 || '%');`,
-    [keyword]
-  );
+async function getAllUserInfo(keyword = "", my_id = null) {
+  console.log("getAllUserInfo 호출:", { keyword, my_id });
 
-  return result.rows;
+  const params = [];
+  // $1 = my_id (nullable), $2 = keyword (if provided)
+  let query = `
+    SELECT 
+      u.user_id AS "user_id", 
+      u.user_name AS "user_name", 
+      u.nick_name AS "nick_name", 
+      u.profile_img AS "profile_img", 
+      u.biography AS "biography",
+      CASE WHEN f.follower_id IS NOT NULL THEN true ELSE false END AS "isFollowing"
+    FROM users u
+    LEFT JOIN followers f ON u.user_id = f.following_id AND f.follower_id = $1
+    WHERE u.user_state = '활성' AND u.user_id != $1
+  `;
+
+  // param 1: my_id (may be null)
+  params.push(my_id);
+
+  // 검색 키워드가 있으면 추가
+  if (keyword) {
+    params.push(`%${keyword}%`);
+    query += ` AND (u.user_name ILIKE $${params.length} OR u.nick_name ILIKE $${params.length})`;
+  }
+
+  query += ` ORDER BY u.user_name`;
+
+  console.log("실행 쿼리:", query);
+  console.log("파라미터:", params);
+
+  try {
+    const result = await pool.query(query, params);
+    console.log("조회된 사용자 수:", result.rows.length);
+    return result.rows;
+  } catch (err) {
+    console.error("getAllUserInfo DB error:", err);
+    throw err;
+  }
+}
+
+async function addFollowUser(my_id, target_id) {
+  const result = await pool.query(
+    `INSERT INTO followers (follower_id, following_id) VALUES ($1, $2)`,
+    [my_id, target_id]
+  );
+  return result.rowCount;
+}
+
+async function removeFollowerUser(follower_id, following_id) {
+  const result = await pool.query(
+    `DELETE FROM followers WHERE follower_id = $1 AND following_id = $2`,
+    [follower_id, following_id]
+  );
+  return result.rowCount;
 }
 
 module.exports = {
@@ -180,4 +226,6 @@ module.exports = {
   updateMyBioService,
   changeStateService,
   getAllUserInfo,
+  addFollowUser,
+  removeFollowerUser,
 };

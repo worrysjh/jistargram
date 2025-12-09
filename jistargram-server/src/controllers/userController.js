@@ -6,6 +6,8 @@ const {
   updateMyImgService,
   changeStateService,
   getAllUserInfo,
+  addFollowUser,
+  removeFollowerUser,
 } = require("../services/user.service");
 
 // 회원가입
@@ -144,12 +146,49 @@ async function resignUser(req, res) {
 // 사용자 조회
 async function fetchAllUser(req, res) {
   try {
+    const my_id = req.user.user_id;
     const searchKeyword = req.query && req.query.search ? req.query.search : "";
     console.log("Search Keyword:", searchKeyword);
-    const result = await getAllUserInfo(searchKeyword);
+    console.log("User ID:", my_id);
+    const result = await getAllUserInfo(searchKeyword, my_id);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ message: "가입 유저 정보 조회실패" });
+  }
+}
+
+// 팔로우 추가
+async function addFollow(req, res) {
+  try {
+    const my_id = req.user.user_id;
+    const target_id = req.params.user_id;
+
+    console.log("팔로우 요청:", { my_id, target_id });
+
+    const result = await addFollowUser(my_id, target_id);
+    return res.status(200).json(result);
+  } catch (err) {
+    console.error("팔로우 컨트롤러 에러:", err);
+
+    return res.status(400).json({
+      message: err.message || "팔로우 추가 실패",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
+  }
+}
+
+// 팔로우 취소
+async function removeFollower(req, res) {
+  try {
+    // 1. 내 아이디 가져오기
+    const follower_id = req.user.user_id;
+    // 2. 상대방 아이디 가져오기
+    const following_id = req.params.user_id;
+    // 3. 서비스에게 전달하기
+    const result = await removeFollowerUser(follower_id, following_id);
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(400).json({ message: "팔로우 제거 실패" });
   }
 }
 
@@ -162,4 +201,6 @@ module.exports = {
   updateProfileImg,
   getUserProfile,
   fetchAllUser,
+  addFollow,
+  removeFollower,
 };

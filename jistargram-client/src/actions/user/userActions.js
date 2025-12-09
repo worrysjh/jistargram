@@ -12,3 +12,25 @@ export async function fetchUserList(searchKeyword = "") {
   if (!res.ok) throw new Error("네트워크 응답 실패");
   return res.json();
 }
+
+export async function addFollowUser(target_user_id) {
+  const response = await authFetch(
+    `${process.env.REACT_APP_API_URL}/users/addFollow/${target_user_id}`,
+    {
+      method: "POST",
+    }
+  );
+  if (!response.ok) throw new Error("팔로우 추가 실패");
+  return response.json();
+}
+
+export async function removeFollowUser(target_user_id) {
+  const response = await authFetch(
+    `${process.env.REACT_APP_API_URL}/users/removeFollower/${target_user_id}`,
+    {
+      method: "DELETE",
+    }
+  );
+  if (!response.ok) throw new Error("팔로우 취소 실패");
+  return response.json();
+}

@@ -6,11 +6,15 @@ export async function authFetch(url, options = {}, navigate) {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
   };
 
+  console.log("authFetch 요청:", { url, options: { ...options, headers } });
+
   let res = await fetch(url, {
     ...options,
     headers,
     credentials: "include",
   });
+
+  console.log("authFetch 응답 상태:", res.status, url);
 
   if (res.status === 401 || res.status === 403) {
     const refreshRes = await fetch(
@@ -31,6 +35,16 @@ export async function authFetch(url, options = {}, navigate) {
       //리프레시 실패시 로그아웃 처리
       if (navigate) navigate("/login");
       return null;
+    }
+  }
+
+  if (!res.ok) {
+    try {
+      const errBody = await res.clone().json();
+      console.warn("authFetch error body:", errBody);
+    } catch (e) {
+      const txt = await res.clone().text();
+      console.warn("authFetch error text:", txt);
     }
   }
   return res;

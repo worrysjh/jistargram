@@ -8,6 +8,8 @@ const {
   updateProfileImg,
   getUserProfile,
   fetchAllUser,
+  addFollow,
+  removeFollower,
 } = require("../controllers/userController");
 
 const authenticateToken = require("../middlewares/auth");
@@ -35,5 +37,8 @@ router.get("/targetProfile/:user_id", getUserProfile);
 
 router.get("/me", authenticateToken, getMyProfile);
 router.get("/all", authenticateToken, fetchAllUser);
+
+router.post("/addFollow/:user_id", authenticateToken, addFollow);
+router.delete("/removeFollower/:user_id", authenticateToken, removeFollower);
 
 module.exports = router;

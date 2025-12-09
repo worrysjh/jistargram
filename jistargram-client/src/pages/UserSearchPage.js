@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchUserList } from "../actions/user/userActions";
+import { fetchUserList, removeFollowUser } from "../actions/user/userActions";
+import { addFollowUser } from "../actions/user/userActions";
 
 import "../styles/UserSearchPage.css";
+import DeleteFollowerForm from "../components/user/DeleteFollowerForm";
 
 function UserSearchPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [userToUnfollow, setUserToUnfollow] = useState(null);
 
   // 디바운스: search 값이 변경되고 1초 후에 debouncedSearch 업데이트
   useEffect(() => {
@@ -54,8 +57,48 @@ function UserSearchPage() {
     e.preventDefault();
   };
 
-  const handleFollow = (userId) => {
-    console.log("Follow user:", userId);
+  const handleFollow = async (userId, isFollowing) => {
+    try {
+      if (isFollowing) {
+        const user = users.find((u) => u.user_id === userId);
+        setUserToUnfollow(user);
+      } else {
+        await addFollowUser(userId);
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.user_id === userId
+              ? { ...user, isFollowing: !isFollowing }
+              : user
+          )
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("팔로우 처리 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleConfirmUnfollow = async () => {
+    if (!userToUnfollow) return;
+
+    try {
+      await removeFollowUser(userToUnfollow.user_id);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.user_id === userToUnfollow.user_id
+            ? { ...user, isFollowing: false }
+            : user
+        )
+      );
+      setUserToUnfollow(null);
+    } catch (err) {
+      console.error(err);
+      alert("팔로우 취소에 실패했습니다.");
+    }
+  };
+
+  const handleCancelUnfollow = () => {
+    setUserToUnfollow(null);
   };
 
   const isTyping = search !== debouncedSearch;
@@ -120,7 +163,7 @@ function UserSearchPage() {
 
               <button
                 className={`follow-button ${user.isFollowing ? "following" : ""}`}
-                onClick={() => handleFollow(user.user_id)}
+                onClick={() => handleFollow(user.user_id, user.isFollowing)}
               >
                 {user.isFollowing ? "팔로잉" : "팔로우"}
               </button>
@@ -128,6 +171,14 @@ function UserSearchPage() {
           ))
         )}
       </div>
+
+      {userToUnfollow && (
+        <DeleteFollowerForm
+          user={userToUnfollow}
+          onConfirm={handleConfirmUnfollow}
+          onCancel={handleCancelUnfollow}
+        />
+      )}
     </div>
   );
 }

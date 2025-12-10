@@ -34,3 +34,14 @@ export async function removeFollowUser(target_user_id) {
   if (!response.ok) throw new Error("팔로우 취소 실패");
   return response.json();
 }
+
+export async function fetchFollowStatus(target_user_id) {
+  const response = await authFetch(
+    `${process.env.REACT_APP_API_URL}/users/followStatus/${target_user_id}`,
+    {
+      method: "GET",
+    }
+  );
+  if (!response.ok) throw new Error("팔로우 상태 조회 실패");
+  return response.json();
+}

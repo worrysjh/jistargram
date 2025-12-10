@@ -1,21 +1,11 @@
-const {
-  registerUser,
-  loginService,
-  getProfileService,
-  updateMyBioService,
-  updateMyImgService,
-  changeStateService,
-  getAllUserInfo,
-  addFollowUser,
-  removeFollowerUser,
-} = require("../services/user.service");
+const services = require("../services");
 
 // 회원가입
 async function register(req, res) {
   const { user_name, nick_name, email, passwd, birthdate, gender } = req.body;
 
   try {
-    const result = await registerUser({
+    const result = await services.registerUser({
       user_name,
       nick_name,
       email,
@@ -50,7 +40,7 @@ async function login(req, res) {
   }
 
   try {
-    const result = await loginService({ user_name, passwd });
+    const result = await services.loginService({ user_name, passwd });
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
@@ -78,7 +68,8 @@ async function getMyProfile(req, res) {
   const user_id = req.user.user_id;
 
   try {
-    const result = await getProfileService(user_id);
+    const result = await services.getProfileService(user_id);
+    console.log("내 프로필 데이터:", result);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -91,7 +82,8 @@ async function getUserProfile(req, res) {
   const { user_id } = req.params;
 
   try {
-    const result = await getProfileService(user_id);
+    const result = await services.getProfileService(user_id);
+    console.log("선택 대상 프로필 데이터:", result);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -105,7 +97,7 @@ async function updateProfile(req, res) {
   const user_name = req.user.user_name;
 
   try {
-    await updateMyBioService({ biography, user_name });
+    await services.updateMyBioService({ biography, user_name });
     res.json({ message: "자기소개가 업데이트되었습니다." });
   } catch (err) {
     console.error(err);
@@ -119,7 +111,7 @@ async function updateProfileImg(req, res) {
   const user_name = req.user.user_name;
 
   try {
-    const result = await updateMyImgService({ user_name, filename });
+    const result = await services.updateMyImgService({ user_name, filename });
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }
@@ -135,7 +127,7 @@ async function resignUser(req, res) {
   const user_id = req.user.user_id;
 
   try {
-    await changeStateService(user_id);
+    await services.changeStateService(user_id);
     res.json({ message: "계정 비활성화 완료" });
   } catch (err) {
     console.error(err);
@@ -150,7 +142,7 @@ async function fetchAllUser(req, res) {
     const searchKeyword = req.query && req.query.search ? req.query.search : "";
     console.log("Search Keyword:", searchKeyword);
     console.log("User ID:", my_id);
-    const result = await getAllUserInfo(searchKeyword, my_id);
+    const result = await services.getAllUserInfo(searchKeyword, my_id);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ message: "가입 유저 정보 조회실패" });
@@ -165,7 +157,7 @@ async function addFollow(req, res) {
 
     console.log("팔로우 요청:", { my_id, target_id });
 
-    const result = await addFollowUser(my_id, target_id);
+    const result = await services.addFollowUser(my_id, target_id);
     return res.status(200).json(result);
   } catch (err) {
     console.error("팔로우 컨트롤러 에러:", err);
@@ -185,10 +177,24 @@ async function removeFollower(req, res) {
     // 2. 상대방 아이디 가져오기
     const following_id = req.params.user_id;
     // 3. 서비스에게 전달하기
-    const result = await removeFollowerUser(follower_id, following_id);
+    const result = await services.removeFollowerUser(follower_id, following_id);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ message: "팔로우 제거 실패" });
+  }
+}
+
+// 팔로우 상태 조회
+async function getFollowStatus(req, res) {
+  try {
+    const my_id = req.user.user_id;
+    const target_id = req.params.user_id;
+    console.log("팔로우 상태 조회 요청:", { my_id, target_id });
+    const result = await services.getFollowInfo(my_id, target_id);
+    console.log("팔로우 상태 조회 결과:", result);
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(400).json({ message: "팔로우 상태 조회 실패" });
   }
 }
 
@@ -203,4 +209,5 @@ module.exports = {
   fetchAllUser,
   addFollow,
   removeFollower,
+  getFollowStatus,
 };

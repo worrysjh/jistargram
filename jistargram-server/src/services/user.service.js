@@ -2,6 +2,8 @@ const pool = require("../models/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { encryptData } = require("../utils/cryptoUtils");
+const path = require("path");
+const fs = require("fs");
 
 // 로그인
 async function loginService({ user_name, passwd }) {
@@ -68,7 +70,7 @@ async function registerUser({
     [user_name]
   );
   if (idCheck.rows.length > 0) {
-    return { success: false, messgae: "이미 사용중인 아이디입니다." };
+    return { success: false, message: "이미 사용중인 아이디입니다." };
   }
 
   // 중복 email 검사
@@ -94,7 +96,28 @@ async function registerUser({
 // 프로필 정보 불러오기
 async function getProfileService(user_id) {
   const result = await pool.query(
-    `SELECT user_id, user_name, nick_name, email, birthdate, gender, created_at, biography, profile_img FROM users WHERE user_id = $1`,
+    `SELECT
+      u.user_id,
+      u.user_name,
+      u.nick_name,
+      u.email,
+      u.birthdate,
+      u.gender,
+      u.created_at,
+      u.biography,
+      u.profile_img,
+      (
+        SELECT COUNT(*)
+        FROM followers f
+        WHERE f.following_id = u.user_id
+      ) AS follower_count,
+      (
+        SELECT COUNT(*)
+        FROM followers f
+        WHERE f.follower_id = u.user_id
+      ) AS following_count
+    FROM users u
+    WHERE u.user_id = $1`,
     [user_id]
   );
   if (result.rows.length === 0) {
@@ -218,6 +241,14 @@ async function removeFollowerUser(follower_id, following_id) {
   return result.rowCount;
 }
 
+async function getFollowInfo(my_id, target_id) {
+  const result = await pool.query(
+    `SELECT 1 FROM followers WHERE follower_id = $1 AND following_id = $2`,
+    [my_id, target_id]
+  );
+  return { isFollowing: result.rows.length > 0 };
+}
+
 module.exports = {
   loginService,
   registerUser,
@@ -228,4 +259,5 @@ module.exports = {
   getAllUserInfo,
   addFollowUser,
   removeFollowerUser,
+  getFollowInfo,
 };

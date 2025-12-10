@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { addFollowUser, removeFollowUser } from "../actions/user/userActions";
 
 import PostDetailModal from "../components/posts/PostDetailModal";
 import { CiSettings } from "react-icons/ci";
@@ -12,28 +13,71 @@ import {
   fetchUserProfile,
   fetchUserPosts,
 } from "../actions/profile/profileActions";
+import { fetchFollowStatus } from "../actions/user/userActions";
+
+import DeleteFollowerForm from "../components/user/DeleteFollowerForm";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [myPosts, setMyPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteFollowId, setDeleteFollowId] = useState(null);
+  const [followStatusData, setFollowStatusData] = useState(null);
+
   const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const target_user_id = searchParams.get("user_id");
 
+  const handleFollow = async (target_user_id) => {
+    console.log("내용: ", followStatusData);
+    try {
+      if (followStatusData > 0) {
+        // 언팔로우
+        setDeleteFollowId(target_user_id);
+        setShowDeleteModal(true);
+        return;
+      } else {
+        // 팔로우
+        await addFollowUser(target_user_id);
+        setFollowStatusData(1);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("팔로우 처리 중 오류가 발생했습니다.");
+    }
+  };
+
+  const confirmUnfollow = async () => {
+    try {
+      if (!deleteFollowId) return;
+      await removeFollowUser(deleteFollowId);
+      setFollowStatusData(0);
+      setShowDeleteModal(false);
+      setDeleteFollowId(null);
+    } catch (err) {
+      console.error(err);
+      alert("언팔로우 처리 중 오류가 발생했습니다.");
+    }
+  };
+
   useEffect(() => {
     (async () => {
       try {
         if (target_user_id) {
-          const [profileData, postsData] = await Promise.all([
+          const [profileData, postsData, followStatusRes] = await Promise.all([
             fetchUserProfile(target_user_id),
             fetchUserPosts(target_user_id),
+            fetchFollowStatus(target_user_id),
           ]);
-
+          console.log("내용2: ", followStatusData);
           setProfile(profileData);
           setMyPosts(postsData.posts.result);
+          console.log("팔로우 상태 데이터:", followStatusRes);
+          setFollowStatusData(followStatusRes.isFollowing ? 1 : 0);
+          console.log("내용3: ", followStatusData);
         } else {
           // 프로필 + 내 게시물 동시 로드
           const [profileData, postsData] = await Promise.all([
@@ -43,6 +87,7 @@ function ProfilePage() {
 
           setProfile(profileData);
           setMyPosts(postsData.posts.result);
+          setFollowStatusData(null);
         }
       } catch (err) {
         console.error("데이터 로딩 중 오류:", err);
@@ -83,12 +128,22 @@ function ProfilePage() {
         <div className="profile-info">
           <div className="profile-top">
             <h2 className="profile-username">{profile.user_name}</h2>
-            <button
-              className="profile-button"
-              onClick={() => navigate("/profile/edit")}
-            >
-              <FaPencilAlt title="프로필 수정" />
-            </button>
+            {target_user_id ? (
+              <button
+                className={`follow-button ${followStatusData > 0 ? "following" : ""}`}
+                onClick={() => handleFollow(target_user_id)}
+              >
+                {followStatusData ? "팔로잉" : "팔로우"}
+              </button> // TODO: 팔로우 버튼으로 변경
+            ) : (
+              <button
+                className="profile-button"
+                onClick={() => navigate("/profile/edit")}
+              >
+                <FaPencilAlt title="프로필 수정" />
+                프로필 편집
+              </button>
+            )}
             <span className="settings-icon">
               <CiSettings title="설정" />
             </span>
@@ -98,10 +153,10 @@ function ProfilePage() {
               게시물 <b>{myPosts.length ? myPosts.length : "0"}</b>
             </li>
             <li>
-              팔로워 <b>0</b>
+              팔로워 <b>{profile.follower_count}</b>
             </li>
             <li>
-              팔로우 <b>0</b>
+              팔로우 <b>{profile.following_count}</b>
             </li>
           </ul>
           <div className="profile-details">
@@ -137,6 +192,16 @@ function ProfilePage() {
 
       {showDetailModal && (
         <PostDetailModal post={selectedPost} onClose={closeModal} />
+      )}
+      {showDeleteModal && (
+        <DeleteFollowerForm
+          user={profile}
+          onConfirm={confirmUnfollow}
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setDeleteFollowId(null);
+          }}
+        />
       )}
     </div>
   );

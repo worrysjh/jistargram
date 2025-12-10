@@ -134,3 +134,30 @@
 .profile-user-nick-name {
   font-weight: bold;
 }
+
+.follow-button {
+  padding: 7px 16px;
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  margin-left: 0px;
+}
+
+.follow-button:hover {
+  background-color: #1877f2;
+}
+
+.follow-button.following {
+  background-color: #d3d3d3;
+  color: black;
+}
+
+.follow-button.following:hover {
+  background-color: #c13540;
+}

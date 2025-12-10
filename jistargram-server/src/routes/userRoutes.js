@@ -10,6 +10,7 @@ const {
   fetchAllUser,
   addFollow,
   removeFollower,
+  getFollowStatus,
 } = require("../controllers/userController");
 
 const authenticateToken = require("../middlewares/auth");
@@ -40,5 +41,6 @@ router.get("/all", authenticateToken, fetchAllUser);
 
 router.post("/addFollow/:user_id", authenticateToken, addFollow);
 router.delete("/removeFollower/:user_id", authenticateToken, removeFollower);
+router.get("/followStatus/:user_id", authenticateToken, getFollowStatus);
 
 module.exports = router;

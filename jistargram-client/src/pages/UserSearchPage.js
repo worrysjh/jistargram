@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchUserList, removeFollowUser } from "../actions/user/userActions";
-import { addFollowUser } from "../actions/user/userActions";
+import {
+  fetchUserList,
+  addFollowUser,
+  removeFollowUser,
+} from "../actions/user/userActions";
 
 import "../styles/UserSearchPage.css";
 import DeleteFollowerForm from "../components/user/DeleteFollowerForm";

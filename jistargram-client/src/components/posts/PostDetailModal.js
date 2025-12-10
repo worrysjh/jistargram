@@ -11,6 +11,7 @@ import { fetchAndFlattenComments } from "../../utils/commentUtils";
 import PostOwnerMenu from "./PostOwnerMenu";
 
 import LikeButton from "../common/LikeButton";
+import { Link } from "react-router-dom";
 
 function PostDetailModal({ post, onClose }) {
   const [comments, setComments] = useState([]);
@@ -164,7 +165,14 @@ function PostDetailModal({ post, onClose }) {
                     className={`comment-block${c.parent_id ? " reply-comment" : ""}`}
                   >
                     <p>
-                      <b>{c.user_name}</b>{" "}
+                      <Link
+                        to={
+                          isOwner ? "/profile" : `/profile?user_id=${c.user_id}`
+                        }
+                        className="username"
+                      >
+                        <b>{c.user_name}</b>
+                      </Link>{" "}
                       {c.comment_state === "삭제" ? (
                         <span style={{ color: "gray", fontStyle: "italic" }}>
                           삭제된 댓글입니다.

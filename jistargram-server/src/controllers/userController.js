@@ -198,6 +198,28 @@ async function getFollowStatus(req, res) {
   }
 }
 
+// 팔로워 목록 조회
+async function getFollowerList(req, res) {
+  try {
+    const user_id = req.params.user_id;
+    const result = await services.getFollowerListService(user_id);
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(400).json({ message: "팔로워 목록 조회 실패" });
+  }
+}
+
+// 팔로잉 목록 조회
+async function getFollowingList(req, res) {
+  try {
+    const user_id = req.params.user_id;
+    const result = await services.getFollowingListService(user_id);
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(400).json({ message: "팔로잉 목록 조회 실패" });
+  }
+}
+
 module.exports = {
   register,
   login,
@@ -210,4 +232,6 @@ module.exports = {
   addFollow,
   removeFollower,
   getFollowStatus,
+  getFollowerList,
+  getFollowingList,
 };

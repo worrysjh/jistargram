@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { addFollowUser, removeFollowUser } from "../actions/user/userActions";
 
 import PostDetailModal from "../components/posts/PostDetailModal";
+import FollowListModal from "../components/user/FollowListModal";
 import { CiSettings } from "react-icons/ci";
 import { FaPencilAlt } from "react-icons/fa";
 
@@ -25,6 +26,8 @@ function ProfilePage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteFollowId, setDeleteFollowId] = useState(null);
   const [followStatusData, setFollowStatusData] = useState(null);
+  const [showFollowListModal, setShowFollowListModal] = useState(false);
+  const [followListType, setFollowListType] = useState(null);
 
   const navigate = useNavigate();
 
@@ -112,6 +115,16 @@ function ProfilePage() {
     setSelectedPost(null);
   };
 
+  const openFollowListModal = (type) => {
+    setFollowListType(type);
+    setShowFollowListModal(true);
+  };
+
+  const closeFollowListModal = () => {
+    setShowFollowListModal(false);
+    setFollowListType(null);
+  };
+
   return (
     <div className="profile-container">
       <div className="profile-header">
@@ -152,10 +165,10 @@ function ProfilePage() {
             <li>
               게시물 <b>{myPosts.length ? myPosts.length : "0"}</b>
             </li>
-            <li>
+            <li onClick={() => openFollowListModal("followers")}>
               팔로워 <b>{profile.follower_count}</b>
             </li>
-            <li>
+            <li onClick={() => openFollowListModal("following")}>
               팔로우 <b>{profile.following_count}</b>
             </li>
           </ul>
@@ -201,6 +214,13 @@ function ProfilePage() {
             setShowDeleteModal(false);
             setDeleteFollowId(null);
           }}
+        />
+      )}
+      {showFollowListModal && (
+        <FollowListModal
+          type={followListType}
+          userId={target_user_id || profile.user_id}
+          onClose={closeFollowListModal}
         />
       )}
     </div>

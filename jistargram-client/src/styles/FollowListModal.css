@@ -1,0 +1,185 @@
+.follow-list-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.follow-list-modal {
+  background-color: #fff;
+  border-radius: 12px;
+  width: 400px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.follow-list-modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dbdbdb;
+  position: relative;
+}
+
+.follow-list-modal-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.follow-list-modal-close {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: #262626;
+}
+
+.follow-list-modal-close:hover {
+  color: #8e8e8e;
+}
+
+.follow-list-search {
+  padding: 8px 16px;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.follow-list-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #efefef;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.follow-list-search input::placeholder {
+  color: #8e8e8e;
+}
+
+.follow-list-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.follow-list-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 12px;
+}
+
+.follow-list-item:hover {
+  background-color: #fafafa;
+}
+
+.follow-list-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.follow-list-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.follow-list-user-info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.follow-list-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.follow-list-nickname {
+  font-size: 14px;
+  color: #8e8e8e;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.follow-list-mutual {
+  font-size: 12px;
+  color: #8e8e8e;
+  margin: 2px 0 0 0;
+}
+
+.follow-list-action-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.follow-list-action-btn.follow {
+  background-color: #0095f6;
+  color: white;
+}
+
+.follow-list-action-btn.follow:hover {
+  background-color: #1877f2;
+}
+
+.follow-list-action-btn.following {
+  background-color: #efefef;
+  color: #262626;
+}
+
+.follow-list-action-btn.following:hover {
+  background-color: #dbdbdb;
+}
+
+.follow-list-empty {
+  text-align: center;
+  color: #8e8e8e;
+  padding: 40px 16px;
+  font-size: 14px;
+}
+
+.follow-list-loading {
+  text-align: center;
+  padding: 40px 16px;
+  color: #8e8e8e;
+}
+
+.profile-stats li {
+  cursor: pointer;
+}
+
+.profile-stats li:hover {
+  opacity: 0.7;
+}

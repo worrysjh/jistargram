@@ -45,3 +45,25 @@ export async function fetchFollowStatus(target_user_id) {
   if (!response.ok) throw new Error("팔로우 상태 조회 실패");
   return response.json();
 }
+
+export async function fetchFollowList(user_id) {
+  const response = await authFetch(
+    `${process.env.REACT_APP_API_URL}/users/followerlists/${user_id}`,
+    {
+      method: "GET",
+    }
+  );
+  if (!response.ok) throw new Error("팔로워 목록 조회 실패");
+  return response.json();
+}
+
+export async function fetchFollowerList(user_id) {
+  const response = await authFetch(
+    `${process.env.REACT_APP_API_URL}/users/followinglists/${user_id}`,
+    {
+      method: "GET",
+    }
+  );
+  if (!response.ok) throw new Error("팔로우 목록 조회 실패");
+  return response.json();
+}

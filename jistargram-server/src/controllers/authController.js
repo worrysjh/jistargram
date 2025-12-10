@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { getRefreshToken } = require("../services/auth.service");
+const services = require("../services");
 
 async function refreshToken(req, res) {
   const token = req.cookies.refresh_token;
@@ -11,7 +11,7 @@ async function refreshToken(req, res) {
     const { data, iv, tag } = decoded;
 
     // DB에 저장된 토큰과 일치하는지 확인
-    const result = await getRefreshToken(data.user_id, token);
+    const result = await services.getRefreshToken(data.user_id, token);
     if (result.rowCount === 0) {
       return res.status(403).json({ message: "유효하지 않은 refresh token" });
     }

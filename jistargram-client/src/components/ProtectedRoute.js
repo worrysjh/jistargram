@@ -30,7 +30,7 @@ function ProtectedRoute({ children }) {
     };
   }, []);
 
-  if (loading) return null; // 로더 컴포넌트로 교체 가능
+  if (loading) return null;
   if (!authed) {
     alert("로그인이 필요한 페이지입니다.");
     return <Navigate to="/login" replace />;

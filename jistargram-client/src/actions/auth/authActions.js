@@ -1,9 +1,9 @@
-import { authFetch } from "../../utils/authFetch";
+import { authFetch } from "utils/authFetch";
 
 export async function login(user_name, passwd) {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
     method: "POST",
-    credentials: "include", // refresh_token 쿠키를 위한 설정
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },

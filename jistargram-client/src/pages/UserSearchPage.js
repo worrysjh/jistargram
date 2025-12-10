@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   fetchUserList,
   addFollowUser,
   removeFollowUser,
-} from "../actions/user/userActions";
+} from "actions/user/userActions";
 import { Link } from "react-router-dom";
-
-import "../styles/UserSearchPage.css";
-import DeleteFollowerForm from "../components/user/DeleteFollowerForm";
+import "styles/UserSearchPage.css";
+import DeleteFollowerForm from "components/user/DeleteFollowerForm";
 
 function UserSearchPage() {
   const [users, setUsers] = useState([]);

@@ -1,19 +1,4 @@
-const {
-  uploadService,
-  getPostService,
-  updatePostService,
-  deletePostService,
-  getUserPostService,
-  countPostService,
-} = require("../services/postService/post.service");
-
-const {
-  newCommentService,
-  showAllCommentService,
-  updateCommentService,
-  deleteCommentService,
-  countCommentService,
-} = require("../services/postService/comment.service");
+const services = require("../services");
 
 //게시글 등록
 async function uploadPost(req, res) {
@@ -28,7 +13,7 @@ async function uploadPost(req, res) {
   const media_url = `/uploads/post_imgs/${req.file.filename}`;
 
   try {
-    await uploadService({ user_id, content, media_url });
+    await services.uploadService({ user_id, content, media_url });
     res.status(200).json({ message: "게시글 등록 성공" });
   } catch (err) {
     console.error(err);
@@ -40,7 +25,7 @@ async function uploadPost(req, res) {
 async function showPost(req, res) {
   const limit = parseInt(req.query.limit) || 3;
   try {
-    const result = await getPostService(limit);
+    const result = await services.getPostService(limit);
     res.json({
       user: { user_id: req.user.user_id, user_name: req.user.user_name },
       result: result.result,
@@ -60,7 +45,7 @@ async function updatePost(req, res) {
     : existingImage;
 
   try {
-    await updatePostService({ content, media_url, post_id });
+    await services.updatePostService({ content, media_url, post_id });
     res.json({ message: "게시글 수정에 성공하였습니다." });
   } catch (err) {
     console.error(err);
@@ -73,11 +58,11 @@ async function deletePost(req, res) {
   const { post_id } = req.params;
 
   try {
-    await deletePostService(post_id);
+    await services.deletePostService(post_id);
     res.json({ message: "게시글 삭제에 성공하였습니다." });
   } catch (err) {
     console.error(err);
-    res.stauts(500).json({ message: "게시글 삭제 실패" });
+    res.status(500).json({ message: "게시글 삭제 실패" });
   }
 }
 
@@ -86,7 +71,7 @@ async function getMyPost(req, res) {
   const { user_id, user_name } = req.user;
 
   try {
-    const posts = await getUserPostService(user_id);
+    const posts = await services.getUserPostService(user_id);
     res.json({
       user: { user_id, user_name },
       posts,
@@ -102,7 +87,7 @@ async function getUserPost(req, res) {
   const { user_id } = req.params;
 
   try {
-    const posts = await getUserPostService(user_id);
+    const posts = await services.getUserPostService(user_id);
     res.json({
       user: { user_id },
       posts,
@@ -118,11 +103,11 @@ async function countPost(req, res) {
   const { user_id } = req.body;
 
   try {
-    const result = await countPostService(user_id);
+    const result = await services.countPostService(user_id);
     res.json(result.result);
   } catch (err) {
     console.error(err);
-    res.stauts(500).json({ message: "게시글 카운트 실패" });
+    res.status(500).json({ message: "게시글 카운트 실패" });
   }
 }
 
@@ -132,7 +117,7 @@ async function newComment(req, res) {
   const user_id = req.user.user_id;
 
   try {
-    await newCommentService({
+    await services.newCommentService({
       post_id,
       user_id,
       comment_content,
@@ -154,7 +139,7 @@ async function showAllComment(req, res) {
   }
 
   try {
-    const result = await showAllCommentService(post_id);
+    const result = await services.showAllCommentService(post_id);
     res.json({
       user: { user_id: req.user.user_id, user_name: req.user.user_name },
       result: result.result,
@@ -170,11 +155,11 @@ async function updateComment(req, res) {
   const { comment_id, comment_content } = req.body;
 
   try {
-    await updateCommentService(comment_id, comment_content);
+    await services.updateCommentService(comment_id, comment_content);
     res.json({ message: "댓글 수정에 성공하였습니다." });
   } catch (err) {
     console.error(err);
-    res.stauts(500).json({ message: "댓글 수정 실패" });
+    res.status(500).json({ message: "댓글 수정 실패" });
   }
 }
 
@@ -183,7 +168,7 @@ async function deleteComment(req, res) {
   const { comment_id } = req.params;
 
   try {
-    await deleteCommentService(comment_id);
+    await services.deleteCommentService(comment_id);
     res.json({ success: true, message: "댓글 삭제에 성공하였습니다." });
   } catch (err) {
     console.error(err);
@@ -196,11 +181,11 @@ async function countComment(req, res) {
   const { post_id } = req.body;
 
   try {
-    const result = await countCommentService(post_id);
+    const result = await services.countCommentService(post_id);
     res.json(result.result);
   } catch (err) {
     console.error(err);
-    res.stauts(500).json({ message: "게시글 삭제 실패" });
+    res.status(500).json({ message: "게시글 삭제 실패" });
   }
 }
 

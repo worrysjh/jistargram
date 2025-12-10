@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactDOM from "react-dom";
-import "../../styles/PostUploadModal.css";
-import { uploadPost } from "../../actions/post/postActions";
+import "styles/PostUploadModal.css";
+import { uploadPost } from "actions/post/postActions";
 
 function PostUploadModal({ onClose, onSubmit }) {
   const [image, setImage] = useState(null);

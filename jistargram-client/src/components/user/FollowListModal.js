@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
-import "../../styles/FollowListModal.css";
-import { authFetch } from "../../utils/authFetch";
-import {
-  addFollowUser,
-  removeFollowUser,
-} from "../../actions/user/userActions";
+import { useState, useEffect } from "react";
+import "styles/FollowListModal.css";
+import { authFetch } from "utils/authFetch";
+import { addFollowUser, removeFollowUser } from "actions/user/userActions";
 import { useNavigate } from "react-router-dom";
 
 function FollowListModal({ type, userId, onClose }) {

@@ -1,14 +1,11 @@
-// src/pages/ProfileChangePage.js
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/ProfileChangePage.css";
-
+import "styles/ProfileChangePage.css";
 import {
   fetchProfile,
   updateProfileBio,
   updateProfileImage,
-} from "../actions/profile/profileActions";
+} from "actions/profile/profileActions";
 
 function ProfileChangePage() {
   const [profile, setProfile] = useState(null);

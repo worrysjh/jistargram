@@ -1,5 +1,4 @@
-import React from "react";
-import "../../styles/DeleteFollowerForm.css";
+import "styles/DeleteFollowerForm.css";
 
 function DeleteFollowerForm({ user, onConfirm, onCancel }) {
   return (

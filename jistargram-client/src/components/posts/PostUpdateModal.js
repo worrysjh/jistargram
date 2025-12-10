@@ -1,8 +1,6 @@
-// src/components/posts/PostUpdateModal.js
-
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactDOM from "react-dom";
-import "../../styles/PostUploadModal.css";
+import "styles/PostUploadModal.css";
 import { useNavigate } from "react-router-dom";
 
 function PostUpdateModal({ post, onClose, onUpdate, currentUser }) {
@@ -31,10 +29,8 @@ function PostUpdateModal({ post, onClose, onUpdate, currentUser }) {
     formData.append("post_id", post.post_id);
 
     try {
-      // updatedContent 변수 없이 onUpdate 호출
       await onUpdate(formData);
 
-      // 성공 시 모달 닫고 리다이렉트/리로드
       onClose();
       navigate("/home", { replace: true });
       window.location.reload();

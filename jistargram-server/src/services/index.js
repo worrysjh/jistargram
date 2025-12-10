@@ -1,14 +1,21 @@
 const fs = require("fs");
 const path = require("path");
 
-const files = fs
-  .readdirSync(__dirname)
-  .filter((f) => f !== "index.js" && f.endsWith(".js"));
+function walkDir(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((dirent) => {
+    const full = path.join(dir, dirent.name);
+    if (dirent.isDirectory()) return walkDir(full);
+    if (dirent.isFile() && dirent.name.endsWith(".js")) return full;
+    return [];
+  });
+}
+
+const files = walkDir(__dirname).filter((f) => path.basename(f) !== "index.js");
 
 const services = {};
 
 files.forEach((file) => {
-  const mod = require(path.join(__dirname, file));
+  const mod = require(file);
   if (mod && typeof mod === "object") {
     Object.assign(services, mod);
   } else {

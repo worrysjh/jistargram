@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from "react";
-import "../styles/ProfilePage.css";
+import { useState, useEffect } from "react";
+import "styles/ProfilePage.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { addFollowUser, removeFollowUser } from "../actions/user/userActions";
-
-import PostDetailModal from "../components/posts/PostDetailModal";
-import FollowListModal from "../components/user/FollowListModal";
+import { addFollowUser, removeFollowUser } from "actions/user/userActions";
+import PostDetailModal from "components/posts/PostDetailModal";
+import FollowListModal from "components/user/FollowListModal";
 import { CiSettings } from "react-icons/ci";
 import { FaPencilAlt } from "react-icons/fa";
-
 import {
   fetchProfile,
   fetchMyPosts,
   fetchUserProfile,
   fetchUserPosts,
-} from "../actions/profile/profileActions";
-import { fetchFollowStatus } from "../actions/user/userActions";
-
-import DeleteFollowerForm from "../components/user/DeleteFollowerForm";
+} from "actions/profile/profileActions";
+import { fetchFollowStatus } from "actions/user/userActions";
+import DeleteFollowerForm from "components/user/DeleteFollowerForm";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -147,7 +144,7 @@ function ProfilePage() {
                 onClick={() => handleFollow(target_user_id)}
               >
                 {followStatusData ? "팔로잉" : "팔로우"}
-              </button> // TODO: 팔로우 버튼으로 변경
+              </button>
             ) : (
               <button
                 className="profile-button"

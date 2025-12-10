@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from "react";
-import PostDetailModal from "../components/posts/PostDetailModal";
-import PostUpdateModal from "../components/posts/PostUpdateModal";
-import LikeButton from "../components/common/LikeButton";
-import "../styles/PostPage.css";
-
+import PostDetailModal from "components/posts/PostDetailModal";
+import PostUpdateModal from "components/posts/PostUpdateModal";
+import LikeButton from "components/common/LikeButton";
+import "styles/PostPage.css";
 import { Link } from "react-router-dom";
-
-import {
-  fetchPosts,
-  updatePost,
-  deletePost,
-} from "../actions/post/postActions";
-
-import PostOwnerMenu from "../components/posts/PostOwnerMenu";
+import { fetchPosts, updatePost, deletePost } from "actions/post/postActions";
+import PostOwnerMenu from "components/posts/PostOwnerMenu";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);

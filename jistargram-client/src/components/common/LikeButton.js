@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { authFetch } from "../../utils/authFetch";
+import { authFetch } from "utils/authFetch";
 import { FcLike } from "react-icons/fc";
 import { RiDislikeLine } from "react-icons/ri";
 
@@ -60,7 +60,6 @@ function LikeButton({ target_id, target_type }) {
 
       if (!res.ok) throw new Error("좋아요 요청 실패");
 
-      // 상태 반영
       setLiked((prev) => !prev);
       setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
     } catch (err) {

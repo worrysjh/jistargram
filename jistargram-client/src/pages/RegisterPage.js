@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Register from "../components/auth/Register";
-import Footer from "../components/layout/Footer";
-
-import "../styles/RegisterPage.css";
-import { register } from "../actions/auth/authActions";
+import Register from "components/auth/Register";
+import Footer from "components/layout/Footer";
+import "styles/RegisterPage.css";
+import { register } from "actions/auth/authActions";
 
 function RegisterPage() {
   const [message, setMessage] = useState("");

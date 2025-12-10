@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import "../../styles/index.css";
+import { useState } from "react";
+import "styles/index.css";
 import { Link } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
-import Logout from "../auth/Logout";
-
+import Logout from "components/auth/Logout";
 import { FaHome } from "react-icons/fa";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { IoIosCreate } from "react-icons/io";
@@ -23,8 +22,10 @@ function Aside({ onOpenPostUploadModal, onOpenMessageModal }) {
   return (
     <aside className="sidebar">
       <h2 className="logo" data-tooltip="Jistargram">
-        <span className="short-text">J</span>
-        <span className="full-text">istargram</span>
+        <Link to="/home" className="logo-link">
+          <span className="short-text">J</span>
+          <span className="full-text">istargram</span>
+        </Link>
       </h2>
       <ul>
         <Link to="/home" className="menu-link">
@@ -33,16 +34,19 @@ function Aside({ onOpenPostUploadModal, onOpenMessageModal }) {
             <span className="label">홈</span>
           </li>
         </Link>
+
         <Link to="/search" className="menu-link">
           <li className="menu-item" data-tooltip="검색">
             <FaSearch className="menu-icon" />
             <span className="label">검색</span>
           </li>
         </Link>
+
         <li className="menu-item" data-tooltip="탐색 탭">
           <FaRegCompass className="menu-icon" />
           <span className="label">탐색 탭</span>
         </li>
+
         <li className="menu-item" data-tooltip="릴스">
           <BiMoviePlay className="menu-icon" />
           <span className="label">릴스</span>

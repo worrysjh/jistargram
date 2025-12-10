@@ -1,4 +1,4 @@
-import { authFetch } from "../../utils/authFetch";
+import { authFetch } from "utils/authFetch";
 
 export async function deletePost(post_id) {
   const res = await authFetch(

@@ -1,4 +1,4 @@
-import { authFetch } from "../../utils/authFetch";
+import { authFetch } from "utils/authFetch";
 
 export async function fetchUserList(searchKeyword = "") {
   const base = `${process.env.REACT_APP_API_URL}/users/all`;

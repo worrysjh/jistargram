@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/layout/Footer";
-import { login } from "../actions/auth/authActions";
-import "../styles/LoginPage.css";
-import LoginForm from "../components/auth/LoginForm";
+import Footer from "components/layout/Footer";
+import { login } from "actions/auth/authActions";
+import "styles/LoginPage.css";
+import LoginForm from "components/auth/LoginForm";
 import { Link } from "react-router-dom";
 
 function LoginPage() {

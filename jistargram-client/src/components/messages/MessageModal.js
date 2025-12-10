@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import "../../styles/MessageModal.css";
 import { authFetch } from "../../utils/authFetch";
 import { useNavigate } from "react-router-dom";
-
 import UserList from "./UserList";
 import ChatWindow from "./ChatWindow";
 

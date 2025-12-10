@@ -15,8 +15,6 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
 
   useEffect(() => {
     if (!selectedUser) return;
-
-    //fetch previous messages
     fetch(`${process.env.REACT_APP_API_URL}/messages/${selectedUser.user_id}`)
       .then((res) => res.json())
       .then((data) => setMessages(data));
@@ -47,7 +45,6 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
     // 실시간 전송
     socket.emit("send_message", message);
 
-    //DB 저장 요청
     try {
       await fetch(`${process.env.REACT_APP_API_URL}/messages/sendMessage`, {
         method: "POST",

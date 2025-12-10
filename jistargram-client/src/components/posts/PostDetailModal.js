@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/PostDetailModal.css";
-
 import {
   addComment,
   deleteComment,
 } from "../../actions/comment/commentActions";
-
 import { fetchAndFlattenComments } from "../../utils/commentUtils";
 import PostOwnerMenu from "./PostOwnerMenu";
-
 import LikeButton from "../common/LikeButton";
 import { Link } from "react-router-dom";
 

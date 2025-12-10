@@ -1,7 +1,5 @@
-import React from "react";
 import { FiMenu } from "react-icons/fi";
 
-// 자신의 게시글에 토글추가(수정/삭제)
 function PostOwnerMenu({
   post,
   isOwner,

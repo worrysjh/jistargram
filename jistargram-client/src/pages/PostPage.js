@@ -109,7 +109,9 @@ function PostPage() {
                     alt="프로필"
                   />
                   <Link
-                    to={`/profile?user_id=${post.user_id}`}
+                    to={
+                      isOwner ? "/profile" : `/profile?user_id=${post.user_id}`
+                    }
                     className="username"
                   >
                     {post.user_name}

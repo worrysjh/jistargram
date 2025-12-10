@@ -4,6 +4,7 @@ import {
   addFollowUser,
   removeFollowUser,
 } from "../actions/user/userActions";
+import { Link } from "react-router-dom";
 
 import "../styles/UserSearchPage.css";
 import DeleteFollowerForm from "../components/user/DeleteFollowerForm";
@@ -143,26 +144,31 @@ function UserSearchPage() {
         ) : (
           users.map((user) => (
             <div key={user.user_id} className="user-item">
-              <div className="user-info">
-                <div className="user-avatar">
-                  {user.profile_img ? (
-                    <img
-                      src={`${process.env.REACT_APP_API_URL}${user.profile_img}`}
-                      alt={user.user_name}
-                    />
-                  ) : (
-                    <div className="default-avatar"></div>
-                  )}
-                </div>
+              <Link
+                to={`/profile?user_id=${user.user_id}`}
+                className="user-link"
+              >
+                <div className="user-info">
+                  <div className="user-avatar">
+                    {user.profile_img ? (
+                      <img
+                        src={`${process.env.REACT_APP_API_URL}${user.profile_img}`}
+                        alt={user.user_name}
+                      />
+                    ) : (
+                      <div className="default-avatar"></div>
+                    )}
+                  </div>
 
-                <div className="user-details">
-                  <div className="username">{user.user_name}</div>
-                  <div className="user-nickname">{user.nick_name}</div>
-                  {user.biography && (
-                    <div className="user-bio">{user.biography}</div>
-                  )}
+                  <div className="user-details">
+                    <div className="username">{user.user_name}</div>
+                    <div className="user-nickname">{user.nick_name}</div>
+                    {user.biography && (
+                      <div className="user-bio">{user.biography}</div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Link>
 
               <button
                 className={`follow-button ${user.isFollowing ? "following" : ""}`}

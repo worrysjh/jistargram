@@ -2,8 +2,8 @@ import { useState } from "react";
 import Aside from "./Aside";
 import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
-import PostUploadModal from "../posts/PostUploadModal";
-import MessageModal from "../messages/MessageModal";
+import PostUploadModal from "components/posts/PostUploadModal";
+import MessageModal from "components/messages/MessageModal";
 
 function Layout() {
   const handleSubmit = (data) => {

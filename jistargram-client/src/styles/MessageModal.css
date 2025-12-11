@@ -5,7 +5,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,26 +15,27 @@
 /* 채팅 모달 컨테이너 */
 .chat-page {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  width: 800px;
-  height: 600px;
+  grid-template-columns: 350px 1fr;
+  width: 900px;
+  height: 700px;
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.2s ease-in-out;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  animation: fadeIn 0.3s ease-out;
 }
 
 /* 그리드 자식 구분선 */
 .chat-page > *:first-child {
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #dbdbdb;
+  background-color: #fafafa;
 }
 
 /* 애니메이션 */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
@@ -44,126 +45,284 @@
 
 .empty-window {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 16px;
-  color: #777;
+  font-size: 22px;
+  font-weight: 300;
+  color: #262626;
   height: 100%;
+  gap: 12px;
+}
+
+.empty-window::before {
+  content: "💬";
+  font-size: 96px;
+  opacity: 0.3;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fff;
 }
 
 .user-list h3 {
-  margin: 12px;
+  margin: 0;
+  padding: 20px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  border-bottom: 1px solid #dbdbdb;
+  background-color: #fff;
+}
+
+.user-list-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.user-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.user-list-container::-webkit-scrollbar-thumb {
+  background-color: #dbdbdb;
+  border-radius: 3px;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.user-item:hover {
+  background-color: #fafafa;
+}
+
+.user-item.active {
+  background-color: #efefef;
+}
+
+.user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #dbdbdb;
+  flex-shrink: 0;
+}
+
+.user-avatar-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-message-preview {
+  font-size: 14px;
+  color: #8e8e8e;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-message-preview.unread {
+  font-weight: 600;
+  color: #262626;
+}
+
+.user-time {
+  font-size: 12px;
+  color: #8e8e8e;
+  flex-shrink: 0;
+}
+
+.no-users {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #8e8e8e;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.no-users::before {
+  content: "👥";
+  font-size: 48px;
+  opacity: 0.3;
 }
 
 .chat-window {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: 600px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  overflow: hidden;
   background: #fff;
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ddd;
+  padding: 16px 24px;
+  border-bottom: 1px solid #dbdbdb;
+  background-color: #fff;
 }
 
 .chat-header h3 {
-  margin: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
 }
 
-/* 버튼은 중앙 정렬되도록 */
 .close-button {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: 28px;
   cursor: pointer;
-  color: #888;
+  color: #8e8e8e;
   line-height: 1;
-  padding: 4px 8px;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.2s ease;
-  margin-left: auto;
 }
 
 .close-button:hover {
-  color: #ff4d4f;
+  color: #262626;
 }
 
 .message-box {
   flex: 1;
-  padding: 10px;
+  padding: 16px 24px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  background-color: #f9f9f9;
+  gap: 12px;
+  background-color: #fff;
+}
+
+.message-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-box::-webkit-scrollbar-thumb {
+  background-color: #dbdbdb;
+  border-radius: 3px;
 }
 
 .my-msg,
 .their-msg {
-  max-width: 70%;
-  padding: 10px;
-  border-radius: 12px;
+  max-width: 60%;
+  padding: 12px 16px;
+  border-radius: 22px;
   word-break: break-word;
   font-size: 14px;
+  line-height: 1.4;
 }
 
 .my-msg {
   align-self: flex-end;
-  background-color: #d1e7ff;
-  color: #003366;
+  background-color: #0095f6;
+  color: #fff;
 }
 
 .their-msg {
   align-self: flex-start;
-  background-color: #eeeeee;
-  color: #333;
+  background-color: #efefef;
+  color: #262626;
+  border: 1px solid #dbdbdb;
 }
 
 .no-message {
   text-align: center;
-  color: #888;
+  color: #8e8e8e;
   font-size: 14px;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 .chat-input {
   display: flex;
-  border-top: 1px solid #ddd;
-  padding: 10px;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #dbdbdb;
+  padding: 16px 24px;
   background-color: #fff;
 }
 
 .chat-input input {
   flex: 1;
-  padding: 10px;
+  padding: 10px 16px;
   font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-right: 10px;
+  border: 1px solid #dbdbdb;
+  border-radius: 22px;
   outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.chat-input input:focus {
+  border-color: #0095f6;
 }
 
 .chat-input button {
-  padding: 10px 16px;
+  padding: 8px 20px;
   font-size: 14px;
-  background-color: #007bff;
-  color: white;
+  font-weight: 600;
+  background-color: transparent;
+  color: #0095f6;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
 .chat-input button:hover {
-  background-color: #0056b3;
+  opacity: 0.7;
+}
+
+.chat-input button:disabled {
+  color: #b2dffc;
+  cursor: default;
+  opacity: 0.5;
 }

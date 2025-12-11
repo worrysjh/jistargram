@@ -6,21 +6,22 @@ import {
   deleteComment,
 } from "../../actions/comment/commentActions";
 import { fetchAndFlattenComments } from "../../utils/commentUtils";
+import { fetchFollowStatus, addFollowUser } from "actions/user/userActions";
 import PostOwnerMenu from "./PostOwnerMenu";
 import LikeButton from "../common/LikeButton";
 import { Link } from "react-router-dom";
+import { calculateDateDifference } from "utils/dateCalculate";
 
 function PostDetailModal({ post, onClose }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [replyTarget, setReplyTarget] = useState(null);
   const [replyContent, setReplyContent] = useState("");
-
   const post_id = post.post_id;
   const post_created_at = post.created_at;
   const [currentUser, setCurrentUser] = useState(null);
-
   const [menuOpenFor, setMenuOpenFor] = useState(null);
+  const [followStatus, setFollowStatus] = useState(null);
 
   const toggleMenu = (post_id) =>
     setMenuOpenFor((prev) => (prev === post_id ? null : post_id));
@@ -40,6 +41,18 @@ function PostDetailModal({ post, onClose }) {
   };
 
   const isOwner = currentUser?.user_id === post.user_id;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const followRes = await fetchFollowStatus(post.user_id);
+        setFollowStatus(followRes.isFollowing ? 1 : 0);
+      } catch (err) {
+        console.error("팔로우 상태 조회 실패:", err);
+        setFollowStatus(0);
+      }
+    })();
+  }, [post.user_id]);
 
   // 댓글 조회
   useEffect(() => {
@@ -104,6 +117,16 @@ function PostDetailModal({ post, onClose }) {
     }
   };
 
+  const handleFollow = async (user_id) => {
+    try {
+      await addFollowUser(user_id);
+      setFollowStatus(1);
+    } catch (err) {
+      console.error(err);
+      alert("팔로우 처리 중 오류가 발생했습니다.");
+    }
+  };
+
   if (!post) return null;
 
   return ReactDOM.createPortal(
@@ -130,6 +153,15 @@ function PostDetailModal({ post, onClose }) {
               className="detail-profile-img"
             />
             <span className="detail-username">{post.user_name}</span>
+            {/* 팔로우 기능 구현 */}
+            {followStatus === 0 && !isOwner ? (
+              <button
+                className="follow-btn"
+                onClick={() => handleFollow(post.user_id)}
+              >
+                팔로우
+              </button>
+            ) : null}
             <PostOwnerMenu
               post={post}
               isOwner={isOwner}
@@ -177,14 +209,17 @@ function PostDetailModal({ post, onClose }) {
                       ) : (
                         <>
                           {c.comment_content}
+                          <br />
+
                           <LikeButton
                             target_id={c.comment_id}
                             target_type="comment"
                           />
+
                           <small className="comment-date">
-                            {new Date(c.created_at).toLocaleString("ko-KR")}
+                            {calculateDateDifference(c.created_at, new Date())}
                           </small>
-                          {" | "}
+
                           <span
                             className="comment-action reply-text"
                             onClick={() =>
@@ -193,11 +228,10 @@ function PostDetailModal({ post, onClose }) {
                               )
                             }
                           >
-                            답글
+                            답글 달기
                           </span>
                           {currentUser.user_id === c.user_id && (
                             <>
-                              {" | "}
                               <span
                                 className="comment-action delete-text"
                                 onClick={() =>

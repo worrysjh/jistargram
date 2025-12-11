@@ -5,7 +5,9 @@ import LikeButton from "components/common/LikeButton";
 import "styles/PostPage.css";
 import { Link } from "react-router-dom";
 import { fetchPosts, updatePost, deletePost } from "actions/post/postActions";
+import { fetchFollowStatus, addFollowUser } from "actions/user/userActions";
 import PostOwnerMenu from "components/posts/PostOwnerMenu";
+import { calculateDateDifference } from "utils/dateCalculate";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);
@@ -13,9 +15,8 @@ function PostPage() {
   const [detailModal, setDetailModal] = useState({ open: false, post: null });
   const [updateModal, setUpdateModal] = useState({ open: false, post: null });
   const [menuOpenFor, setMenuOpenFor] = useState(null);
-
   const [currentUser, setCurrentUser] = useState(null);
-
+  const [followStatuses, setFollowStatuses] = useState({});
   const [limit, setLimit] = useState(3);
   const [isLast, setIsLast] = useState(false);
 
@@ -23,8 +24,26 @@ function PostPage() {
     (async () => {
       try {
         const data = await fetchPosts(limit);
+
         setCurrentUser(data.user);
         setPosts(data.result);
+
+        // 게시물 작성자들의 팔로우 상태를 병렬로 조회
+        const userIds = Array.from(
+          new Set(data.result.map((p) => p.user_id))
+        ).filter((id) => id !== data.user.user_id);
+        const statuses = {};
+        await Promise.all(
+          userIds.map(async (uid) => {
+            try {
+              const res = await fetchFollowStatus(uid);
+              statuses[uid] = res.isFollowing ? 1 : 0;
+            } catch (e) {
+              statuses[uid] = 0;
+            }
+          })
+        );
+        setFollowStatuses(statuses);
         setIsLast(data.result.length < limit);
       } catch (err) {
         console.error(err);
@@ -77,6 +96,16 @@ function PostPage() {
   const toggleMenu = (post_id) =>
     setMenuOpenFor((prev) => (prev === post_id ? null : post_id));
 
+  const handleFollow = async (user_id) => {
+    try {
+      await addFollowUser(user_id);
+      setFollowStatuses((prev) => ({ ...prev, [user_id]: 1 }));
+    } catch (err) {
+      console.error(err);
+      alert("팔로우 처리 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <>
       <div className="post-list">
@@ -109,6 +138,18 @@ function PostPage() {
                   >
                     {post.user_name}
                   </Link>
+                  <span>
+                    • {calculateDateDifference(post.created_at, new Date())}
+                  </span>
+                  {/* 팔로우 기능 구현 */}
+                  {followStatuses[post.user_id] === 0 && !isOwner ? (
+                    <button
+                      className="follow-btn"
+                      onClick={() => handleFollow(post.user_id)}
+                    >
+                      팔로우
+                    </button>
+                  ) : null}
                   <PostOwnerMenu
                     post={post}
                     isOwner={isOwner}
@@ -126,9 +167,18 @@ function PostPage() {
                   alt="게시물"
                 />
 
+                {/* likes button */}
+                <div className="post-actions">
+                  <LikeButton target_id={post.post_id} target_type="post" />
+                </div>
+
+                {/* likes */}
+                <div className="post-likes">
+                  좋아요 {post.like_count || 0}개
+                </div>
+
                 {/* caption */}
                 <div className="post-caption">
-                  <LikeButton target_id={post.post_id} target_type="post" />
                   <span className="post-owner-name">{post.user_name}</span>{" "}
                   {expandedHere ? (
                     <>
@@ -146,6 +196,7 @@ function PostPage() {
                             cursor: "pointer",
                           }}
                         >
+                          {" "}
                           접기
                         </span>
                       )}
@@ -161,7 +212,8 @@ function PostPage() {
                             cursor: "pointer",
                           }}
                         >
-                          …더보기
+                          {" "}
+                          ...더 보기
                         </span>
                       )}
                     </>
@@ -169,7 +221,6 @@ function PostPage() {
                 </div>
 
                 {/* comments */}
-                <div className="comment-divider" />
                 <div className="comment-area">
                   <span onClick={() => openDetail(post)}>
                     댓글 {post.comment_count}개 모두 보기

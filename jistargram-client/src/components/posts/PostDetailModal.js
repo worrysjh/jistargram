@@ -210,16 +210,13 @@ function PostDetailModal({ post, onClose }) {
                         <>
                           {c.comment_content}
                           <br />
-
                           <LikeButton
                             target_id={c.comment_id}
                             target_type="comment"
                           />
-
                           <small className="comment-date">
                             {calculateDateDifference(c.created_at, new Date())}
                           </small>
-
                           <span
                             className="comment-action reply-text"
                             onClick={() =>

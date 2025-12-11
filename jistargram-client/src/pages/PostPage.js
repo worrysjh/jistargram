@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import PostDetailModal from "components/posts/PostDetailModal";
 import PostUpdateModal from "components/posts/PostUpdateModal";
 import LikeButton from "components/common/LikeButton";
@@ -19,10 +19,30 @@ function PostPage() {
   const [followStatuses, setFollowStatuses] = useState({});
   const [limit, setLimit] = useState(3);
   const [isLast, setIsLast] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const observer = useRef();
+
+  const lastPostRef = useCallback(
+    (node) => {
+      if (isLoading) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !isLast) {
+          setLimit((prev) => prev + 3);
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, isLast]
+  );
 
   useEffect(() => {
     (async () => {
       try {
+        setIsLoading(true);
         const data = await fetchPosts(limit);
 
         setCurrentUser(data.user);
@@ -47,6 +67,8 @@ function PostPage() {
         setIsLast(data.result.length < limit);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [limit]);
@@ -110,15 +132,20 @@ function PostPage() {
     <>
       <div className="post-list">
         {posts.length > 0 ? (
-          posts.map((post) => {
+          posts.map((post, index) => {
             const lines = post.content.split("\n");
             const long = lines.length > 1;
             const expandedHere = expanded[post.post_id];
             if (!currentUser) return <div>로딩 중...</div>;
             const isOwner = currentUser.user_id === post.user_id;
+            const isLastPost = index === posts.length - 1;
 
             return (
-              <div key={post.post_id} className="post-card">
+              <div
+                key={post.post_id}
+                className="post-card"
+                ref={isLastPost ? lastPostRef : null}
+              >
                 {/* header */}
                 <div className="post-header">
                   <img
@@ -230,16 +257,9 @@ function PostPage() {
             );
           })
         ) : (
-          <div className="no-posts">작성된 게시글이 없습니다...</div>
+          <div className="no-posts">작성된 피드가 없습니다...</div>
         )}
-      </div>
-
-      <div>
-        {!isLast && (
-          <button className="load-more-btn" onClick={handleLoadMore}>
-            게시글 더보기
-          </button>
-        )}
+        {isLoading && <div className="loading">피드 로딩 중...</div>}
       </div>
 
       {detailModal.open && (

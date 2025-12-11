@@ -157,9 +157,9 @@
   margin-right: 6px;
 }
 
-.load-more-btn{
+/* .load-more-btn{
   display: block;
-  margin: 20px auto; /* 위아래 여백 + 중앙정렬 */
+  margin: 20px auto;
   padding: 10px 20px;
   font-size: 15px;
   font-weight: bold;
@@ -169,12 +169,12 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-}
+} */
 
-.load-more-btn:hover {
+/* .load-more-btn:hover {
   background-color: #f0f0f0;
   border-color: #999;
-}
+} */
 
 .no-posts {
   display: flex;

@@ -8,8 +8,10 @@ import PostOwnerMenu from "./PostOwnerMenu";
 import LikeButton from "components/common/LikeButton";
 import { Link } from "react-router-dom";
 import { calculateDateDifference } from "utils/dateCalculate";
+import { useModalScrollLock } from "utils/modalScrollLock";
 
 function PostDetailModal({ post, onClose }) {
+  useModalScrollLock(true);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [replyTarget, setReplyTarget] = useState(null);

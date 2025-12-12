@@ -3,8 +3,10 @@ import "styles/FollowListModal.css";
 import { authFetch } from "utils/authFetch";
 import { addFollowUser, removeFollowUser } from "actions/user/userActions";
 import { useNavigate } from "react-router-dom";
+import { useModalScrollLock } from "utils/modalScrollLock";
 
 function FollowListModal({ type, userId, onClose }) {
+  useModalScrollLock(true);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");

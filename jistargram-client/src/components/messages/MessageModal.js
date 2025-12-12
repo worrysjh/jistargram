@@ -5,8 +5,10 @@ import { authFetch } from "utils/authFetch";
 import { useNavigate } from "react-router-dom";
 import UserList from "./UserList";
 import ChatWindow from "./ChatWindow";
+import { useModalScrollLock } from "utils/modalScrollLock";
 
 function MessageModal({ onClose, onSubmit }) {
+  useModalScrollLock(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);

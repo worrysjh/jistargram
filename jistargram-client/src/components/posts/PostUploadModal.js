@@ -2,8 +2,10 @@ import { useState } from "react";
 import ReactDOM from "react-dom";
 import "styles/PostUploadModal.css";
 import { uploadPost } from "actions/post/postActions";
+import { useModalScrollLock } from "utils/modalScrollLock";
 
 function PostUploadModal({ onClose, onSubmit }) {
+  useModalScrollLock(true);
   const [image, setImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState("");

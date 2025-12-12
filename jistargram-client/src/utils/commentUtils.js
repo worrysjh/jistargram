@@ -1,4 +1,4 @@
-import { fetchComments } from "../actions/comment/commentActions";
+import { fetchComments } from "actions/comment/commentActions";
 
 function flattenComments(comments) {
   if (!Array.isArray(comments)) {

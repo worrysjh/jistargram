@@ -1,18 +1,7 @@
-import "../../styles/MessageModal.css";
+import "styles/MessageModal.css";
+import { calculateDateDifference } from "utils/dateCalculate";
 
 export default function UserList({ users = [], selectedUser, onSelectUser }) {
-  const formatTime = (timestamp) => {
-    if (!timestamp) return "";
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
-
-    if (diff < 60000) return "방금";
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}분`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)}시간`;
-    return `${Math.floor(diff / 86400000)}일`;
-  };
-
   return (
     <div className="user-list">
       <h3>메시지</h3>
@@ -47,7 +36,7 @@ export default function UserList({ users = [], selectedUser, onSelectUser }) {
               </div>
               {user.last_message_time && (
                 <span className="user-time">
-                  {formatTime(user.last_message_time)}
+                  {calculateDateDifference(user.last_message_time, new Date())}
                 </span>
               )}
             </div>

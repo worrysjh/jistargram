@@ -127,6 +127,7 @@ function FollowListModal({ type, userId, onClose }) {
                         : "/common/img/사용자이미지.jpeg"
                     }
                     alt={user.user_name}
+                    onClick={() => handleUserClick(user.user_id)}
                   />
                 </div>
                 <div
@@ -135,6 +136,7 @@ function FollowListModal({ type, userId, onClose }) {
                 >
                   <p className="follow-list-username">{user.user_name}</p>
                   <p className="follow-list-nickname">{user.nick_name}</p>
+                  {user.bio && <p className="follow-list-bio">{user.bio}</p>}
                 </div>
                 {!user.isMe && (
                   <button

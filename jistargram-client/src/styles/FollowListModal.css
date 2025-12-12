@@ -80,6 +80,7 @@
 
 .follow-list-item {
   display: flex;
+  flex-direction: row;
   align-items: center;
   padding: 8px 16px;
   gap: 12px;
@@ -95,6 +96,7 @@
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .follow-list-avatar img {
@@ -107,6 +109,9 @@
   flex: 1;
   min-width: 0;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .follow-list-username {
@@ -126,6 +131,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.follow-list-bio {
+  font-size: 14px;
+  color: #8e8e8e;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
 }
 
 .follow-list-mutual {

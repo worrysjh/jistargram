@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { socket } from "../../utils/socket";
-import "../../styles/MessageModal.css";
+import { socket } from "utils/socket";
+import "styles/MessageModal.css";
 
 export default function ChatWindow({ selectedUser, currentUser, onClose }) {
   const [messages, setMessages] = useState([]);

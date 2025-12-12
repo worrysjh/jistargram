@@ -1,4 +1,3 @@
-
 --사용자 테이블
 CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -64,11 +63,31 @@ create table refresh_tokens (
 	created_at timestamp default now()
 );
 
+--메시지 방 테이블
+create table message_room (
+    room_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    last_message_id SERIAL,
+    last_activity_at timestamptz,
+    created_at timestamptz default now()
+);
+
+--메시지 참가자 테이블
+create table message_participant (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_id UUID references message_room(room_id),
+    user_id UUID references users(user_id),
+    joined_at timestamptz default now(),
+    left_at timestamptz,
+    last_read_message_id UUID
+);
+
 --메시지 테이블
 create table messages (
 	message_id SERIAL primary key,
+    room_id UUID references message_room(room_id),
 	sender_id UUID references users(user_id),
 	receiver_id UUID references users(user_id),
 	content TEXT not null,
+    content_type VARCHAR(50) default 'text' not null,
 	timestamp timestamptz default now()
 );

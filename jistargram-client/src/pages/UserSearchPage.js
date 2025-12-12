@@ -147,7 +147,7 @@ function UserSearchPage() {
                 to={`/profile?user_id=${user.user_id}`}
                 className="user-link"
               >
-                <div className="user-info">
+                <div className="user-search-info">
                   <div className="user-avatar">
                     {user.profile_img ? (
                       <img

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { authFetch } from "../utils/authFetch";
+import { authFetch } from "utils/authFetch";
 
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);

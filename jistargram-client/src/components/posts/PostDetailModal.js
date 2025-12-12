@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import "../../styles/PostDetailModal.css";
-import {
-  addComment,
-  deleteComment,
-} from "../../actions/comment/commentActions";
-import { fetchAndFlattenComments } from "../../utils/commentUtils";
+import "styles/PostDetailModal.css";
+import { addComment, deleteComment } from "actions/comment/commentActions";
+import { fetchAndFlattenComments } from "utils/commentUtils";
 import { fetchFollowStatus, addFollowUser } from "actions/user/userActions";
 import PostOwnerMenu from "./PostOwnerMenu";
-import LikeButton from "../common/LikeButton";
+import LikeButton from "components/common/LikeButton";
 import { Link } from "react-router-dom";
 import { calculateDateDifference } from "utils/dateCalculate";
 

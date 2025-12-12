@@ -1,5 +1,19 @@
 const services = require("../services");
 
+// TODO: 방 생성
+async function createMessageRoom(req, res) {
+  const { user_id: target_user_id } = req.body;
+  const { user_id } = req.user;
+  console.log("대상: " + target_user_id + " 보낸이: " + user_id);
+  try {
+    // 방이 이미 존재하는가?
+    // 존재시
+    // 없을시 룸 생성
+  } catch (err) {
+    return res.status(400).json({ message: "대화 방 생성 실패" });
+  }
+}
+
 // 기존 메시지 이력 조회
 async function getMessage(req, res) {
   const { user_id: target_user_id } = req.params;
@@ -13,7 +27,7 @@ async function getMessage(req, res) {
   }
 }
 
-// 메시지 전송시 저장장
+// 메시지 전송시 저장
 async function sendMessage(req, res) {
   console.log(req.body);
   const { sender_id, receiver_id, content } = req.body;

@@ -18,7 +18,7 @@ const messageRoutes = require("./src/routes/messageRoutes");
 
 const app = express();
 
-// 이미지 업로드 폴더 공개
+// 이미지 업로드 폴더
 app.use("/uploads", express.static("public/uploads"));
 
 // CORS 설정

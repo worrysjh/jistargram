@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "pages/LoginPage";
 import PostPage from "pages/PostPage";
 import UserSearchPage from "pages/UserSearchPage";
-import ProtectedRoute from "components/ProtectedRoute";
+import ProtectedRoute from "actions/ProtectedRoute";
 import Layout from "components/layout/Layout";
 import PostUploadModal from "components/posts/PostUploadModal";
 import MessageModal from "components/messages/MessageModal";

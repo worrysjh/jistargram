@@ -202,7 +202,8 @@ async function getFollowStatus(req, res) {
 async function getFollowerList(req, res) {
   try {
     const user_id = req.params.user_id;
-    const result = await services.getFollowerListService(user_id);
+    const limit = parseInt(req.query.limit) || 10;
+    const result = await services.getFollowerListService(user_id, limit);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ message: "팔로워 목록 조회 실패" });
@@ -213,7 +214,8 @@ async function getFollowerList(req, res) {
 async function getFollowingList(req, res) {
   try {
     const user_id = req.params.user_id;
-    const result = await services.getFollowingListService(user_id);
+    const limit = parseInt(req.query.limit) || 10;
+    const result = await services.getFollowingListService(user_id, limit);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ message: "팔로잉 목록 조회 실패" });

@@ -249,34 +249,38 @@ async function getFollowInfo(my_id, target_id) {
   return { isFollowing: result.rows.length > 0 };
 }
 
-async function getFollowerListService(user_id) {
+async function getFollowerListService(user_id, limit = 10) {
   const result = await pool.query(
     `SELECT
 	    u.user_id, 
 	    u.user_name, 
 	    u.nick_name, 
-	    u.profile_img 
+	    u.profile_img,
+	    u.biography
     FROM followers f
     JOIN users u
     ON f.follower_id = u.user_id
-    WHERE following_id = $1`,
-    [user_id]
+    WHERE following_id = $1
+    LIMIT $2`,
+    [user_id, limit]
   );
   return result.rows;
 }
 
-async function getFollowingListService(user_id) {
+async function getFollowingListService(user_id, limit = 10) {
   const result = await pool.query(
     `SELECT
 	    u.user_id, 
 	    u.user_name, 
 	    u.nick_name, 
-	    u.profile_img 
+	    u.profile_img,
+	    u.biography
     FROM followers f
     JOIN users u
     ON f.following_id = u.user_id
-    WHERE follower_id = $1`,
-    [user_id]
+    WHERE follower_id = $1
+    LIMIT $2`,
+    [user_id, limit]
   );
   return result.rows;
 }

@@ -5,6 +5,7 @@ import "styles/MessageModal.css";
 export default function ChatWindow({ selectedUser, currentUser, onClose }) {
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState("");
+  const [roomId, setRoomId] = useState(null);
 
   useEffect(() => {
     if (currentUser?.user_id) {
@@ -20,36 +21,64 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
       return;
     }
 
+    let mounted = true;
     (async () => {
       try {
         const res = await fetch(
-          `${process.env.REACT_APP_API_URL}/messages/${selectedUser.user_id}`,
+          `${process.env.REACT_APP_API_URL}/messages/checkMessageRoom/${selectedUser.user_id}`,
           {
             credentials: "include", // 쿠키 포함
           }
         );
-
         if (!res.ok) {
-          console.error("메시지 조회 실패:", res.status);
-          setMessages([]);
+          console.error("대화 방 확인 실패, status:", res.status);
+          if (mounted) setMessages([]);
           return;
         }
 
         const data = await res.json();
-        console.log("fetched messages:", data);
+        console.log("대화 방 존재 여부: ", data);
+        if (!mounted) return;
 
-        // API 응답 형태에 따라 안전하게 배열 추출
-        const list = Array.isArray(data)
-          ? data
-          : Array.isArray(data.messages)
-            ? data.messages
-            : Array.isArray(data.result)
-              ? data.result
-              : [];
-        setMessages(list);
+        // 방이 존재하면 기존 메시지 불러오기
+        if (data.exists) {
+          setRoomId(data.roomId);
+          (async () => {
+            try {
+              const res = await fetch(
+                `${process.env.REACT_APP_API_URL}/messages/${selectedUser.user_id}`,
+                {
+                  credentials: "include", // 쿠키 포함
+                }
+              );
+
+              if (!res.ok) {
+                console.error("메시지 조회 실패:", res.status);
+                setMessages([]);
+                return;
+              }
+
+              const data = await res.json();
+              console.log("fetched messages:", data);
+
+              // API 응답 형태에 따라 안전하게 배열 추출
+              const list = Array.isArray(data)
+                ? data
+                : Array.isArray(data.messages)
+                  ? data.messages
+                  : Array.isArray(data.result)
+                    ? data.result
+                    : [];
+              setMessages(list);
+            } catch (err) {
+              console.error("메시지 불러오기 실패", err);
+              setMessages([]);
+            }
+          })();
+        }
       } catch (err) {
-        console.error("메시지 불러오기 실패", err);
-        setMessages([]);
+        console.error("대화 방 확인 실패", err);
+        return;
       }
     })();
   }, [selectedUser?.user_id]); // user_id만 의존성으로

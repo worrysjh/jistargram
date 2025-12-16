@@ -65,9 +65,9 @@ create table refresh_tokens (
 
 --메시지 방 테이블
 create table message_room (
-    room_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_id UUID PRIMARY KEY,
     last_message_id SERIAL,
-    last_activity_at timestamptz,
+    last_activity_at timestamptz default now(),
     created_at timestamptz default now()
 );
 

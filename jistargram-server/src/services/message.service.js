@@ -23,9 +23,10 @@ async function updateMessageRoom(room_id, last_message_id, last_activity_at) {
 // 채팅방 존재 유무 확인
 async function checkMessageRoom(room_id) {
   const result = await pool.query(
-    `SELECT 1 FROM message_rooms WHERE room_id = $1`,
+    `SELECT room_id FROM message_rooms WHERE room_id = $1`,
     [room_id]
   );
+  if (!result) return false;
   return result.rows.length > 0;
 }
 

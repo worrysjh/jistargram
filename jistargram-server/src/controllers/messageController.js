@@ -10,7 +10,7 @@ async function checkMessageRoom(req, res) {
 
   const result = await services.checkMessageRoom(room_id);
   console.log("방 존재 여부: ", result);
-  return res.status(200).json({ exists: result });
+  return res.status(200).json({ exists: result, roomId: room_id });
 }
 
 // 방 생성
@@ -58,19 +58,48 @@ async function getMessage(req, res) {
 // 메시지 전송시 저장
 async function sendMessage(req, res) {
   console.log(req.body);
-  const { sender_id, receiver_id, content } = req.body;
-  const room_id = generateRoomId(sender_id, receiver_id);
+  const { sender_id, receiver_id, content, content_type } = req.body;
+
+  if (!sender_id || !receiver_id || !content) {
+    return res
+      .status(400)
+      .json({ message: "sender_id, receiver_id, content가 필요합니다." });
+  }
+
+  let room_id;
+  try {
+    room_id = generateRoomId(sender_id, receiver_id);
+  } catch (err) {
+    console.error("room id 생성 오류:", err);
+    return res.status(400).json({ message: "유효하지 않은 사용자 ID" });
+  }
+
   console.log("방 이름 : " + room_id);
   try {
     const roomExists = await services.checkMessageRoom(room_id);
     console.log("방 존재 여부: ", roomExists);
-    // 방이 없으면, 방을 만들고 메시지 송수신 및 DB 저장
+
+    // 방이 없으면 생성
     if (!roomExists) {
       await services.createMessageRoom(room_id);
+      console.log("새 방 생성: ", room_id);
     }
-    // 방이 있으면, 있는 방에 메시지 송수신 및 저장
-    await services.saveMessage(room_id, sender_id, receiver_id, content);
-    return res.status(201).json({ success: true });
+
+    // 메시지 저장
+    const savedMessage = await services.saveMessage(
+      room_id,
+      sender_id,
+      receiver_id,
+      content,
+      content_type || "text"
+    );
+
+    // 성공 응답 + room_id 반환
+    return res.status(201).json({
+      success: true,
+      room_id: room_id,
+      message: savedMessage,
+    });
   } catch (err) {
     console.log("메시지 저장 실패: ", err);
     return res.status(500).json({ message: "메시지 저장 실패" });

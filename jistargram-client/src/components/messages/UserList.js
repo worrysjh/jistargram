@@ -24,9 +24,9 @@ export default function UserList({
                 )
               }
             >
-              {user.profile_image ? (
+              {user.profile_img ? (
                 <img
-                  src={user.profile_image}
+                  src={`${process.env.REACT_APP_API_URL}${user.profile_img}`}
                   alt={user.nick_name}
                   className="user-avatar"
                 />

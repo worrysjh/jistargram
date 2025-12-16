@@ -8,32 +8,31 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
   const [roomId, setRoomId] = useState(null);
   const prevSelectedRef = useRef(null);
 
+  // roomId가 생성된 후에만 join (메시지 송신 후)
   useEffect(() => {
-    if (currentUser?.user_id) {
-      socket.emit("join", currentUser.user_id);
-      console.log("방 참가: ", currentUser.user_id);
-    }
-  }, [currentUser]);
+    if (!roomId) return;
+
+    socket.emit("join_room", roomId);
+    console.log("Room 참가: ", roomId);
+
+    return () => {
+      socket.emit("leave_room", roomId);
+      console.log("Room 나가기: ", roomId);
+    };
+  }, [roomId]);
 
   useEffect(() => {
-    // selectedUser가 없으면 실행하지 않음
     if (!selectedUser?.user_id) {
-      if (roomId) {
-        socket.emit("leave_room", roomId);
-        setRoomId(null);
-      }
+      setRoomId(null);
       setMessages([]);
       prevSelectedRef.current = null;
       return;
     }
 
+    // 재선택 시 선택 해제
     if (prevSelectedRef.current === selectedUser.user_id) {
-      if (roomId) {
-        socket.emit("leave_room", roomId);
-        setRoomId(null);
-      }
+      setRoomId(null);
       setMessages([]);
-
       prevSelectedRef.current = selectedUser.user_id;
       return;
     }
@@ -41,119 +40,105 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
     let mounted = true;
     (async () => {
       try {
+        // 1. 방 존재 여부 확인 (roomId는 서버에서 계산해서 반환)
         const res = await fetch(
           `${process.env.REACT_APP_API_URL}/messages/checkMessageRoom/${selectedUser.user_id}`,
-          {
-            credentials: "include", // 쿠키 포함
-          }
+          { credentials: "include" }
         );
+
         if (!res.ok) {
           console.error("대화 방 확인 실패, status:", res.status);
           if (mounted) setMessages([]);
           return;
         }
 
-        const data = await res.json();
-        console.log("대화 방 존재 여부: ", data);
+        const data = await res.json(); // { exists: boolean, roomId: string }
+        console.log("대화 방 확인 결과: ", data);
+        console.log("roomid: ", data.roomId);
         if (!mounted) return;
 
-        // 방이 존재하면 기존 메시지 불러오기
-        if (data.roomId) {
-          if (roomId && roomId !== data.roomId) {
-            socket.emit("leave_room", roomId);
-          }
-
+        // 2. 방이 존재하면 roomId 설정 + 기존 메시지 불러오기
+        if (data.exists && data.roomId) {
           setRoomId(data.roomId);
-          socket.emit("join_room", data.roomId);
-        }
-        if (data.exists) {
-          const res = await fetch(
+
+          const msgRes = await fetch(
             `${process.env.REACT_APP_API_URL}/messages/${selectedUser.user_id}`,
-            {
-              credentials: "include", // 쿠키 포함
-            }
+            { credentials: "include" }
           );
 
-          if (!res.ok) {
-            console.error("메시지 조회 실패:", res.status);
-            setMessages([]);
-            return;
-          }
-
-          const data = await res.json();
-          console.log("fetched messages:", data);
-
-          // API 응답 형태에 따라 안전하게 배열 추출
-          const list = Array.isArray(data)
-            ? data
-            : Array.isArray(data.messages)
-              ? data.messages
-              : Array.isArray(data.result)
-                ? data.result
+          if (msgRes.ok) {
+            const msgData = await msgRes.json();
+            const list = Array.isArray(msgData)
+              ? msgData
+              : Array.isArray(msgData.messages)
+                ? msgData.messages
                 : [];
-          setMessages(list);
+            if (mounted) setMessages(list);
+            console.log("기존 메시지 불러오기 성공:", list);
+          } else {
+            console.error("메시지 조회 실패:", msgRes.status);
+            if (mounted) setMessages([]);
+          }
         } else {
-          setMessages([]);
+          // 방이 없으면 메시지 비우기 (최초 메시지 전송 시 생성됨)
+          if (mounted) {
+            setRoomId(null);
+            setMessages([]);
+          }
         }
-      } catch {
-        console.error("대화 방 조회 오류");
+      } catch (err) {
+        console.error("대화 방 조회 오류:", err);
         if (mounted) setMessages([]);
       }
     })();
+
     prevSelectedRef.current = selectedUser.user_id;
 
     return () => {
       mounted = false;
-      if (roomId) {
-        socket.emit("leave_room", roomId);
-        setRoomId(null);
-      }
     };
-  }, [selectedUser?.user_id]); // user_id만 의존성으로
+  }, [selectedUser?.user_id]);
 
+  // receive_message 핸들러
   useEffect(() => {
     const handleReceive = (message) => {
-      if (!roomId) return;
-      if (message.roomId && message.roomId !== roomId) return;
-      if (
-        message.sender_id === selectedUser?.user_id ||
-        message.receiver_id === selectedUser?.user_id ||
-        message.roomId === roomId
-      ) {
-        setMessages((prev) => [...prev, message]);
-      }
+      console.log("메시지 수신:", message);
+
+      // roomId 기반 필터링 (안전장치)
+      if (roomId && message.roomId !== roomId) return;
+
+      setMessages((prev) => [...prev, message]);
     };
 
     socket.on("receive_message", handleReceive);
     return () => {
       socket.off("receive_message", handleReceive);
     };
-  }, [selectedUser?.user_id, roomId]);
+  }, [roomId]);
 
   const sendMessage = async () => {
-    if (!content.trim()) {
-      alert("빈 메시지는 보낼 수 없습니다.");
+    if (!content.trim()) return;
+    if (!selectedUser?.user_id || !currentUser?.user_id) {
+      alert("사용자 정보가 없습니다.");
       return;
     }
 
-    const message = {
-      roomId,
+    const messagePayload = {
       sender_id: currentUser.user_id,
       receiver_id: selectedUser.user_id,
-      content,
+      content: content.trim(),
+      content_type: "text",
     };
 
     try {
-      // DB에 저장
+      // 1. 서버로 메시지 전송 (DB 저장 + room 생성)
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/messages/sendMessage`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // 쿠키 포함
-          body: JSON.stringify(message),
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(messagePayload),
         }
       );
 
@@ -163,64 +148,88 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
         return;
       }
 
-      // 저장 성공 후 실시간 전송
-      socket.emit("send_message", message);
+      const result = await res.json(); // { success: true, room_id: "..." }
+      console.log("메시지 저장 성공:", result);
 
-      // UI에 즉시 반영 (본인 메시지는 receive_message로 안 올 수 있음)
-      setMessages((prev) => [...prev, message]);
+      // 2. 최초 전송인 경우(roomId가 없었던 경우) roomId 설정 → useEffect에서 자동 join
+      if (!roomId && result.room_id) {
+        setRoomId(result.room_id);
+      }
+
+      // 3. 소켓으로 메시지 전송 (방에 broadcast)
+      socket.emit("send_message", {
+        ...messagePayload,
+        roomId: result.room_id || roomId,
+      });
+
+      // 4. UI에 즉시 반영 (낙관적 업데이트)
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...messagePayload,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+
       setContent("");
     } catch (err) {
-      console.error("메시지 전송 실패", err);
-      alert("메시지 전송에 실패했습니다.");
+      console.error("메시지 전송 실패:", err);
+      alert("메시지 전송 중 오류가 발생했습니다.");
     }
   };
 
-  if (!selectedUser)
+  if (!selectedUser) {
     return (
       <div className="chat-window">
-        <div className="chat-header">
-          <button className="close-button" onClick={onClose}>
-            ×
-          </button>
-        </div>
-        <div className="empty-window">대화할 사용자를 선택하세요.</div>
+        <div className="empty-window">메시지를 보내보세요</div>
       </div>
     );
+  }
 
   return (
     <div className="chat-window">
       <div className="chat-header">
-        <h3>{selectedUser.nick_name}</h3>
-        <button className="close-button" onClick={onClose}>
+        <div className="chat-header-user">
+          {selectedUser.profile_img ? (
+            <img
+              src={`${process.env.REACT_APP_API_URL}${selectedUser.profile_img}`}
+              alt={selectedUser.nick_name}
+              className="chat-avatar"
+            />
+          ) : (
+            <div className="chat-avatar-placeholder">
+              {selectedUser.nick_name?.charAt(0) || "?"}
+            </div>
+          )}
+          <span className="chat-username">{selectedUser.nick_name}</span>
+        </div>
+        <button className="chat-close" onClick={onClose}>
           ×
         </button>
       </div>
+
       <div className="message-box">
-        {messages.length === 0 ? (
-          <div className="no-message">메시지를 보내보세요</div>
-        ) : (
-          messages.map((msg, i) => (
-            <div
-              key={i}
-              className={
-                msg.sender_id === currentUser.user_id ? "my-msg" : "their-msg"
-              }
-            >
-              {msg.content}
-            </div>
-          ))
-        )}
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`message ${
+              msg.sender_id === currentUser?.user_id ? "sent" : "received"
+            }`}
+          >
+            <p>{msg.content}</p>
+          </div>
+        ))}
       </div>
-      <div className="chat-input">
+
+      <div className="message-input">
         <input
+          type="text"
+          placeholder="메시지 입력..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="메시지 입력..."
         />
-        <button onClick={sendMessage} disabled={!content.trim()}>
-          전송
-        </button>
+        <button onClick={sendMessage}>전송</button>
       </div>
     </div>
   );

@@ -78,7 +78,7 @@ create table message_participant (
     user_id UUID references users(user_id),
     joined_at timestamptz default now(),
     left_at timestamptz,
-    last_read_message_id UUID
+    last_read_message_id SERIAL
 );
 
 --메시지 테이블

@@ -8,9 +8,9 @@ export default function UserList({
   currentUser,
 }) {
   return (
-    <div className="user-list">
+    <div className="message-user-list">
       <h3>{currentUser?.user_name}</h3>
-      <div className="user-list-container">
+      <div className="message-user-list-container">
         {users.length === 0 ? (
           <div className="no-users">대화 가능한 사용자가 없습니다</div>
         ) : (
@@ -18,7 +18,11 @@ export default function UserList({
             <div
               key={user.user_id}
               className={`user-item ${selectedUser?.user_id === user.user_id ? "active" : ""}`}
-              onClick={() => onSelectUser(user)}
+              onClick={() =>
+                onSelectUser(
+                  selectedUser?.user_id === user.user_id ? null : user
+                )
+              }
             >
               {user.profile_image ? (
                 <img

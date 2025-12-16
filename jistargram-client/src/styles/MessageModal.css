@@ -10,6 +10,9 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* 채팅 모달 컨테이너 */
@@ -17,12 +20,15 @@
   display: grid;
   grid-template-columns: 350px 1fr;
   width: 900px;
-  height: 700px;
+  max-width: 90vw;
+  max-height: 90vh;
+  height: auto;
   background-color: #fff;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   animation: fadeIn 0.3s ease-out;
+  margin: 0 auto;
 }
 
 /* 그리드 자식 구분선 */
@@ -53,7 +59,6 @@
   font-weight: 300;
   color: #262626;
   height: 100%;
-  gap: 12px;
 }
 
 .empty-window::before {
@@ -62,16 +67,16 @@
   opacity: 0.3;
 }
 
-.user-list {
+.message-user-list {
   display: flex;
   flex-direction: column;
   height: 100%;
   background-color: #fff;
 }
 
-.user-list h3 {
+.message-user-list h3 {
   margin: 0;
-  padding: 20px 24px;
+  padding: 13px 24px;
   font-size: 16px;
   font-weight: 600;
   color: #262626;
@@ -79,16 +84,16 @@
   background-color: #fff;
 }
 
-.user-list-container {
+.message-user-list-container {
   flex: 1;
   overflow-y: auto;
 }
 
-.user-list-container::-webkit-scrollbar {
+.message-user-list-container::-webkit-scrollbar {
   width: 6px;
 }
 
-.user-list-container::-webkit-scrollbar-thumb {
+.message-user-list-container::-webkit-scrollbar-thumb {
   background-color: #dbdbdb;
   border-radius: 3px;
 }
@@ -193,8 +198,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 0;
+  /* background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; */
 }
 
 .chat-header {
@@ -227,6 +233,7 @@
   align-items: center;
   justify-content: center;
   transition: color 0.2s ease;
+  margin-left: auto;
 }
 
 .close-button:hover {
@@ -241,6 +248,7 @@
   flex-direction: column;
   gap: 12px;
   background-color: #fff;
+  min-height: 0;
 }
 
 .message-box::-webkit-scrollbar {

@@ -1,6 +1,18 @@
 const { v5: uuidv5 } = require("uuid");
 const services = require("../services");
 
+// 팔로우 목록 + 수신받은 미팔로우 메시지 방 목록 조회
+async function getExpMessageRoomList(req, res) {
+  const { user_id } = req.user;
+  console.log("대화 방 목록 조회 대상: ", user_id);
+  try {
+    const result = await services.getExpMessageRoomList(user_id);
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(400).json({ message: "대화 방 목록 조회 실패" });
+  }
+}
+
 // 방 존재 유무 확인
 async function checkMessageRoom(req, res) {
   const target_user_id = req.params.user_id;
@@ -14,29 +26,30 @@ async function checkMessageRoom(req, res) {
 }
 
 // 방 생성
-async function createMessageRoom(req, res) {
-  const { user_id: target_user_id } = req.body;
-  const { user_id } = req.user;
-  console.log("대상: " + target_user_id + " 보낸이: " + user_id);
-  try {
-    const roomId = generateRoomId(user_id, target_user_id);
-    // 방 존재 재검사 : 충돌방지
-    if (await services.checkMessageRoom(roomId)) {
-      return res
-        .status(200)
-        .json({ message: "이미 존재하는 대화 방입니다.", roomId });
-    }
-    // 없을시 룸 생성
-    else {
-      await services.createMessageRoom(roomId);
-      return res
-        .status(201)
-        .json({ message: "대화 방이 생성되었습니다.", roomId });
-    }
-  } catch (err) {
-    return res.status(400).json({ message: "대화 방 생성 실패" });
-  }
-}
+// async function createMessageRoom(req, res) {
+//   const { user_id: target_user_id } = req.body;
+//   const { user_id } = req.user;
+//   console.log("대상: " + target_user_id + " 보낸이: " + user_id);
+//   try {
+//     const roomId = generateRoomId(user_id, target_user_id);
+//     // 방 존재 재검사 : 충돌방지
+//     if (await services.checkMessageRoom(roomId)) {
+//       return res
+//         .status(200)
+//         .json({ message: "이미 존재하는 대화 방입니다.", roomId });
+//     }
+//     // 없을시 룸 생성 후 참가
+//     else {
+//       await services.createMessageRoom(roomId);
+//       await services.joinMessageRoom(roomId, user_id, target_user_id);
+//       return res
+//         .status(201)
+//         .json({ message: "대화 방이 생성되었습니다.", roomId });
+//     }
+//   } catch (err) {
+//     return res.status(400).json({ message: "대화 방 생성 실패" });
+//   }
+// }
 
 // 기존 메시지 이력 조회
 async function getMessage(req, res) {
@@ -82,6 +95,7 @@ async function sendMessage(req, res) {
     // 방이 없으면 생성
     if (!roomExists) {
       await services.createMessageRoom(room_id);
+      await services.joinMessageRoom(room_id, sender_id, receiver_id);
       console.log("새 방 생성: ", room_id);
     }
 
@@ -117,8 +131,8 @@ function generateRoomId(userId1, userId2) {
 }
 
 module.exports = {
+  getExpMessageRoomList,
   checkMessageRoom,
-  createMessageRoom,
   getMessage,
   sendMessage,
 };

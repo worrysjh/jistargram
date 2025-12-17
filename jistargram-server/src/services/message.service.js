@@ -1,11 +1,44 @@
 const pool = require("../models/db");
 
+// 팔로우 목록 + 수신받은 미팔로우 메시지 방 목록 조회
+async function getExpMessageRoomList(user_id) {
+  const result = await pool.query(
+    `
+    SELECT u.user_id, u.user_name, u.nick_name, u.profile_img 
+    FROM followers f
+    JOIN users u 
+    ON f.following_id = u.user_id
+    WHERE f.follower_id = $1
+    UNION
+    SELECT u.user_id, u.user_name, u.nick_name, u.profile_img
+    FROM message_participant mp1
+    JOIN message_participant mp2 ON mp1.room_id = mp2.room_id
+    JOIN users u ON mp2.user_id = u.user_id
+    WHERE mp1.user_id = $1
+    AND mp2.user_id <> $1
+    AND mp2.user_id not in (
+      SELECT following_id
+      FROM followers f WHERE follower_id = $1
+    )`,
+    [user_id]
+  );
+  return result.rows;
+}
+
 // 채팅 방 생성
 async function createMessageRoom(room_id) {
   await pool.query(
     `INSERT INTO message_rooms (room_id, last_activity_at)
         VALUES ($1, NOW())`,
     [room_id]
+  );
+}
+
+// 채팅 방 참가
+async function joinMessageRoom(room_id, user_id, target_user_id) {
+  await pool.query(
+    `INSERT INTO message_participant (room_id, user_id) VALUES ($1, $2), ($1, $3)`,
+    [room_id, user_id, target_user_id]
   );
 }
 
@@ -58,7 +91,9 @@ async function saveMessage(
 }
 
 module.exports = {
+  getExpMessageRoomList,
   createMessageRoom,
+  joinMessageRoom,
   checkMessageRoom,
   getMessageContent,
   saveMessage,

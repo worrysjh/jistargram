@@ -48,13 +48,13 @@ export default function MessageModal({ onClose }) {
           return;
         }
 
-        const followRes = await authFetch(
-          `${process.env.REACT_APP_API_URL}/users/followinglists/${me.user_id}?limit=${limit}`,
+        const chatUserListRes = await authFetch(
+          `${process.env.REACT_APP_API_URL}/messages/expMessageRoomList`,
           {},
           navigate
         );
 
-        if (!followRes || !followRes.ok) {
+        if (!chatUserListRes || !chatUserListRes.ok) {
           console.error("failed to fetch users");
           if (mounted) {
             setUsers([]);
@@ -63,7 +63,7 @@ export default function MessageModal({ onClose }) {
           return;
         }
 
-        const data = await followRes.json();
+        const data = await chatUserListRes.json();
         console.log("fetched users:", data);
 
         const userList = Array.isArray(data)

@@ -167,8 +167,10 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
     const handleReceive = (message) => {
       console.log("메시지 수신:", message);
 
-      // roomId 기반 필터링
-      // if (roomId && message.roomId !== roomId) return;
+      // 내가 보낸 메시지는 이미 UI에 추가했으므로 무시
+      if (message.sender_id === currentUser?.user_id) {
+        return;
+      }
 
       setMessages((prev) => {
         const newMessages = [...prev, message];
@@ -186,7 +188,7 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
     return () => {
       socket.off("receive_message", handleReceive);
     };
-  }, [roomId]);
+  }, [currentUser?.user_id]);
 
   const sendMessage = async () => {
     if (!content.trim()) return;
@@ -220,22 +222,34 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
         return;
       }
 
-      const result = await res.json(); // { success: true, room_id: "..." }
+      const result = await res.json();
       console.log("메시지 저장 성공:", result);
 
-      // 2. 최초 전송인 경우(roomId가 없었던 경우) roomId 설정 → useEffect에서 자동 join
-      if (!roomId && result.room_id) {
-        setRoomId(result.room_id);
+      const targetRoomId = result.room_id;
+
+      // 2. 최초 전송인 경우 즉시 방 입장
+      if (!roomId && targetRoomId) {
+        console.log("최초 메시지 - Room 즉시 참가: ", targetRoomId);
+        socket.emit("join_room", targetRoomId);
+        setRoomId(targetRoomId);
+
+        // 방 입장 처리 시간 대기
+        await new Promise((resolve) => setTimeout(resolve, 150));
       }
 
-      const socketMessage = {
+      // 3. 즉시 메시지를 UI에 추가 (낙관적 업데이트)
+      const newMessage = {
         ...messagePayload,
-        roomId: result.room_id,
         message_id: result.message_id,
         timestamp: result.timestamp,
+        roomId: targetRoomId,
       };
-      socket.emit("send_message", socketMessage);
-      console.log("메시지 소켓 전송:", socketMessage);
+
+      setMessages((prev) => [...prev, newMessage]);
+
+      // 4. 소켓으로 메시지 전송 (다른 사용자에게 전달)
+      socket.emit("send_message", newMessage);
+      console.log("메시지 소켓 전송:", newMessage);
 
       setContent("");
 

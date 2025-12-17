@@ -6,7 +6,47 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState("");
   const [roomId, setRoomId] = useState(null);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const prevSelectedRef = useRef(null);
+  const messageBoxRef = useRef(null);
+  const shouldScrollRef = useRef(false);
+  const isUserScrollingRef = useRef(false);
+
+  // 메시지 목록 끝으로 스크롤
+  const scrollToBottom = () => {
+    if (messageBoxRef.current) {
+      messageBoxRef.current.scrollTop = messageBoxRef.current.scrollHeight;
+    }
+  };
+
+  // 스크롤이 최하단에 있는지 확인
+  const isAtBottom = () => {
+    if (!messageBoxRef.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } = messageBoxRef.current;
+    return scrollHeight - scrollTop - clientHeight < 50;
+  };
+
+  // 스크롤 이벤트 핸들러
+  useEffect(() => {
+    const handleScroll = () => {
+      isUserScrollingRef.current = !isAtBottom();
+    };
+
+    const messageBox = messageBoxRef.current;
+    if (messageBox) {
+      messageBox.addEventListener("scroll", handleScroll);
+      return () => messageBox.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
+  // 메시지가 렌더링되면 스크롤
+  useEffect(() => {
+    if (shouldScrollRef.current && !isLoadingMessages && messages.length > 0) {
+      scrollToBottom();
+      shouldScrollRef.current = false;
+      isUserScrollingRef.current = false;
+    }
+  }, [messages, isLoadingMessages]);
 
   // roomId가 생성된 후에만 join (메시지 송신 후)
   useEffect(() => {
@@ -26,6 +66,9 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
       setRoomId(null);
       setMessages([]);
       prevSelectedRef.current = null;
+      setIsLoadingMessages(false);
+      shouldScrollRef.current = false;
+      isUserScrollingRef.current = false;
       return;
     }
 
@@ -34,10 +77,16 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
       setRoomId(null);
       setMessages([]);
       prevSelectedRef.current = selectedUser.user_id;
+      setIsLoadingMessages(false);
+      shouldScrollRef.current = false;
+      isUserScrollingRef.current = false;
       return;
     }
 
     let mounted = true;
+    setIsLoadingMessages(true);
+    shouldScrollRef.current = false;
+
     (async () => {
       try {
         // 1. 방 존재 여부 확인 (roomId는 서버에서 계산해서 반환)
@@ -48,7 +97,10 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
 
         if (!res.ok) {
           console.error("대화 방 확인 실패, status:", res.status);
-          if (mounted) setMessages([]);
+          if (mounted) {
+            setMessages([]);
+            setIsLoadingMessages(false);
+          }
           return;
         }
 
@@ -73,22 +125,33 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
               : Array.isArray(msgData.messages)
                 ? msgData.messages
                 : [];
-            if (mounted) setMessages(list);
+            if (mounted) {
+              shouldScrollRef.current = true;
+              setMessages(list);
+              setIsLoadingMessages(false);
+            }
             console.log("기존 메시지 불러오기 성공:", list);
           } else {
             console.error("메시지 조회 실패:", msgRes.status);
-            if (mounted) setMessages([]);
+            if (mounted) {
+              setMessages([]);
+              setIsLoadingMessages(false);
+            }
           }
         } else {
           // 방이 없으면 메시지 비우기 (최초 메시지 전송 시 생성됨)
           if (mounted) {
             setRoomId(null);
             setMessages([]);
+            setIsLoadingMessages(false);
           }
         }
       } catch (err) {
         console.error("대화 방 조회 오류:", err);
-        if (mounted) setMessages([]);
+        if (mounted) {
+          setMessages([]);
+          setIsLoadingMessages(false);
+        }
       }
     })();
 
@@ -107,7 +170,16 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
       // roomId 기반 필터링
       // if (roomId && message.roomId !== roomId) return;
 
-      setMessages((prev) => [...prev, message]);
+      setMessages((prev) => {
+        const newMessages = [...prev, message];
+
+        // 스크롤이 최하단에 있으면 자동 스크롤
+        if (!isUserScrollingRef.current) {
+          setTimeout(() => scrollToBottom(), 0);
+        }
+
+        return newMessages;
+      });
     };
 
     socket.on("receive_message", handleReceive);
@@ -166,6 +238,10 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
       console.log("메시지 소켓 전송:", socketMessage);
 
       setContent("");
+
+      // 메시지 전송 시 항상 스크롤
+      isUserScrollingRef.current = false;
+      setTimeout(() => scrollToBottom(), 0);
     } catch (err) {
       console.error("메시지 전송 실패:", err);
       alert("메시지 전송 중 오류가 발생했습니다.");
@@ -202,18 +278,26 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
         </button>
       </div>
 
-      <div className="message-box">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`message ${
-              msg.sender_id === currentUser?.user_id ? "sent" : "received"
-            }`}
-          >
-            <p>{msg.content}</p>
+      {isLoadingMessages ? (
+        <div className="message-box">
+          <div className="user-list-loading">
+            <div className="spinner"></div>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="message-box" ref={messageBoxRef}>
+          {messages.map((msg, idx) => (
+            <div
+              key={idx}
+              className={`message ${
+                msg.sender_id === currentUser?.user_id ? "sent" : "received"
+              }`}
+            >
+              <p>{msg.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="message-input">
         <input

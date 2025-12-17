@@ -3,6 +3,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
 const db = require("./src/models/db");
+const { createClient } = require("redis");
+const { createAdapter } = require("@socket.io/redis-adapter");
 
 const PORT = process.env.PORT || 4000;
 const MAX_RETRIES = 5;
@@ -11,7 +13,7 @@ let client;
 // 1. HTTP 서버 래핑
 const server = http.createServer(app);
 
-// 2. Socket.io 서버 연결
+// 2. Socket.io 인스턴스 생성
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
@@ -19,24 +21,44 @@ const io = new Server(server, {
   },
 });
 
-// 3. Socket 이벤트 처리
-io.on("connection", (socket) => {
-  console.log("사용자 연결됨:", socket.id);
+const pubClient = createClient({ url: process.env.REDIS_URL });
+const subClient = pubClient.duplicate();
 
-  socket.on("join", (user_id) => {
-    socket.join(user_id);
-    console.log(`${user_id} 방 입장`);
-  });
+Promise.all([pubClient.connect(), subClient.connect()])
+  .then(() => {
+    console.log("Connected to Redis for Socket.io adapter");
 
-  socket.on("send_message", (message) => {
-    console.log("메시지 전송:", message);
-    io.to(message.receiver_id).emit("receive_message", message);
-  });
+    // Socket.io 어댑터 적용
+    io.adapter(createAdapter(pubClient, subClient));
 
-  socket.on("disconnect", () => {
-    console.log("사용자 연결 해제:", socket.id);
+    // Socket 이벤트 핸들러
+    io.on("connection", (socket) => {
+      console.log("사용자 연결됨: ", socket.id);
+
+      socket.on("join_room", (room_id) => {
+        socket.join(room_id);
+        console.log(`${room_id} 방 입장`);
+      });
+
+      socket.on("leave_room", (room_id) => {
+        socket.leave(room_id);
+        console.log(`${room_id} 방 퇴장`);
+      });
+
+      socket.on("send_message", (message) => {
+        console.log(`[${socket.id}] 메시지 전송 및 Redis 발행: `, message);
+        io.to(message.roomId).emit("receive_message", message);
+      });
+
+      socket.on("disconnect", () => {
+        console.log("사용자 연결 해제:", socket.id);
+      });
+    });
+  })
+  .catch((err) => {
+    console.error("Redis 연결 실패:", err);
+    process.exit(1);
   });
-});
 
 // 4. DB 연결 후 서버 시작 (재시도 포함)
 async function connectToDBWithExponentialBackoff(retry = 0) {

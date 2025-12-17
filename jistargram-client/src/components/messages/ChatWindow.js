@@ -104,8 +104,8 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
     const handleReceive = (message) => {
       console.log("메시지 수신:", message);
 
-      // roomId 기반 필터링 (안전장치)
-      if (roomId && message.roomId !== roomId) return;
+      // roomId 기반 필터링
+      // if (roomId && message.roomId !== roomId) return;
 
       setMessages((prev) => [...prev, message]);
     };
@@ -156,20 +156,14 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
         setRoomId(result.room_id);
       }
 
-      // 3. 소켓으로 메시지 전송 (방에 broadcast)
-      socket.emit("send_message", {
+      const socketMessage = {
         ...messagePayload,
-        roomId: result.room_id || roomId,
-      });
-
-      // 4. UI에 즉시 반영 (낙관적 업데이트)
-      setMessages((prev) => [
-        ...prev,
-        {
-          ...messagePayload,
-          timestamp: new Date().toISOString(),
-        },
-      ]);
+        roomId: result.room_id,
+        message_id: result.message_id,
+        timestamp: result.timestamp,
+      };
+      socket.emit("send_message", socketMessage);
+      console.log("메시지 소켓 전송:", socketMessage);
 
       setContent("");
     } catch (err) {

@@ -48,6 +48,7 @@ export default function MessageModal({ onClose }) {
           return;
         }
 
+        // 대화 가능한 사용자 목록 조회
         const chatUserListRes = await authFetch(
           `${process.env.REACT_APP_API_URL}/messages/expMessageRoomList`,
           {},

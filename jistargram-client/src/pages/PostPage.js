@@ -48,7 +48,7 @@ function PostPage() {
         setCurrentUser(data.user);
         setPosts(data.result);
 
-        // 게시물 작성자들의 팔로우 상태를 병렬로 조회
+        // 게시물 작성자들의 팔로우 상태 조회
         const userIds = Array.from(
           new Set(data.result.map((p) => p.user_id))
         ).filter((id) => id !== data.user.user_id);
@@ -261,6 +261,7 @@ function PostPage() {
       {detailModal.open && (
         <PostDetailModal post={detailModal.post} onClose={closeDetail} />
       )}
+
       {updateModal.open && (
         <PostUpdateModal
           post={updateModal.post}

@@ -22,10 +22,10 @@ async function uploadPost(req, res) {
 }
 
 //게시글 전체 조회
-async function showPost(req, res) {
+async function getAllPost(req, res) {
   const limit = parseInt(req.query.limit) || 3;
   try {
-    const result = await services.getPostService(limit);
+    const result = await services.getAllPostData(limit);
     res.json({
       user: { user_id: req.user.user_id, user_name: req.user.user_name },
       result: result.result,
@@ -191,7 +191,7 @@ async function countComment(req, res) {
 
 module.exports = {
   uploadPost,
-  showPost,
+  getAllPost,
   deletePost,
   updatePost,
   getMyPost,

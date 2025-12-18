@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "store/useAuthStore";
 
 function Logout() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function Logout() {
     }
 
     alert("로그아웃 하였습니다.");
+    useAuthStore.getState().logout();
     navigate("/login");
   };
 

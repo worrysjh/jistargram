@@ -51,7 +51,6 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
   // roomId가 생성된 후에만 join (메시지 송신 후)
   useEffect(() => {
     if (!roomId) return;
-
     socket.emit("join_room", roomId);
     console.log("Room 참가: ", roomId);
 

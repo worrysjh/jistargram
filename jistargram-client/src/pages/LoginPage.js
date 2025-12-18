@@ -5,10 +5,12 @@ import { login } from "actions/auth/authActions";
 import "styles/LoginPage.css";
 import LoginForm from "components/auth/LoginForm";
 import { Link } from "react-router-dom";
+import useAuthStore from "store/useAuthStore";
 
 function LoginPage() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const loginSuccess = useAuthStore((state) => state.login);
 
   const handleLogin = async (user_name, passwd) => {
     console.log("로그인 시도:", user_name);
@@ -36,6 +38,7 @@ function LoginPage() {
       if (response.ok && data.access_token) {
         setMessage("로그인 성공");
         console.log("로그인 성공, 이동 중...");
+        loginSuccess({ user_id: data.user_id });
         navigate("/home");
       } else {
         setMessage(`로그인 실패: ${data.message || "알 수 없는 오류"}`);

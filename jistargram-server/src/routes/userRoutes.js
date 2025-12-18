@@ -1,8 +1,7 @@
 const express = require("express");
 const {
   register,
-  login,
-  updateProfile,
+  updateProfileBio,
   resignUser,
   getMyProfile,
   updateProfileImg,
@@ -14,7 +13,6 @@ const {
   getFollowerList,
   getFollowingList,
 } = require("../controllers/userController");
-
 const authenticateToken = require("../middlewares/auth");
 const verifyPasswd = require("../middlewares/verifyPasswd");
 const upload = require("../middlewares/uploadProfileImage");
@@ -22,9 +20,7 @@ const upload = require("../middlewares/uploadProfileImage");
 const router = express.Router();
 
 router.post("/register", register);
-router.post("/login", login);
-
-// 파일 업로드 라우트
+// 프로필 이미지 파일 업로드 라우트
 router.post(
   "/updateProfileImg",
   authenticateToken,
@@ -34,7 +30,7 @@ router.post(
 
 router.delete("/resignUser", authenticateToken, verifyPasswd, resignUser);
 router.get("/getMyProfile", authenticateToken, getMyProfile);
-router.patch("/updateProfile", authenticateToken, updateProfile);
+router.patch("/updateProfileBio", authenticateToken, updateProfileBio);
 
 router.get("/targetProfile/:user_id", getUserProfile);
 

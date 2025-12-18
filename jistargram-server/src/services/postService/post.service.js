@@ -30,7 +30,7 @@ async function deletePostService(post_id) {
 }
 
 // 전체 게시글 조회
-async function getPostService(limit) {
+async function getAllPostData(limit) {
   const result = await pool.query(
     `SELECT
         p.post_id,
@@ -93,7 +93,7 @@ module.exports = {
   uploadService,
   deletePostService,
   countPostService,
-  getPostService,
+  getAllPostData,
   getUserPostService,
   updatePostService,
 };

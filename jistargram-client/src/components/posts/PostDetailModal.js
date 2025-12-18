@@ -9,6 +9,7 @@ import LikeButton from "components/common/LikeButton";
 import { Link } from "react-router-dom";
 import { calculateDateDifference } from "utils/dateCalculate";
 import { useModalScrollLock } from "utils/modalScrollLock";
+import useAuthStore from "store/useAuthStore";
 
 function PostDetailModal({ post, onClose }) {
   useModalScrollLock(true);
@@ -16,11 +17,13 @@ function PostDetailModal({ post, onClose }) {
   const [newComment, setNewComment] = useState("");
   const [replyTarget, setReplyTarget] = useState(null);
   const [replyContent, setReplyContent] = useState("");
-  const post_id = post.post_id;
-  const post_created_at = post.created_at;
-  const [currentUser, setCurrentUser] = useState(null);
   const [menuOpenFor, setMenuOpenFor] = useState(null);
   const [followStatus, setFollowStatus] = useState(null);
+  const target_user_id = post.user_id;
+  const post_id = post.post_id;
+  const post_created_at = post.created_at;
+  const loginUser = useAuthStore((state) => state.user);
+  const loginUserId = loginUser?.user_id;
 
   const toggleMenu = (post_id) =>
     setMenuOpenFor((prev) => (prev === post_id ? null : post_id));
@@ -33,32 +36,31 @@ function PostDetailModal({ post, onClose }) {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
       alert("삭제 기능은 아직 구현되지 않았습니다.");
-      onClose(); // 모달 닫기
+      onClose();
     } catch {
       alert("삭제 실패");
     }
   };
 
-  const isOwner = currentUser?.user_id === post.user_id;
+  const isOwner = loginUserId === post.user_id;
 
   useEffect(() => {
     (async () => {
       try {
-        const followRes = await fetchFollowStatus(post.user_id);
+        const followRes = await fetchFollowStatus(target_user_id);
         setFollowStatus(followRes.isFollowing ? 1 : 0);
       } catch (err) {
         console.error("팔로우 상태 조회 실패:", err);
         setFollowStatus(0);
       }
     })();
-  }, [post.user_id]);
+  }, [target_user_id]);
 
   // 댓글 조회
   useEffect(() => {
     (async () => {
       try {
-        const { comments, user } = await fetchAndFlattenComments(post_id);
-        setCurrentUser(user);
+        const { comments } = await fetchAndFlattenComments(post_id);
         setComments(comments);
       } catch (err) {
         console.error("댓글 로딩 실패:", err);
@@ -226,7 +228,7 @@ function PostDetailModal({ post, onClose }) {
                           >
                             답글 달기
                           </span>
-                          {currentUser.user_id === c.user_id && (
+                          {loginUserId === c.user_id && (
                             <>
                               <span
                                 className="comment-action delete-text"

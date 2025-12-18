@@ -1,7 +1,7 @@
 import { authFetch } from "utils/authFetch";
 
 export async function login(user_name, passwd) {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
     method: "POST",
     credentials: "include",
     headers: {

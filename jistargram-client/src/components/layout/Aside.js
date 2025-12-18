@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "styles/index.css";
 import { Link } from "react-router-dom";
-import { FiMenu } from "react-icons/fi";
 import Logout from "components/auth/Logout";
+import { FiMenu } from "react-icons/fi";
 import { FaHome } from "react-icons/fa";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { IoIosCreate } from "react-icons/io";

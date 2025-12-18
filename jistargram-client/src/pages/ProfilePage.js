@@ -73,8 +73,14 @@ function ProfilePage() {
             fetchFollowStatus(target_user_id),
           ]);
           console.log("내용2: ", followStatusData);
+          const postsWithUserId = postsData.posts.result.map((post) => ({
+            ...post,
+            user_id: profileData.user_id,
+            user_name: profileData.user_name,
+            profile_img: profileData.profile_img,
+          }));
           setProfile(profileData);
-          setMyPosts(postsData.posts.result);
+          setMyPosts(postsWithUserId);
           console.log("팔로우 상태 데이터:", followStatusRes);
           setFollowStatusData(followStatusRes.isFollowing ? 1 : 0);
           console.log("내용3: ", followStatusData);
@@ -86,7 +92,13 @@ function ProfilePage() {
           ]);
 
           setProfile(profileData);
-          setMyPosts(postsData.posts.result);
+          const postsWithUserId = postsData.posts.result.map((post) => ({
+            ...post,
+            user_id: profileData.user_id,
+            user_name: profileData.user_name,
+            profile_img: profileData.profile_img,
+          }));
+          setMyPosts(postsWithUserId);
           setFollowStatusData(null);
         }
       } catch (err) {

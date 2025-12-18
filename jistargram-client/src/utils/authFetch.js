@@ -6,15 +6,11 @@ export async function authFetch(url, options = {}, navigate) {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
   };
 
-  console.log("authFetch 요청:", { url, options: { ...options, headers } });
-
   let res = await fetch(url, {
     ...options,
     headers,
     credentials: "include",
   });
-
-  console.log("authFetch 응답 상태:", res.status, url);
 
   if (res.status === 401 || res.status === 403) {
     const refreshRes = await fetch(

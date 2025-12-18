@@ -1,7 +1,7 @@
 const express = require("express");
 const {
   uploadPost,
-  showPost,
+  getAllPost,
   newComment,
   showAllComment,
   updatePost,
@@ -24,7 +24,7 @@ router.post(
   upload.single("image"),
   uploadPost
 );
-router.get("/showPost", authenticateToken, showPost);
+router.get("/postList", authenticateToken, getAllPost);
 router.put(
   "/updatePost/:post_id",
   authenticateToken,

@@ -23,46 +23,6 @@ async function register(req, res) {
   }
 }
 
-// 로그인
-async function login(req, res) {
-  const { user_name, passwd } = req.body;
-
-  const USERNAME_REGEX = /^[a-zA-Z0-9_]{4,20}$/;
-  const PASSWORD_REGEX = /^[a-zA-Z0-9!@#\$%\^&\*]{6,30}$/;
-
-  if (!USERNAME_REGEX.test(user_name)) {
-    return res
-      .status(400)
-      .json({ message: "아이디는 영문/숫자 4~20자여야 합니다." });
-  }
-  if (!PASSWORD_REGEX.test(passwd)) {
-    return res.status(400).json({ message: "비밀번호는 6~30자여야 합니다." });
-  }
-
-  try {
-    const result = await services.loginService({ user_name, passwd });
-    if (!result.success) {
-      return res.status(400).json({ message: result.message });
-    }
-    res.cookie("access_token", result.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 60 * 60 * 1000,
-    });
-    res.cookie("refresh_token", result.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 60 * 60 * 24 * 7 * 1000,
-    });
-    res.json({ message: "로그인 성공", access_token: result.access_token });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "로그인 실패" });
-  }
-}
-
 // 내 프로필 조회
 async function getMyProfile(req, res) {
   const user_id = req.user.user_id;
@@ -92,7 +52,7 @@ async function getUserProfile(req, res) {
 }
 
 // 자기소개 업데이트
-async function updateProfile(req, res) {
+async function updateProfileBio(req, res) {
   const { biography } = req.body;
   const user_name = req.user.user_name;
 
@@ -224,8 +184,7 @@ async function getFollowingList(req, res) {
 
 module.exports = {
   register,
-  login,
-  updateProfile,
+  updateProfileBio,
   resignUser,
   getMyProfile,
   updateProfileImg,

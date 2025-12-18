@@ -1,5 +1,6 @@
 import { authFetch } from "utils/authFetch";
 
+// 내 게시물 조회
 export async function fetchMyPosts() {
   const response = await authFetch(
     `${process.env.REACT_APP_API_URL}/posts/getMyPost`
@@ -8,6 +9,7 @@ export async function fetchMyPosts() {
   return response.json();
 }
 
+// 특정 유저 게시물 조회
 export async function fetchUserPosts(target_user_id) {
   const response = await fetch(
     `${process.env.REACT_APP_API_URL}/posts/targetPost/${target_user_id}`
@@ -16,6 +18,7 @@ export async function fetchUserPosts(target_user_id) {
   return response.json();
 }
 
+// 내 프로필 조회
 export async function fetchProfile(navigate) {
   const response = await authFetch(
     `${process.env.REACT_APP_API_URL}/users/getMyProfile`,
@@ -26,6 +29,7 @@ export async function fetchProfile(navigate) {
   return response.json();
 }
 
+// 특정 유저 프로필 조회
 export async function fetchUserProfile(target_user_id) {
   const response = await fetch(
     `${process.env.REACT_APP_API_URL}/users/targetProfile/${target_user_id}`
@@ -33,9 +37,10 @@ export async function fetchUserProfile(target_user_id) {
   return response.json();
 }
 
+// 프로필 소개 수정
 export async function updateProfileBio(biography, navigate) {
   const response = await authFetch(
-    `${process.env.REACT_APP_API_URL}/users/updateProfile`,
+    `${process.env.REACT_APP_API_URL}/users/updateProfileBio`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -46,6 +51,7 @@ export async function updateProfileBio(biography, navigate) {
   if (!response) throw new Error("소개 수정 실패");
 }
 
+// 프로필 이미지 수정
 export async function updateProfileImage(file, navigate) {
   const formData = new FormData();
   formData.append("profile_img", file);

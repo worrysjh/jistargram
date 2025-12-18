@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import "../../styles/FollowListModal.css";
-import { authFetch } from "../../utils/authFetch";
-import {
-  addFollowUser,
-  removeFollowUser,
-} from "../../actions/user/userActions";
+import "styles/FollowListModal.css";
+import { authFetch } from "utils/authFetch";
+import { addFollowUser, removeFollowUser } from "actions/user/userActions";
 import { useNavigate } from "react-router-dom";
-import { useModalScrollLock } from "../../utils/modalScrollLock";
+import { useModalScrollLock } from "utils/modalScrollLock";
+import useAuthStore from "store/useAuthStore";
 
 function FollowListModal({ type, userId, onClose }) {
   useModalScrollLock(true);
@@ -17,6 +15,9 @@ function FollowListModal({ type, userId, onClose }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isLast, setIsLast] = useState(false);
   const navigate = useNavigate();
+
+  const loginUser = useAuthStore((state) => state.user);
+  const loginUserId = loginUser?.user_id;
 
   const title = type === "followers" ? "팔로워" : "팔로우";
 
@@ -54,10 +55,19 @@ function FollowListModal({ type, userId, onClose }) {
         const data = await res.json();
         console.log("Fetched users:", data);
 
-        setUsers(data);
+        const uniqueUsers = Array.from(
+          new Map(data.map((u) => [u.user_id, u])).values()
+        );
+
+        // 접속 사용자 최상단으로 이동
+        const processedUsers = uniqueUsers
+          .map((u) => ({ ...u, isMe: u.user_id === loginUserId }))
+          .sort((a, b) => (a.isMe === b.isMe ? 0 : a.isMe ? -1 : 1));
+
+        setUsers(processedUsers);
 
         // 더 이상 데이터가 없으면 isLast를 true로
-        if (data.length < limit) {
+        if (processedUsers.length < limit) {
           setIsLast(true);
         }
       } catch (err) {

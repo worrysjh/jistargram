@@ -1,5 +1,6 @@
 import { authFetch } from "utils/authFetch";
 
+// 게시물 삭제
 export async function deletePost(post_id) {
   const res = await authFetch(
     `${process.env.REACT_APP_API_URL}/posts/deletePost/${post_id}`,
@@ -10,14 +11,16 @@ export async function deletePost(post_id) {
   if (!res.ok) throw new Error("삭제 실패");
 }
 
+// 전체 게시물 조회
 export async function fetchPosts(limit) {
   const res = await authFetch(
-    `${process.env.REACT_APP_API_URL}/posts/showPost?limit=${limit}`
+    `${process.env.REACT_APP_API_URL}/posts/postList?limit=${limit}`
   );
   if (!res.ok) throw new Error("네트워크 응답 실패");
   return res.json();
 }
 
+// 게시물 업데이트
 export async function updatePost(formData) {
   const post_id = formData.get("post_id");
   const res = await authFetch(
@@ -28,6 +31,7 @@ export async function updatePost(formData) {
   return formData.get("content");
 }
 
+// 게시물 업로드
 export async function uploadPost(formData, navigate) {
   try {
     const response = await authFetch(

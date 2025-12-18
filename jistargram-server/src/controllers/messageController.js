@@ -25,32 +25,6 @@ async function checkMessageRoom(req, res) {
   return res.status(200).json({ exists: result, roomId: room_id });
 }
 
-// 방 생성
-// async function createMessageRoom(req, res) {
-//   const { user_id: target_user_id } = req.body;
-//   const { user_id } = req.user;
-//   console.log("대상: " + target_user_id + " 보낸이: " + user_id);
-//   try {
-//     const roomId = generateRoomId(user_id, target_user_id);
-//     // 방 존재 재검사 : 충돌방지
-//     if (await services.checkMessageRoom(roomId)) {
-//       return res
-//         .status(200)
-//         .json({ message: "이미 존재하는 대화 방입니다.", roomId });
-//     }
-//     // 없을시 룸 생성 후 참가
-//     else {
-//       await services.createMessageRoom(roomId);
-//       await services.joinMessageRoom(roomId, user_id, target_user_id);
-//       return res
-//         .status(201)
-//         .json({ message: "대화 방이 생성되었습니다.", roomId });
-//     }
-//   } catch (err) {
-//     return res.status(400).json({ message: "대화 방 생성 실패" });
-//   }
-// }
-
 // 기존 메시지 이력 조회
 async function getMessage(req, res) {
   const { user_id: target_user_id } = req.params;
@@ -120,7 +94,7 @@ async function sendMessage(req, res) {
   }
 }
 
-// 두 사용자 ID로 ROOM ID 생성하기
+// 두 사용자 ID 기반 ROOM ID 생성
 function generateRoomId(userId1, userId2) {
   const JISTARGRAM_NAMESPACE = process.env.JISTARGRAM_NAMESPACE;
   const sotredIds = [userId1, userId2].sort();

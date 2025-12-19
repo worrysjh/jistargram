@@ -2,7 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { socket } from "utils/socket";
 import "styles/MessageModal.css";
 
-export default function ChatWindow({ selectedUser, currentUser, onClose }) {
+export default function ChatWindow({
+  selectedUser,
+  currentUser,
+  onClose,
+  onRoomChange,
+  onRefreshRoomList,
+}) {
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState("");
   const [roomId, setRoomId] = useState(null);
@@ -21,44 +27,79 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
 
   // 스크롤이 최하단에 있는지 확인
   const isAtBottom = () => {
-    if (!messageBoxRef.current) return false;
+    if (!messageBoxRef.current) return true;
     const { scrollTop, scrollHeight, clientHeight } = messageBoxRef.current;
     return scrollHeight - scrollTop - clientHeight < 50;
   };
 
   // 스크롤 이벤트 핸들러
   useEffect(() => {
+    const messageBox = messageBoxRef.current;
+    if (!messageBox) return;
+
     const handleScroll = () => {
       isUserScrollingRef.current = !isAtBottom();
     };
 
-    const messageBox = messageBoxRef.current;
-    if (messageBox) {
-      messageBox.addEventListener("scroll", handleScroll);
-      return () => messageBox.removeEventListener("scroll", handleScroll);
-    }
+    messageBox.addEventListener("scroll", handleScroll);
+    return () => messageBox.removeEventListener("scroll", handleScroll);
   }, []);
 
   // 메시지가 렌더링되면 스크롤
   useEffect(() => {
-    if (shouldScrollRef.current && !isLoadingMessages && messages.length > 0) {
+    if (shouldScrollRef.current && !isUserScrollingRef.current) {
       scrollToBottom();
       shouldScrollRef.current = false;
-      isUserScrollingRef.current = false;
     }
   }, [messages, isLoadingMessages]);
 
   // roomId가 생성된 후에만 join (메시지 송신 후)
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !currentUser?.user_id) {
+      onRoomChange?.(null);
+      return;
+    }
+
+    // 부모에게 현재 roomId 전달
+    onRoomChange?.(roomId);
+
     socket.emit("join_room", roomId);
     console.log("Room 참가: ", roomId);
 
-    return () => {
-      socket.emit("leave_room", roomId);
-      console.log("Room 나가기: ", roomId);
+    // 방 입장 시 읽음 처리 (안읽은 메시지 0으로 만들기)
+    const markAsRead = async () => {
+      try {
+        await fetch(`${process.env.REACT_APP_API_URL}/messages/markAsRead`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            room_id: roomId,
+            user_id: currentUser.user_id,
+          }),
+        });
+        console.log(`방 입장 - 읽음 처리 완료: ${roomId}`);
+
+        // 읽음 처리 후 방 목록 새로고침
+        setTimeout(() => {
+          onRefreshRoomList?.();
+          console.log("방 목록 새로고침 요청");
+        }, 300);
+      } catch (err) {
+        console.error("읽음 처리 실패:", err);
+      }
     };
-  }, [roomId]);
+
+    markAsRead();
+
+    return () => {
+      socket.emit("leave_room", {
+        room_id: roomId,
+        user_id: currentUser.user_id,
+      });
+      console.log(`Room 나가기: ${roomId}, 사용자: ${currentUser.user_id}`);
+    };
+  }, [roomId, currentUser?.user_id, onRoomChange]);
 
   useEffect(() => {
     if (!selectedUser?.user_id) {
@@ -244,6 +285,10 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
         roomId: targetRoomId,
       };
 
+      // 스크롤 플래그 설정 (메시지 추가 전)
+      isUserScrollingRef.current = false;
+      shouldScrollRef.current = true;
+
       setMessages((prev) => [...prev, newMessage]);
 
       // 4. 소켓으로 메시지 전송 (다른 사용자에게 전달)
@@ -251,10 +296,6 @@ export default function ChatWindow({ selectedUser, currentUser, onClose }) {
       console.log("메시지 소켓 전송:", newMessage);
 
       setContent("");
-
-      // 메시지 전송 시 항상 스크롤
-      isUserScrollingRef.current = false;
-      setTimeout(() => scrollToBottom(), 0);
     } catch (err) {
       console.error("메시지 전송 실패:", err);
       alert("메시지 전송 중 오류가 발생했습니다.");

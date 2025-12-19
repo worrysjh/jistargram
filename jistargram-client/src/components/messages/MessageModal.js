@@ -4,17 +4,57 @@ import ChatWindow from "./ChatWindow";
 import { authFetch } from "utils/authFetch";
 import { useNavigate } from "react-router-dom";
 import { useModalScrollLock } from "utils/modalScrollLock";
+import { socket } from "utils/socket";
 import "styles/MessageModal.css";
 
 export default function MessageModal({ onClose }) {
   useModalScrollLock(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [limit, setLimit] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentRoomId, setCurrentRoomId] = useState(null);
   const navigate = useNavigate();
+
+  // 방 목록 새로고침 함수
+  const refreshRoomList = async () => {
+    try {
+      const chatUserListRes = await authFetch(
+        `${process.env.REACT_APP_API_URL}/messages/expMessageRoomList`,
+        {},
+        navigate
+      );
+
+      if (!chatUserListRes || !chatUserListRes.ok) {
+        console.error("failed to refresh room list");
+        return;
+      }
+
+      const data = await chatUserListRes.json();
+      console.log("=== 새로고침된 방 목록 ===", data);
+
+      const roomList = Array.isArray(data)
+        ? data
+        : Array.isArray(data.users)
+          ? data.users
+          : Array.isArray(data.result)
+            ? data.result
+            : [];
+
+      console.log("처리된 roomList:", roomList);
+      roomList.forEach((room) => {
+        console.log(
+          `방: ${room.room_id}, 사용자: ${room.nick_name}, unread_count: ${room.unread_count}`
+        );
+      });
+
+      setRooms(roomList);
+    } catch (err) {
+      console.error("Error refreshing room list:", err);
+    }
+  };
 
   // 현재 사용자 정보 + 초기 팔로잉 목록 조회
   useEffect(() => {
@@ -32,7 +72,7 @@ export default function MessageModal({ onClose }) {
           console.error("failed to fetch current user");
           if (mounted) {
             setCurrentUser(null);
-            setUsers([]);
+            setRooms([]);
             setIsLoading(false);
           }
           return;
@@ -43,7 +83,7 @@ export default function MessageModal({ onClose }) {
         setCurrentUser(me);
 
         if (!me?.user_id) {
-          setUsers([]);
+          setRooms([]);
           setIsLoading(false);
           return;
         }
@@ -58,7 +98,7 @@ export default function MessageModal({ onClose }) {
         if (!chatUserListRes || !chatUserListRes.ok) {
           console.error("failed to fetch users");
           if (mounted) {
-            setUsers([]);
+            setRooms([]);
             setIsLoading(false);
           }
           return;
@@ -67,7 +107,7 @@ export default function MessageModal({ onClose }) {
         const data = await chatUserListRes.json();
         console.log("fetched users:", data);
 
-        const userList = Array.isArray(data)
+        const roomList = Array.isArray(data)
           ? data
           : Array.isArray(data.users)
             ? data.users
@@ -75,10 +115,16 @@ export default function MessageModal({ onClose }) {
               ? data.result
               : [];
 
+        console.log("초기 roomList:", roomList);
+        roomList.forEach((room) => {
+          console.log(
+            `방: ${room.room_id}, 사용자: ${room.nick_name}, unread_count: ${room.unread_count}`
+          );
+        });
+
         if (mounted) {
-          setUsers(userList);
-          // 받아온 데이터가 limit보다 적으면 더 이상 없음
-          if (userList.length < limit) {
+          setRooms(roomList);
+          if (roomList.length < limit) {
             setHasMore(false);
           }
           setIsLoading(false);
@@ -87,7 +133,7 @@ export default function MessageModal({ onClose }) {
         console.error("Error fetching current user or users:", err);
         if (mounted) {
           setCurrentUser(null);
-          setUsers([]);
+          setRooms([]);
           setIsLoading(false);
         }
       }
@@ -106,13 +152,47 @@ export default function MessageModal({ onClose }) {
     }
   };
 
+  // 사용자 선택 변경 시 이전 방 나가기 처리
+  const handleSelectUser = (user) => {
+    console.log(`[방 전환] 선택된 사용자:`, user);
+
+    // 이전 방이 있으면 나가기
+    if (currentRoomId && currentUser?.user_id) {
+      console.log(`[방 전환] 이전 방 나가기: ${currentRoomId}`);
+      socket.emit("leave_room", {
+        room_id: currentRoomId,
+        user_id: currentUser.user_id,
+      });
+    }
+
+    setSelectedUser(user);
+
+    // 새 사용자 선택 후 방 목록 새로고침 (읽음 처리 반영)
+    setTimeout(() => {
+      console.log("[방 전환] 방 목록 새로고침 시작");
+      refreshRoomList();
+    }, 800);
+  };
+
+  // 모달 닫을 때 현재 방 나가기 처리
+  const handleClose = () => {
+    if (currentRoomId && currentUser?.user_id) {
+      socket.emit("leave_room", {
+        room_id: currentRoomId,
+        user_id: currentUser.user_id,
+      });
+      console.log(`모달 닫기 - 방 나가기: ${currentRoomId}`);
+    }
+    onClose();
+  };
+
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={handleClose}>
       <div className="chat-page" onClick={(e) => e.stopPropagation()}>
         <UserList
-          users={users}
+          rooms={rooms}
           selectedUser={selectedUser}
-          onSelectUser={setSelectedUser}
+          onSelectUser={handleSelectUser}
           currentUser={currentUser}
           onLoadMore={handleLoadMore}
           hasMore={hasMore}
@@ -121,7 +201,9 @@ export default function MessageModal({ onClose }) {
         <ChatWindow
           selectedUser={selectedUser}
           currentUser={currentUser}
-          onClose={onClose}
+          onClose={handleClose}
+          onRoomChange={setCurrentRoomId}
+          onRefreshRoomList={refreshRoomList}
         />
       </div>
     </div>

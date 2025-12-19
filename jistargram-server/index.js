@@ -1,10 +1,10 @@
-// index.js
 const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
 const db = require("./src/models/db");
 const { createClient } = require("redis");
 const { createAdapter } = require("@socket.io/redis-adapter");
+const services = require("./src/services");
 
 const PORT = process.env.PORT || 4000;
 const MAX_RETRIES = 5;
@@ -41,9 +41,23 @@ Promise.all([pubClient.connect(), subClient.connect()])
         console.log(`${room_id} 방 입장`);
       });
 
-      socket.on("leave_room", (room_id) => {
-        socket.leave(room_id);
-        console.log(`${room_id} 방 퇴장`);
+      socket.on("leave_room", async (data) => {
+        const { room_id, user_id } = data;
+
+        try {
+          // DB에 left_at 업데이트
+          await services.markMessagesAsRead(room_id, user_id);
+          console.log(
+            `${user_id}가 ${room_id} 방 퇴장 - left_at 업데이트 완료`
+          );
+
+          socket.leave(room_id);
+        } catch (err) {
+          console.error(
+            `방 퇴장 중 오류 (room: ${room_id}, user: ${user_id}):`,
+            err
+          );
+        }
       });
 
       socket.on("send_message", (message) => {

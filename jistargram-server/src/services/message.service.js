@@ -25,6 +25,52 @@ async function getExpMessageRoomList(user_id) {
   return result.rows;
 }
 
+// 참여한 방 기반 반환
+async function getRoomList(user_id) {
+  const result = await pool.query(
+    `
+    SELECT 
+      mp.room_id, 
+      u.user_id, 
+      u.user_name, 
+      u.nick_name, 
+      u.profile_img,
+      mr.last_message_id,
+      mr.last_activity_at,
+      my_mp.left_at,
+      COALESCE(
+        (SELECT COUNT(*)
+         FROM messages m
+         WHERE m.room_id = mp.room_id
+           AND m.sender_id != $1
+           AND m.timestamp > COALESCE(my_mp.left_at, '1970-01-01'::timestamp)
+        ), 0
+      ) AS unread_count
+    FROM message_participant mp
+    JOIN users u ON mp.user_id = u.user_id
+    LEFT JOIN message_rooms mr ON mp.room_id = mr.room_id
+    LEFT JOIN message_participant my_mp ON mp.room_id = my_mp.room_id AND my_mp.user_id = $1
+    WHERE mp.room_id IN (
+        SELECT room_id 
+        FROM message_participant 
+        WHERE user_id = $1
+    )
+    AND mp.user_id != $1
+    ORDER BY mr.last_activity_at DESC NULLS LAST;
+  `,
+    [user_id]
+  );
+
+  console.log("=== 방 목록 조회 결과 ===");
+  result.rows.forEach((row) => {
+    console.log(
+      `방: ${row.room_id}, 사용자: ${row.nick_name}, left_at: ${row.left_at}, unread: ${row.unread_count}`
+    );
+  });
+
+  return result.rows;
+}
+
 // 채팅 방 생성
 async function createMessageRoom(room_id) {
   await pool.query(
@@ -44,13 +90,23 @@ async function joinMessageRoom(room_id, user_id, target_user_id) {
 
 // 채팅방 내용 업데이트
 async function updateMessageRoom(room_id, last_message_id, last_activity_at) {
-  await pool.query(
-    `UPDATE message_rooms
-    SET last_message_id = $2, last_activity_at = $3
-    WHERE room_id = $1
-    `,
-    [room_id, last_message_id, last_activity_at]
-  );
+  // last_message_id가 유효한 경우에만 업데이트
+  if (last_message_id) {
+    await pool.query(
+      `UPDATE message_rooms
+      SET last_message_id = $2, last_activity_at = $3
+      WHERE room_id = $1`,
+      [room_id, last_message_id, last_activity_at]
+    );
+  } else {
+    // last_message_id가 없으면 last_activity_at만 업데이트
+    await pool.query(
+      `UPDATE message_rooms
+      SET last_activity_at = $2
+      WHERE room_id = $1`,
+      [room_id, last_activity_at]
+    );
+  }
 }
 
 // 채팅방 존재 유무 확인
@@ -81,20 +137,60 @@ async function saveMessage(
   content,
   content_type = "text"
 ) {
-  await pool.query(
-    `INSERT INTO messages (room_id, sender_id, receiver_id, content, content_type)
-        VALUES ($1, $2, $3, $4, $5)`,
+  const result = await pool.query(
+    `INSERT INTO messages (room_id, sender_id, receiver_id, content, content_type, timestamp)
+    VALUES ($1, $2, $3, $4, $5, NOW())
+    RETURNING message_id, timestamp`,
     [room_id, sender_id, receiver_id, content, content_type]
   );
 
-  return { success: true };
+  console.log("저장된 메시지:", result.rows[0]);
+  return result.rows[0]; // { message_id: 46, timestamp: '2025-12-19...' }
+}
+
+// 안읽은 메시지 개수 조회
+async function getUnreadMessageCount(room_id, user_id) {
+  const result = await pool.query(
+    `SELECT 
+      m.room_id,
+      COUNT(m.message_id) AS unread_count
+    FROM messages m
+    JOIN message_participant mp ON m.room_id = mp.room_id
+    WHERE mp.room_id = $1
+      AND mp.user_id = $2
+      AND m.timestamp  > mp.left_at
+    GROUP BY m.room_id;`,
+    [room_id, user_id]
+  );
+  return result.rows;
+}
+
+// 메시지 읽음 처리
+async function markMessagesAsRead(room_id, user_id) {
+  const result = await pool.query(
+    `UPDATE message_participant
+     SET left_at = NOW()
+     WHERE room_id = $1 AND user_id = $2
+     RETURNING left_at`,
+    [room_id, user_id]
+  );
+
+  console.log(
+    `방 ${room_id}의 사용자 ${user_id} 읽음 처리:`,
+    result.rows[0]?.left_at
+  );
+  return result.rows[0];
 }
 
 module.exports = {
   getExpMessageRoomList,
+  getRoomList,
   createMessageRoom,
   joinMessageRoom,
+  updateMessageRoom,
   checkMessageRoom,
   getMessageContent,
   saveMessage,
+  getUnreadMessageCount,
+  markMessagesAsRead,
 };

@@ -1,9 +1,10 @@
 import { useRef, useCallback } from "react";
 import "styles/MessageModal.css";
 import { calculateDateDifference } from "utils/dateCalculate";
+import useAuthStore from "store/useAuthStore";
 
 export default function UserList({
-  users = [],
+  rooms = [],
   selectedUser,
   onSelectUser,
   currentUser,
@@ -11,6 +12,9 @@ export default function UserList({
   hasMore = true,
   isLoading = false,
 }) {
+  const loginUser = useAuthStore((state) => state.user);
+  const loginUserId = loginUser?.user_id;
+
   const observer = useRef();
 
   const lastUserRef = useCallback(
@@ -40,16 +44,21 @@ export default function UserList({
     <div className="message-user-list">
       <h3>{currentUser?.user_name}</h3>
       <div className="message-user-list-container">
-        {users.length === 0 && !isLoading ? (
+        {rooms.length === 0 && !isLoading ? (
           <div className="no-users">대화 가능한 사용자가 없습니다</div>
         ) : (
           <>
-            {users.map((user, index) => {
-              const isLastItem = index === users.length - 1;
+            {rooms.map((user, index) => {
+              const isLastItem = index === rooms.length - 1;
+              const unreadCount = parseInt(user.unread_count || 0);
+
+              console.log(
+                `[UserList] ${user.nick_name}: unread_count = ${user.unread_count}, parsed = ${unreadCount}`
+              );
 
               return (
                 <div
-                  key={user.user_id}
+                  key={user.room_id}
                   ref={isLastItem ? lastUserRef : null}
                   className={`user-item ${selectedUser?.user_id === user.user_id ? "active" : ""}`}
                   onClick={() =>
@@ -71,16 +80,19 @@ export default function UserList({
                   )}
                   <div className="message-user-info">
                     <p className="user-name">{user.nick_name}</p>
-                    <p
-                      className={`user-message-preview ${user.unread ? "unread" : ""}`}
-                    >
+                    <p className="user-message-preview">
                       {user.last_message || "대화를 시작해보세요!"}
                     </p>
+                    {unreadCount > 0 && (
+                      <p className="user-unread-count">
+                        새 메시지: {unreadCount}건
+                      </p>
+                    )}
                   </div>
-                  {user.last_message_time && (
+                  {user.last_activity_at && (
                     <span className="user-time">
                       {calculateDateDifference(
-                        user.last_message_time,
+                        user.last_activity_at,
                         new Date()
                       )}
                     </span>

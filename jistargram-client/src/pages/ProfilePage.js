@@ -72,7 +72,6 @@ function ProfilePage() {
             fetchUserPosts(target_user_id),
             fetchFollowStatus(target_user_id),
           ]);
-          console.log("내용2: ", followStatusData);
           const postsWithUserId = postsData.posts.result.map((post) => ({
             ...post,
             user_id: profileData.user_id,
@@ -81,9 +80,7 @@ function ProfilePage() {
           }));
           setProfile(profileData);
           setMyPosts(postsWithUserId);
-          console.log("팔로우 상태 데이터:", followStatusRes);
           setFollowStatusData(followStatusRes.isFollowing ? 1 : 0);
-          console.log("내용3: ", followStatusData);
         } else {
           // 프로필 + 내 게시물 동시 로드
           const [profileData, postsData] = await Promise.all([

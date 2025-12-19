@@ -24,6 +24,7 @@ const io = new Server(server, {
 const pubClient = createClient({ url: process.env.REDIS_URL });
 const subClient = pubClient.duplicate();
 
+// 3. Redis 클라이언트 연결 및 Socket.io 어댑터 설정
 Promise.all([pubClient.connect(), subClient.connect()])
   .then(() => {
     console.log("Connected to Redis for Socket.io adapter");

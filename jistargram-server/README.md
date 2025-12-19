@@ -24,7 +24,7 @@ Jistargram 서버는 실시간 채팅 기능을 제공하는 Instagram 스타일
 ## 동작 화면
 
 - **채팅**
-    ![동작화면]()
+    ![Image](https://github.com/user-attachments/assets/bd916f9e-7a8f-4665-a884-d8c4afd43fa6)
 
 
 ## 시나리오

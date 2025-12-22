@@ -30,16 +30,24 @@ async function checkMessageRoom(req, res) {
 async function getMessage(req, res) {
   const { user_id: target_user_id } = req.params;
   const { user_id } = req.user;
+  const { offset = 0, limit = 20 } = req.query; // 쿼리 파라미터 추가
+
   console.log("대상: " + target_user_id + " 보낸이: " + user_id);
+  console.log(`offset: ${offset}, limit: ${limit}`);
+
   const room_id = generateRoomId(user_id, target_user_id);
-  console.log("조회할 방 ID: " + room_id);
+
   try {
-    console.log("메시지 조회 서비스 호출 전");
-    const data = await services.getMessageContent(room_id);
-    console.log("메시지 데이터:", data);
-    return res.status(200).json(data);
+    const messages = await services.getMessageContent(
+      room_id,
+      parseInt(offset),
+      parseInt(limit)
+    );
+
+    res.status(200).json(messages);
   } catch (err) {
-    return res.status(400).json({ message: "대화 내역 조회 실패" });
+    console.error("메시지 조회 실패:", err);
+    res.status(500).json({ error: "메시지 조회 실패" });
   }
 }
 

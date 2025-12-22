@@ -76,6 +76,30 @@
   min-height: 0;
 }
 
+.message-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.message-wrapper.sent {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+.message-wrapper.received {
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #8e8e8e;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-end;
+  padding-bottom: 4px;
+}
 
 /* 사용자 목록 로딩 스피너 */
 .user-list-loading {
@@ -435,4 +459,25 @@
 .user-name {
   font-weight: 600;
   margin: 0;
+}
+
+.date-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.date-divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: #dbdbdb;
+}
+
+.date-divider-text {
+  color: #8e8e8e;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 0 10px;
 }

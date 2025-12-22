@@ -1,6 +1,18 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { socket } from "utils/socket";
 import "styles/MessageModal.css";
+import {
+  formatDate,
+  formatTime,
+  isSameDay,
+  isSameSender,
+} from "utils/dateConvertor";
+import {
+  checkMessageRoom,
+  getMessages,
+  sendMessageToServer,
+  markMessagesAsRead,
+} from "actions/message/messageAction";
 
 export default function ChatWindow({
   selectedUser,
@@ -13,10 +25,16 @@ export default function ChatWindow({
   const [content, setContent] = useState("");
   const [roomId, setRoomId] = useState(null);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const limit = parseInt(process.env.REACT_APP_MESSAGE_LIMIT) || 20;
+
   const prevSelectedRef = useRef(null);
   const messageBoxRef = useRef(null);
   const shouldScrollRef = useRef(false);
   const isUserScrollingRef = useRef(false);
+  const observer = useRef();
+  const prevScrollHeightRef = useRef(0);
 
   // 메시지 목록 끝으로 스크롤
   const scrollToBottom = () => {
@@ -31,6 +49,83 @@ export default function ChatWindow({
     const { scrollTop, scrollHeight, clientHeight } = messageBoxRef.current;
     return scrollHeight - scrollTop - clientHeight < 50;
   };
+
+  // 이전 메시지 불러오기 - useCallback으로 감싸기
+  const loadMoreMessages = useCallback(async () => {
+    if (!roomId || isLoadingMessages || !hasMore) return;
+
+    console.log("이전 메시지 로딩 시작, 현재 offset:", offset);
+    setIsLoadingMessages(true);
+    const newOffset = offset + limit;
+
+    try {
+      const newMessages = await getMessages(
+        selectedUser.user_id,
+        newOffset,
+        limit
+      );
+
+      console.log(`불러온 메시지 개수: ${newMessages.length}`);
+
+      if (newMessages.length < limit) {
+        console.log("더 이상 불러올 메시지 없음");
+        setHasMore(false);
+      }
+
+      if (newMessages.length > 0) {
+        prevScrollHeightRef.current = messageBoxRef.current?.scrollHeight || 0;
+        setMessages((prev) => [...newMessages, ...prev]);
+        setOffset(newOffset);
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error("이전 메시지 로드 실패:", err);
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  }, [
+    roomId,
+    isLoadingMessages,
+    hasMore,
+    offset,
+    selectedUser?.user_id,
+    limit,
+  ]);
+
+  // 역방향 무한스크롤 - 첫 번째 메시지 관찰
+  const firstMessageRef = useCallback(
+    (node) => {
+      if (isLoadingMessages) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasMore && !isLoadingMessages) {
+            console.log("첫 메시지 도달 - 이전 메시지 로드");
+            loadMoreMessages();
+          }
+        },
+        {
+          root: messageBoxRef.current,
+          threshold: 0.1,
+        }
+      );
+
+      if (node) observer.current.observe(node);
+    },
+    [isLoadingMessages, hasMore, loadMoreMessages]
+  );
+
+  // 메시지 로드 후 스크롤 위치 복원
+  useEffect(() => {
+    if (prevScrollHeightRef.current > 0 && messageBoxRef.current) {
+      const currentScrollHeight = messageBoxRef.current.scrollHeight;
+      const scrollDiff = currentScrollHeight - prevScrollHeightRef.current;
+      messageBoxRef.current.scrollTop = scrollDiff;
+      prevScrollHeightRef.current = 0;
+    }
+  }, [messages]);
 
   // 스크롤 이벤트 핸들러
   useEffect(() => {
@@ -53,44 +148,30 @@ export default function ChatWindow({
     }
   }, [messages, isLoadingMessages]);
 
-  // roomId가 생성된 후에만 join (메시지 송신 후)
+  // roomId가 생성된 후에만 join
   useEffect(() => {
     if (!roomId || !currentUser?.user_id) {
       onRoomChange?.(null);
       return;
     }
 
-    // 부모에게 현재 roomId 전달
     onRoomChange?.(roomId);
-
     socket.emit("join_room", roomId);
     console.log("Room 참가: ", roomId);
 
-    // 방 입장 시 읽음 처리 (안읽은 메시지 0으로 만들기)
-    const markAsRead = async () => {
+    const handleMarkAsRead = async () => {
       try {
-        await fetch(`${process.env.REACT_APP_API_URL}/messages/markAsRead`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            room_id: roomId,
-            user_id: currentUser.user_id,
-          }),
-        });
-        console.log(`방 입장 - 읽음 처리 완료: ${roomId}`);
-
-        // 읽음 처리 후 방 목록 새로고침
+        await markMessagesAsRead(roomId, currentUser.user_id);
         setTimeout(() => {
           onRefreshRoomList?.();
           console.log("방 목록 새로고침 요청");
         }, 300);
       } catch (err) {
-        console.error("읽음 처리 실패:", err);
+        // 에러는 이미 action에서 처리됨
       }
     };
 
-    markAsRead();
+    handleMarkAsRead();
 
     return () => {
       socket.emit("leave_room", {
@@ -99,12 +180,15 @@ export default function ChatWindow({
       });
       console.log(`Room 나가기: ${roomId}, 사용자: ${currentUser.user_id}`);
     };
-  }, [roomId, currentUser?.user_id, onRoomChange]);
+  }, [roomId, currentUser?.user_id]);
 
+  // 선택된 사용자 변경 시 초기화 및 메시지 로드
   useEffect(() => {
     if (!selectedUser?.user_id) {
       setRoomId(null);
       setMessages([]);
+      setOffset(0);
+      setHasMore(true);
       prevSelectedRef.current = null;
       setIsLoadingMessages(false);
       shouldScrollRef.current = false;
@@ -112,10 +196,11 @@ export default function ChatWindow({
       return;
     }
 
-    // 재선택 시 선택 해제
     if (prevSelectedRef.current === selectedUser.user_id) {
       setRoomId(null);
       setMessages([]);
+      setOffset(0);
+      setHasMore(true);
       prevSelectedRef.current = selectedUser.user_id;
       setIsLoadingMessages(false);
       shouldScrollRef.current = false;
@@ -126,60 +211,32 @@ export default function ChatWindow({
     let mounted = true;
     setIsLoadingMessages(true);
     shouldScrollRef.current = false;
+    setOffset(0);
+    setHasMore(true);
 
     (async () => {
       try {
-        // 1. 방 존재 여부 확인 (roomId는 서버에서 계산해서 반환)
-        const res = await fetch(
-          `${process.env.REACT_APP_API_URL}/messages/checkMessageRoom/${selectedUser.user_id}`,
-          { credentials: "include" }
-        );
-
-        if (!res.ok) {
-          console.error("대화 방 확인 실패, status:", res.status);
-          if (mounted) {
-            setMessages([]);
-            setIsLoadingMessages(false);
-          }
-          return;
-        }
-
-        const data = await res.json(); // { exists: boolean, roomId: string }
+        const data = await checkMessageRoom(selectedUser.user_id);
         console.log("대화 방 확인 결과: ", data);
-        console.log("roomid: ", data.roomId);
+
         if (!mounted) return;
 
-        // 2. 방이 존재하면 roomId 설정 + 기존 메시지 불러오기
         if (data.exists && data.roomId) {
           setRoomId(data.roomId);
 
-          const msgRes = await fetch(
-            `${process.env.REACT_APP_API_URL}/messages/${selectedUser.user_id}`,
-            { credentials: "include" }
-          );
+          const list = await getMessages(selectedUser.user_id, 0, limit);
 
-          if (msgRes.ok) {
-            const msgData = await msgRes.json();
-            const list = Array.isArray(msgData)
-              ? msgData
-              : Array.isArray(msgData.messages)
-                ? msgData.messages
-                : [];
-            if (mounted) {
-              shouldScrollRef.current = true;
-              setMessages(list);
-              setIsLoadingMessages(false);
-            }
-            console.log("기존 메시지 불러오기 성공:", list);
-          } else {
-            console.error("메시지 조회 실패:", msgRes.status);
-            if (mounted) {
-              setMessages([]);
-              setIsLoadingMessages(false);
-            }
+          if (list.length < limit) {
+            setHasMore(false);
           }
+
+          if (mounted) {
+            shouldScrollRef.current = true;
+            setMessages(list);
+            setIsLoadingMessages(false);
+          }
+          console.log("기존 메시지 불러오기 성공:", list);
         } else {
-          // 방이 없으면 메시지 비우기 (최초 메시지 전송 시 생성됨)
           if (mounted) {
             setRoomId(null);
             setMessages([]);
@@ -187,7 +244,6 @@ export default function ChatWindow({
           }
         }
       } catch (err) {
-        console.error("대화 방 조회 오류:", err);
         if (mounted) {
           setMessages([]);
           setIsLoadingMessages(false);
@@ -207,7 +263,6 @@ export default function ChatWindow({
     const handleReceive = (message) => {
       console.log("메시지 수신:", message);
 
-      // 내가 보낸 메시지는 이미 UI에 추가했으므로 무시
       if (message.sender_id === currentUser?.user_id) {
         return;
       }
@@ -215,7 +270,6 @@ export default function ChatWindow({
       setMessages((prev) => {
         const newMessages = [...prev, message];
 
-        // 스크롤이 최하단에 있으면 자동 스크롤
         if (!isUserScrollingRef.current) {
           setTimeout(() => scrollToBottom(), 0);
         }
@@ -244,61 +298,55 @@ export default function ChatWindow({
       content_type: "text",
     };
 
+    const tempMessage = {
+      ...messagePayload,
+      message_id: `temp-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      roomId: roomId,
+      isTemp: true,
+    };
+
+    isUserScrollingRef.current = false;
+    shouldScrollRef.current = true;
+    setMessages((prev) => [...prev, tempMessage]);
+    setContent("");
+
     try {
-      // 1. 서버로 메시지 전송 (DB 저장 + room 생성)
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/messages/sendMessage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(messagePayload),
-        }
-      );
-
-      if (!res.ok) {
-        console.error("메시지 저장 실패:", res.status);
-        alert("메시지 전송에 실패했습니다.");
-        return;
-      }
-
-      const result = await res.json();
+      const result = await sendMessageToServer(messagePayload);
       console.log("메시지 저장 성공:", result);
 
       const targetRoomId = result.room_id;
 
-      // 2. 최초 전송인 경우 즉시 방 입장
       if (!roomId && targetRoomId) {
         console.log("최초 메시지 - Room 즉시 참가: ", targetRoomId);
         socket.emit("join_room", targetRoomId);
         setRoomId(targetRoomId);
-
-        // 방 입장 처리 시간 대기
         await new Promise((resolve) => setTimeout(resolve, 150));
       }
 
-      // 3. 즉시 메시지를 UI에 추가 (낙관적 업데이트)
-      const newMessage = {
+      const { message_id, timestamp } = result.message || {};
+
+      const confirmedMessage = {
         ...messagePayload,
-        message_id: result.message_id,
-        timestamp: result.timestamp,
+        message_id: message_id,
+        timestamp: timestamp,
         roomId: targetRoomId,
       };
 
-      // 스크롤 플래그 설정 (메시지 추가 전)
-      isUserScrollingRef.current = false;
-      shouldScrollRef.current = true;
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.message_id === tempMessage.message_id ? confirmedMessage : msg
+        )
+      );
 
-      setMessages((prev) => [...prev, newMessage]);
-
-      // 4. 소켓으로 메시지 전송 (다른 사용자에게 전달)
-      socket.emit("send_message", newMessage);
-      console.log("메시지 소켓 전송:", newMessage);
-
-      setContent("");
+      socket.emit("send_message", confirmedMessage);
+      console.log("메시지 소켓 전송:", confirmedMessage);
     } catch (err) {
-      console.error("메시지 전송 실패:", err);
-      alert("메시지 전송 중 오류가 발생했습니다.");
+      setMessages((prev) =>
+        prev.filter((msg) => msg.message_id !== tempMessage.message_id)
+      );
+      alert("메시지 전송에 실패했습니다.");
+      setContent(messagePayload.content);
     }
   };
 
@@ -332,7 +380,7 @@ export default function ChatWindow({
         </button>
       </div>
 
-      {isLoadingMessages ? (
+      {isLoadingMessages && messages.length === 0 ? (
         <div className="message-box">
           <div className="user-list-loading">
             <div className="spinner"></div>
@@ -340,16 +388,49 @@ export default function ChatWindow({
         </div>
       ) : (
         <div className="message-box" ref={messageBoxRef}>
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`message ${
-                msg.sender_id === currentUser?.user_id ? "sent" : "received"
-              }`}
-            >
-              <p>{msg.content}</p>
-            </div>
-          ))}
+          {isLoadingMessages && messages.length > 0 && (
+            <div className="loading-more">이전 메시지 불러오는 중...</div>
+          )}
+          {messages.map((msg, idx) => {
+            const showDateDivider =
+              idx === 0 ||
+              !isSameDay(messages[idx - 1].timestamp, msg.timestamp);
+
+            const nextMsg = messages[idx + 1];
+
+            const showTime =
+              !isSameSender(msg, nextMsg) ||
+              (nextMsg && !isSameDay(msg.timestamp, nextMsg.timestamp));
+            const isSent = msg.sender_id === currentUser?.user_id;
+            const isFirstMessage = idx === 0;
+
+            return (
+              <React.Fragment key={msg.message_id || `msg-${idx}`}>
+                {showDateDivider && (
+                  <div className="date-divider">
+                    <span className="date-divider-line"></span>
+                    <span className="date-divider-text">
+                      {formatDate(msg.timestamp)}
+                    </span>
+                    <span className="date-divider-line"></span>
+                  </div>
+                )}
+                <div
+                  className={`message-wrapper ${isSent ? "sent" : "received"}`}
+                  ref={isFirstMessage && hasMore ? firstMessageRef : null}
+                >
+                  <div className={`message ${isSent ? "sent" : "received"}`}>
+                    <p>{msg.content}</p>
+                  </div>
+                  {showTime && (
+                    <span className="message-time">
+                      {formatTime(msg.timestamp)}
+                    </span>
+                  )}
+                </div>
+              </React.Fragment>
+            );
+          })}
         </div>
       )}
 

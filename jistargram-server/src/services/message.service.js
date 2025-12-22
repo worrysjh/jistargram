@@ -1,5 +1,7 @@
 const pool = require("../models/db");
-
+const parsedLimit = parseInt(process.env.MESSAGE_FETCH_LIMIT, 10);
+const SERVER_LIMIT =
+  Number.isInteger(parsedLimit) && parsedLimit > 0 ? parsedLimit : 20;
 // 팔로우 목록 + 수신받은 미팔로우 메시지 방 목록 조회
 async function getExpMessageRoomList(user_id) {
   const result = await pool.query(
@@ -120,13 +122,17 @@ async function checkMessageRoom(room_id) {
 }
 
 // 기존 메시지 이력 조회
-async function getMessageContent(room_id) {
+async function getMessageContent(room_id, offset = 0, limit = SERVER_LIMIT) {
   const message = await pool.query(
-    `SELECT * FROM messages WHERE room_id = $1 ORDER BY timestamp ASC`,
-    [room_id]
+    `SELECT * FROM messages 
+     WHERE room_id = $1 
+     ORDER BY timestamp DESC 
+     LIMIT $2 OFFSET $3`,
+    [room_id, limit, offset]
   );
 
-  return message.rows;
+  // 오래된 순서로 뒤집어서 반환
+  return message.rows.reverse();
 }
 
 // 메시지 전송시 저장
@@ -145,7 +151,7 @@ async function saveMessage(
   );
 
   console.log("저장된 메시지:", result.rows[0]);
-  return result.rows[0]; // { message_id: 46, timestamp: '2025-12-19...' }
+  return result.rows[0];
 }
 
 // 안읽은 메시지 개수 조회

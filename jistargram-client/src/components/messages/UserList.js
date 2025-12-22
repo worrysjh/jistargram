@@ -81,7 +81,7 @@ export default function UserList({
                   <div className="message-user-info">
                     <p className="user-name">{user.nick_name}</p>
                     <p className="user-message-preview">
-                      {user.last_message || "대화를 시작해보세요!"}
+                      {user.last_message_content || "대화를 시작해보세요!"}
                     </p>
                     {unreadCount > 0 && (
                       <p className="user-unread-count">

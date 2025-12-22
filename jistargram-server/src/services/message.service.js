@@ -38,6 +38,7 @@ async function getRoomList(user_id) {
       u.nick_name, 
       u.profile_img,
       mr.last_message_id,
+      m.content AS last_message_content,
       mr.last_activity_at,
       my_mp.left_at,
       COALESCE(
@@ -51,6 +52,7 @@ async function getRoomList(user_id) {
     FROM message_participant mp
     JOIN users u ON mp.user_id = u.user_id
     LEFT JOIN message_rooms mr ON mp.room_id = mr.room_id
+    LEFT JOIN messages m ON mr.last_message_id = m.message_id
     LEFT JOIN message_participant my_mp ON mp.room_id = my_mp.room_id AND my_mp.user_id = $1
     WHERE mp.room_id IN (
         SELECT room_id 

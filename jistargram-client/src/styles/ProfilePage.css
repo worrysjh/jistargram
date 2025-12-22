@@ -161,3 +161,17 @@
 .follow-button.following:hover {
   background-color: #c13540;
 }
+
+.message-button {
+  padding: 7px 16px;
+  background-color: #fafafa;
+  color: black;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  margin-left: 8px;
+}

@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { addFollowUser, removeFollowUser } from "actions/user/userActions";
 import PostDetailModal from "components/posts/PostDetailModal";
 import FollowListModal from "components/user/FollowListModal";
+import MessageModal from "components/messages/MessageModal";
 import { CiSettings } from "react-icons/ci";
 import { FaPencilAlt } from "react-icons/fa";
 import {
@@ -25,6 +26,8 @@ function ProfilePage() {
   const [followStatusData, setFollowStatusData] = useState(null);
   const [showFollowListModal, setShowFollowListModal] = useState(false);
   const [followListType, setFollowListType] = useState(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageTargetUser, setMessageTargetUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -131,6 +134,21 @@ function ProfilePage() {
     setFollowListType(null);
   };
 
+  const openMessageModal = (userId, userName, profileImg, nickName) => {
+    setMessageTargetUser({
+      user_id: userId,
+      user_name: userName,
+      profile_img: profileImg,
+      nick_name: nickName,
+    });
+    setShowMessageModal(true);
+  };
+
+  const closeMessageModal = () => {
+    setShowMessageModal(false);
+    setMessageTargetUser(null);
+  };
+
   return (
     <div className="profile-container">
       <div className="profile-header">
@@ -148,12 +166,27 @@ function ProfilePage() {
           <div className="profile-top">
             <h2 className="profile-username">{profile.user_name}</h2>
             {target_user_id ? (
-              <button
-                className={`follow-button ${followStatusData > 0 ? "following" : ""}`}
-                onClick={() => handleFollow(target_user_id)}
-              >
-                {followStatusData ? "팔로잉" : "팔로우"}
-              </button>
+              <>
+                <button
+                  className={`follow-button ${followStatusData > 0 ? "following" : ""}`}
+                  onClick={() => handleFollow(target_user_id)}
+                >
+                  {followStatusData ? "팔로잉" : "팔로우"}
+                </button>
+                <button
+                  className="message-button"
+                  onClick={() =>
+                    openMessageModal(
+                      profile.user_id,
+                      profile.user_name,
+                      profile.profile_img,
+                      profile.nick_name
+                    )
+                  }
+                >
+                  메시지 보내기
+                </button>
+              </>
             ) : (
               <button
                 className="profile-button"
@@ -227,6 +260,12 @@ function ProfilePage() {
           type={followListType}
           userId={target_user_id || profile.user_id}
           onClose={closeFollowListModal}
+        />
+      )}
+      {showMessageModal && (
+        <MessageModal
+          onClose={closeMessageModal}
+          initialTargetUser={messageTargetUser}
         />
       )}
     </div>

@@ -7,11 +7,11 @@ import { useModalScrollLock } from "utils/modalScrollLock";
 import { socket } from "utils/socket";
 import "styles/MessageModal.css";
 
-export default function MessageModal({ onClose }) {
+export default function MessageModal({ onClose, initialTargetUser }) {
   useModalScrollLock(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [rooms, setRooms] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(initialTargetUser || null);
   const [limit, setLimit] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +55,21 @@ export default function MessageModal({ onClose }) {
       console.error("Error refreshing room list:", err);
     }
   };
+
+  // receive_message 이벤트 리스닝으로 실시간 room 목록 갱신
+  useEffect(() => {
+    const handleReceiveMessage = (message) => {
+      console.log("[MessageModal] receive_message 수신:", message);
+      // 메시지 수신 시 room 목록 새로고침
+      refreshRoomList();
+    };
+
+    socket.on("receive_message", handleReceiveMessage);
+
+    return () => {
+      socket.off("receive_message", handleReceiveMessage);
+    };
+  }, []);
 
   // 현재 사용자 정보 + 초기 팔로잉 목록 조회
   useEffect(() => {
@@ -145,6 +160,14 @@ export default function MessageModal({ onClose }) {
       mounted = false;
     };
   }, [navigate, limit]);
+
+  // initialTargetUser가 있으면 자동으로 선택
+  useEffect(() => {
+    if (initialTargetUser && currentUser) {
+      console.log("[자동 선택] 타겟 유저:", initialTargetUser);
+      setSelectedUser(initialTargetUser);
+    }
+  }, [initialTargetUser, currentUser]);
 
   const handleLoadMore = () => {
     if (!isLoading && hasMore) {

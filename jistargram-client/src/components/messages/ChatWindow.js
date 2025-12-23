@@ -156,8 +156,12 @@ export default function ChatWindow({
     }
 
     onRoomChange?.(roomId);
-    socket.emit("join_room", roomId);
-    console.log("Room 참가: ", roomId);
+    socket.emit("join_room", {
+      roomId: roomId,
+      userId: currentUser.user_id,
+      partnerId: selectedUser.user_id,
+    });
+    console.log("Room 참가: ", roomId, "사용자:", currentUser.user_id);
 
     const handleMarkAsRead = async () => {
       try {
@@ -319,7 +323,11 @@ export default function ChatWindow({
 
       if (!roomId && targetRoomId) {
         console.log("최초 메시지 - Room 즉시 참가: ", targetRoomId);
-        socket.emit("join_room", targetRoomId);
+        socket.emit("join_room", {
+          roomId: targetRoomId,
+          userId: currentUser.user_id,
+          partnerId: selectedUser.user_id,
+        });
         setRoomId(targetRoomId);
         await new Promise((resolve) => setTimeout(resolve, 150));
       }

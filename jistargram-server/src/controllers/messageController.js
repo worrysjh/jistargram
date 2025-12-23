@@ -1,5 +1,5 @@
-const { v5: uuidv5 } = require("uuid");
 const services = require("../services");
+const { generateRoomId } = require("../utils/roomUtils");
 
 // 팔로우 목록 + 수신받은 미팔로우 메시지 방 목록 조회
 async function getExpMessageRoomList(req, res) {
@@ -112,15 +112,7 @@ async function sendMessage(req, res) {
   }
 }
 
-// 두 사용자 ID 기반 ROOM ID 생성
-function generateRoomId(userId1, userId2) {
-  const JISTARGRAM_NAMESPACE = process.env.JISTARGRAM_NAMESPACE;
-  const sotredIds = [userId1, userId2].sort();
-  const combinedString = sotredIds.join("_");
 
-  const roomId = uuidv5(combinedString, JISTARGRAM_NAMESPACE);
-  return roomId;
-}
 
 // 안읽은 메시지 개수 조회
 async function getUnreadMessageCount(req, res) {

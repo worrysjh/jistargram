@@ -32,7 +32,7 @@
 }
 
 /* 그리드 자식 구분선 */
-.chat-page > *:first-child {
+.chat-page>*:first-child {
   border-right: 1px solid #dbdbdb;
   background-color: #fafafa;
 }
@@ -43,6 +43,7 @@
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -67,6 +68,28 @@
   border-bottom: 1px solid #dbdbdb;
   background-color: #fff;
   flex-shrink: 0;
+}
+
+/* 사용자 검색 영역 */
+.message-user-search {
+  padding: 10px 20px;
+  border-bottom: 1px solid #dbdbdb;
+  background-color: #fff;
+}
+
+.user-search-input {
+  width: 100%;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  background-color: #efefef;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.user-search-input:focus {
+  background-color: #fff;
+  border-color: #a8a8a8;
 }
 
 .message-user-list-container {
@@ -122,6 +145,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

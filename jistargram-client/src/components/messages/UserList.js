@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import "styles/MessageModal.css";
 import { calculateDateDifference } from "utils/dateCalculate";
 
@@ -12,6 +12,8 @@ export default function UserList({
   isLoading = false,
 }) {
   const observer = useRef();
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [filteredRooms, setFilteredRooms] = useState([]);
 
   const lastUserRef = useCallback(
     (node) => {
@@ -36,21 +38,43 @@ export default function UserList({
     [isLoading, hasMore, onLoadMore]
   );
 
+  // 검색 필터링
+  useEffect(() => {
+    if (!searchKeyword.trim()) {
+      setFilteredRooms(rooms);
+    } else {
+      const keyword = searchKeyword.toLowerCase();
+      const filtered = rooms.filter((user) =>
+        user.nick_name?.toLowerCase().includes(keyword)
+      );
+      setFilteredRooms(filtered);
+    }
+  }, [searchKeyword, rooms]);
+
   return (
     <div className="message-user-list">
       <h3>{currentUser?.user_name}</h3>
+      
+      <div className="message-user-search">
+        <input
+          type="text"
+          placeholder="사용자 검색"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          className="user-search-input"
+        />
+      </div>
+
       <div className="message-user-list-container">
-        {rooms.length === 0 && !isLoading ? (
-          <div className="no-users">대화 가능한 사용자가 없습니다</div>
+        {filteredRooms.length === 0 && !isLoading ? (
+          <div className="no-users">
+            {searchKeyword ? "검색 결과가 없습니다" : "대화 가능한 사용자가 없습니다"}
+          </div>
         ) : (
           <>
-            {rooms.map((user, index) => {
-              const isLastItem = index === rooms.length - 1;
+            {filteredRooms.map((user, index) => {
+              const isLastItem = index === filteredRooms.length - 1;
               const unreadCount = parseInt(user.unread_count || 0);
-
-              console.log(
-                `[UserList] ${user.nick_name}: unread_count = ${user.unread_count}, parsed = ${unreadCount}`
-              );
 
               return (
                 <div

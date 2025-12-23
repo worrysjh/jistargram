@@ -10,7 +10,7 @@ const jwt = require("jsonwebtoken");
 const { decryptData } = require("./src/utils/cryptoUtils");
 
 const PORT = process.env.PORT || 4000;
-const MAX_RETRIES = 5;
+const MAX_RETRIES = process.env.MAX_RETRIES || 5;
 let client;
 
 // 1. HTTP 서버 래핑
@@ -113,13 +113,10 @@ Promise.all([pubClient.connect(), subClient.connect()])
         const { room_id, user_id } = data;
 
         try {
-          // DB에 left_at 업데이트
-          await services.markMessagesAsRead(room_id, user_id);
-          console.log(
-            `${user_id}가 ${room_id} 방 퇴장 - left_at 업데이트 완료`
-          );
-
+          // 단순히 소켓 방에서만 나가기
+          // 읽음 처리(left_at 업데이트)는 ChatWindow에서 명시적으로 markMessagesAsRead API 호출 시에만 수행
           socket.leave(room_id);
+          console.log(`${user_id}가 ${room_id} 방 퇴장`);
         } catch (err) {
           console.error(
             `방 퇴장 중 오류 (room: ${room_id}, user: ${user_id}):`,

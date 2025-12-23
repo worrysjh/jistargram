@@ -177,13 +177,10 @@ export default function ChatWindow({
 
     handleMarkAsRead();
 
-    return () => {
-      socket.emit("leave_room", {
-        room_id: roomId,
-        user_id: currentUser.user_id,
-      });
-      console.log(`Room 나가기: ${roomId}, 사용자: ${currentUser.user_id}`);
-    };
+    // cleanup에서 leave_room을 하지 않음
+    // 이유: MessageModal에서 이미 모든 방에 join했고, 
+    // 다른 채팅으로 전환해도 메시지를 계속 받아야 함
+    // 읽음 처리는 위의 markMessagesAsRead API 호출로 이미 처리됨
   }, [roomId, currentUser?.user_id, onRefreshRoomList, onRoomChange, selectedUser?.user_id]);
 
   // 선택된 사용자 변경 시 초기화 및 메시지 로드
@@ -267,6 +264,13 @@ export default function ChatWindow({
     const handleReceive = (message) => {
       console.log("메시지 수신:", message);
 
+      // 현재 방의 메시지가 아니면 무시
+      if (message.roomId !== roomId) {
+        console.log(`다른 방의 메시지 무시 - 현재 방: ${roomId}, 메시지 방: ${message.roomId}`);
+        return;
+      }
+
+      // 자신이 보낸 메시지는 무시 (이미 낙관적 업데이트로 표시됨)
       if (message.sender_id === currentUser?.user_id) {
         return;
       }
@@ -286,7 +290,7 @@ export default function ChatWindow({
     return () => {
       socket.off("receive_message", handleReceive);
     };
-  }, [currentUser?.user_id]);
+  }, [currentUser?.user_id, roomId]);
 
   const sendMessage = async () => {
     if (!content.trim()) return;

@@ -56,12 +56,46 @@ export default function MessageModal({ onClose, initialTargetUser }) {
     }
   }, [navigate]);
 
+  // 모든 방에 join (메시지 수신을 위해)
+  useEffect(() => {
+    if (!currentUser?.user_id || rooms.length === 0) return;
+
+    console.log("[MessageModal] 모든 방에 join 시작");
+    rooms.forEach((room) => {
+      socket.emit("join_room", {
+        roomId: room.room_id,
+        userId: currentUser.user_id,
+        partnerId: room.user_id,
+      });
+      console.log(`[MessageModal] 방 join: ${room.room_id} (상대: ${room.nick_name})`);
+    });
+
+    // cleanup: 모달이 언마운트될 때 모든 방에서 leave
+    return () => {
+      console.log("[MessageModal] 모든 방에서 leave 시작");
+      rooms.forEach((room) => {
+        socket.emit("leave_room", {
+          room_id: room.room_id,
+          user_id: currentUser.user_id,
+        });
+        console.log(`[MessageModal] 방 leave: ${room.room_id}`);
+      });
+    };
+  }, [currentUser?.user_id, rooms.length]); // rooms 대신 rooms.length 사용하여 불필요한 재실행 방지
+
   // receive_message 이벤트 리스닝으로 실시간 room 목록 갱신
   useEffect(() => {
     const handleReceiveMessage = (message) => {
       console.log("[MessageModal] receive_message 수신:", message);
-      // 메시지 수신 시 room 목록 새로고침
-      refreshRoomList();
+      
+      // 현재 열려있는 방의 메시지가 아닌 경우에만 room 목록 새로고침
+      // (현재 방의 메시지는 ChatWindow에서 처리하고 이미 읽음 처리됨)
+      if (message.roomId !== currentRoomId) {
+        console.log("[MessageModal] 다른 방에서 메시지 수신 - 목록 새로고침");
+        refreshRoomList();
+      } else {
+        console.log("[MessageModal] 현재 방의 메시지 - 목록 새로고침 생략");
+      }
     };
 
     socket.on("receive_message", handleReceiveMessage);
@@ -69,7 +103,7 @@ export default function MessageModal({ onClose, initialTargetUser }) {
     return () => {
       socket.off("receive_message", handleReceiveMessage);
     };
-  }, [refreshRoomList]);
+  }, [refreshRoomList, currentRoomId]);
 
   // 현재 사용자 정보 + 초기 팔로잉 목록 조회
   useEffect(() => {
@@ -175,18 +209,9 @@ export default function MessageModal({ onClose, initialTargetUser }) {
     }
   };
 
-  // 사용자 선택 변경 시 이전 방 나가기 처리
+  // 사용자 선택 변경
   const handleSelectUser = (user) => {
     console.log(`[방 전환] 선택된 사용자:`, user);
-
-    // 이전 방이 있으면 나가기
-    if (currentRoomId && currentUser?.user_id) {
-      console.log(`[방 전환] 이전 방 나가기: ${currentRoomId}`);
-      socket.emit("leave_room", {
-        room_id: currentRoomId,
-        user_id: currentUser.user_id,
-      });
-    }
 
     setSelectedUser(user);
 
@@ -197,14 +222,18 @@ export default function MessageModal({ onClose, initialTargetUser }) {
     }, 800);
   };
 
-  // 모달 닫을 때 현재 방 나가기 처리
+  // 모달 닫기
   const handleClose = () => {
-    if (currentRoomId && currentUser?.user_id) {
-      socket.emit("leave_room", {
-        room_id: currentRoomId,
-        user_id: currentUser.user_id,
+    // 모든 방에서 leave_room
+    if (currentUser?.user_id && rooms.length > 0) {
+      console.log("[MessageModal] 모달 닫기 - 모든 방에서 leave");
+      rooms.forEach((room) => {
+        socket.emit("leave_room", {
+          room_id: room.room_id,
+          user_id: currentUser.user_id,
+        });
+        console.log(`[MessageModal] 방 leave: ${room.room_id}`);
       });
-      console.log(`모달 닫기 - 방 나가기: ${currentRoomId}`);
     }
     onClose();
   };

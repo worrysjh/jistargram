@@ -79,7 +79,7 @@ function FollowListModal({ type, userId, onClose }) {
     };
 
     fetchFollowList();
-  }, [type, userId, limit, navigate]);
+  }, [type, userId, limit, navigate, loginUserId]);
 
   // 검색 필터링
   useEffect(() => {

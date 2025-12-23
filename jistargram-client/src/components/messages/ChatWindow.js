@@ -150,7 +150,7 @@ export default function ChatWindow({
 
   // roomId가 생성된 후에만 join
   useEffect(() => {
-    if (!roomId || !currentUser?.user_id) {
+    if (!roomId || !currentUser?.user_id || !selectedUser?.user_id) {
       onRoomChange?.(null);
       return;
     }
@@ -184,7 +184,7 @@ export default function ChatWindow({
       });
       console.log(`Room 나가기: ${roomId}, 사용자: ${currentUser.user_id}`);
     };
-  }, [roomId, currentUser?.user_id]);
+  }, [roomId, currentUser?.user_id, onRefreshRoomList, onRoomChange, selectedUser?.user_id]);
 
   // 선택된 사용자 변경 시 초기화 및 메시지 로드
   useEffect(() => {
@@ -260,7 +260,7 @@ export default function ChatWindow({
     return () => {
       mounted = false;
     };
-  }, [selectedUser?.user_id]);
+  }, [selectedUser?.user_id, limit]);
 
   // receive_message 핸들러
   useEffect(() => {

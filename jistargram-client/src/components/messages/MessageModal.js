@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import UserList from "./UserList";
 import ChatWindow from "./ChatWindow";
 import { authFetch } from "utils/authFetch";
@@ -19,7 +19,7 @@ export default function MessageModal({ onClose, initialTargetUser }) {
   const navigate = useNavigate();
 
   // 방 목록 새로고침 함수
-  const refreshRoomList = async () => {
+  const refreshRoomList = useCallback(async () => {
     try {
       const chatUserListRes = await authFetch(
         `${process.env.REACT_APP_API_URL}/messages/expMessageRoomList`,
@@ -54,7 +54,7 @@ export default function MessageModal({ onClose, initialTargetUser }) {
     } catch (err) {
       console.error("Error refreshing room list:", err);
     }
-  };
+  }, [navigate]);
 
   // receive_message 이벤트 리스닝으로 실시간 room 목록 갱신
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function MessageModal({ onClose, initialTargetUser }) {
     return () => {
       socket.off("receive_message", handleReceiveMessage);
     };
-  }, []);
+  }, [refreshRoomList]);
 
   // 현재 사용자 정보 + 초기 팔로잉 목록 조회
   useEffect(() => {

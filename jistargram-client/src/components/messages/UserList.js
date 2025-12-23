@@ -1,7 +1,6 @@
 import { useRef, useCallback } from "react";
 import "styles/MessageModal.css";
 import { calculateDateDifference } from "utils/dateCalculate";
-import useAuthStore from "store/useAuthStore";
 
 export default function UserList({
   rooms = [],
@@ -12,9 +11,6 @@ export default function UserList({
   hasMore = true,
   isLoading = false,
 }) {
-  const loginUser = useAuthStore((state) => state.user);
-  const loginUserId = loginUser?.user_id;
-
   const observer = useRef();
 
   const lastUserRef = useCallback(

@@ -5,6 +5,7 @@ import { addFollowUser, removeFollowUser } from "actions/user/userActions";
 import { useNavigate } from "react-router-dom";
 import { useModalScrollLock } from "utils/modalScrollLock";
 import useAuthStore from "store/useAuthStore";
+import { getImageUrl } from "utils/imageUtils";
 
 function FollowListModal({ type, userId, onClose }) {
   useModalScrollLock(true);
@@ -170,11 +171,7 @@ function FollowListModal({ type, userId, onClose }) {
                   >
                     <div className="follow-list-avatar">
                       <img
-                        src={
-                          user.profile_img
-                            ? `${process.env.REACT_APP_API_URL}${user.profile_img}`
-                            : "/common/img/사용자이미지.jpeg"
-                        }
+                        src={getImageUrl(user.profile_img)}
                         alt={user.user_name}
                         onClick={() => handleUserClick(user.user_id)}
                       />

@@ -1,6 +1,7 @@
 import { useRef, useCallback, useState, useEffect } from "react";
 import "styles/MessageModal.css";
 import { calculateDateDifference } from "utils/dateCalculate";
+import { getImageUrl } from "utils/imageUtils";
 
 export default function UserList({
   rooms = [],
@@ -89,7 +90,7 @@ export default function UserList({
                 >
                   {user.profile_img ? (
                     <img
-                      src={`${process.env.REACT_APP_API_URL}${user.profile_img}`}
+                      src={getImageUrl(user.profile_img)}
                       alt={user.nick_name}
                       className="user-avatar"
                     />

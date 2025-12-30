@@ -43,13 +43,6 @@ export default function MessageModal({ onClose, initialTargetUser }) {
             ? data.result
             : [];
 
-      console.log("처리된 roomList:", roomList);
-      roomList.forEach((room) => {
-        console.log(
-          `방: ${room.room_id}, 사용자: ${room.nick_name}, unread_count: ${room.unread_count}`
-        );
-      });
-
       setRooms(roomList);
     } catch (err) {
       console.error("Error refreshing room list:", err);
@@ -60,41 +53,31 @@ export default function MessageModal({ onClose, initialTargetUser }) {
   useEffect(() => {
     if (!currentUser?.user_id || rooms.length === 0) return;
 
-    console.log("[MessageModal] 모든 방에 join 시작");
     rooms.forEach((room) => {
       socket.emit("join_room", {
         roomId: room.room_id,
         userId: currentUser.user_id,
         partnerId: room.user_id,
       });
-      console.log(`[MessageModal] 방 join: ${room.room_id} (상대: ${room.nick_name})`);
     });
 
     // cleanup: 모달이 언마운트될 때 모든 방에서 leave
     return () => {
-      console.log("[MessageModal] 모든 방에서 leave 시작");
       rooms.forEach((room) => {
         socket.emit("leave_room", {
           room_id: room.room_id,
           user_id: currentUser.user_id,
         });
-        console.log(`[MessageModal] 방 leave: ${room.room_id}`);
       });
     };
-  }, [currentUser?.user_id, rooms.length]); // rooms 대신 rooms.length 사용하여 불필요한 재실행 방지
+  }, [currentUser?.user_id, rooms.length]);
 
   // receive_message 이벤트 리스닝으로 실시간 room 목록 갱신
   useEffect(() => {
-    const handleReceiveMessage = (message) => {
-      console.log("[MessageModal] receive_message 수신:", message);
-      
+    const handleReceiveMessage = (message) => {     
       // 현재 열려있는 방의 메시지가 아닌 경우에만 room 목록 새로고침
-      // (현재 방의 메시지는 ChatWindow에서 처리하고 이미 읽음 처리됨)
       if (message.roomId !== currentRoomId) {
-        console.log("[MessageModal] 다른 방에서 메시지 수신 - 목록 새로고침");
         refreshRoomList();
-      } else {
-        console.log("[MessageModal] 현재 방의 메시지 - 목록 새로고침 생략");
       }
     };
 
@@ -164,13 +147,6 @@ export default function MessageModal({ onClose, initialTargetUser }) {
               ? data.result
               : [];
 
-        console.log("초기 roomList:", roomList);
-        roomList.forEach((room) => {
-          console.log(
-            `방: ${room.room_id}, 사용자: ${room.nick_name}, unread_count: ${room.unread_count}`
-          );
-        });
-
         if (mounted) {
           setRooms(roomList);
           if (roomList.length < limit) {
@@ -198,7 +174,6 @@ export default function MessageModal({ onClose, initialTargetUser }) {
   // initialTargetUser가 있으면 자동으로 선택
   useEffect(() => {
     if (initialTargetUser && currentUser) {
-      console.log("[자동 선택] 타겟 유저:", initialTargetUser);
       setSelectedUser(initialTargetUser);
     }
   }, [initialTargetUser, currentUser]);
@@ -211,13 +186,10 @@ export default function MessageModal({ onClose, initialTargetUser }) {
 
   // 사용자 선택 변경
   const handleSelectUser = (user) => {
-    console.log(`[방 전환] 선택된 사용자:`, user);
-
     setSelectedUser(user);
 
     // 새 사용자 선택 후 방 목록 새로고침 (읽음 처리 반영)
     setTimeout(() => {
-      console.log("[방 전환] 방 목록 새로고침 시작");
       refreshRoomList();
     }, 800);
   };
@@ -226,13 +198,11 @@ export default function MessageModal({ onClose, initialTargetUser }) {
   const handleClose = () => {
     // 모든 방에서 leave_room
     if (currentUser?.user_id && rooms.length > 0) {
-      console.log("[MessageModal] 모달 닫기 - 모든 방에서 leave");
       rooms.forEach((room) => {
         socket.emit("leave_room", {
           room_id: room.room_id,
           user_id: currentUser.user_id,
         });
-        console.log(`[MessageModal] 방 leave: ${room.room_id}`);
       });
     }
     onClose();

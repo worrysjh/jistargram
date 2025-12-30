@@ -13,6 +13,7 @@ import {
   sendMessageToServer,
   markMessagesAsRead,
 } from "actions/message/messageAction";
+import { getImageUrl } from "utils/imageUtils";
 
 export default function ChatWindow({
   selectedUser,
@@ -161,26 +162,19 @@ export default function ChatWindow({
       userId: currentUser.user_id,
       partnerId: selectedUser.user_id,
     });
-    console.log("Room 참가: ", roomId, "사용자:", currentUser.user_id);
 
     const handleMarkAsRead = async () => {
       try {
         await markMessagesAsRead(roomId, currentUser.user_id);
         setTimeout(() => {
           onRefreshRoomList?.();
-          console.log("방 목록 새로고침 요청");
         }, 300);
       } catch (err) {
-        // 에러는 이미 action에서 처리됨
+
       }
     };
 
     handleMarkAsRead();
-
-    // cleanup에서 leave_room을 하지 않음
-    // 이유: MessageModal에서 이미 모든 방에 join했고, 
-    // 다른 채팅으로 전환해도 메시지를 계속 받아야 함
-    // 읽음 처리는 위의 markMessagesAsRead API 호출로 이미 처리됨
   }, [roomId, currentUser?.user_id, onRefreshRoomList, onRoomChange, selectedUser?.user_id]);
 
   // 선택된 사용자 변경 시 초기화 및 메시지 로드
@@ -218,7 +212,6 @@ export default function ChatWindow({
     (async () => {
       try {
         const data = await checkMessageRoom(selectedUser.user_id);
-        console.log("대화 방 확인 결과: ", data);
 
         if (!mounted) return;
 
@@ -376,7 +369,7 @@ export default function ChatWindow({
         <div className="chat-header-user">
           {selectedUser.profile_img ? (
             <img
-              src={`${process.env.REACT_APP_API_URL}${selectedUser.profile_img}`}
+              src={getImageUrl(selectedUser.profile_img)}
               alt={selectedUser.nick_name}
               className="chat-avatar"
             />

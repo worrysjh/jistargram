@@ -1,4 +1,5 @@
 import "styles/DeleteFollowerForm.css";
+import { getImageUrl } from "utils/imageUtils";
 
 function DeleteFollowerForm({ user, onConfirm, onCancel }) {
   return (
@@ -7,7 +8,7 @@ function DeleteFollowerForm({ user, onConfirm, onCancel }) {
         <div className="modal-avatar">
           {user.profile_img ? (
             <img
-              src={`${process.env.REACT_APP_API_URL}${user.profile_img}`}
+              src={getImageUrl(user.profile_img)}
               alt={user.user_name}
             />
           ) : (

@@ -2,7 +2,7 @@ const services = require("../services");
 
 //게시글 등록
 async function uploadPost(req, res) {
-  if (!req.file || !req.file.filename) {
+  if (!req.file || !req.file.supabaseUrl) {
     return res
       .status(400)
       .json({ message: "이미지 파일이 포함되지 않았습니다." });
@@ -10,7 +10,7 @@ async function uploadPost(req, res) {
 
   const user_id = req.user.user_id;
   const { content } = req.body;
-  const media_url = `/uploads/post_imgs/${req.file.filename}`;
+  const media_url = req.file.supabaseUrl;
 
   try {
     await services.uploadService({ user_id, content, media_url });
@@ -40,9 +40,7 @@ async function getAllPost(req, res) {
 async function updatePost(req, res) {
   const { content, existingImage } = req.body;
   const post_id = req.params.post_id;
-  const media_url = req.file
-    ? `/uploads/post_imgs/${req.file.filename}`
-    : existingImage;
+  const media_url = req.file ? req.file.supabaseUrl : existingImage;
 
   try {
     await services.updatePostService({ content, media_url, post_id });

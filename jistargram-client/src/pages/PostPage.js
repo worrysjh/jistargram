@@ -8,6 +8,7 @@ import { fetchPosts, updatePost, deletePost } from "actions/post/postActions";
 import { fetchFollowStatus, addFollowUser } from "actions/user/userActions";
 import PostOwnerMenu from "components/posts/PostOwnerMenu";
 import { calculateDateDifference } from "utils/dateCalculate";
+import { getImageUrl } from "utils/imageUtils";
 
 function PostPage() {
   const [posts, setPosts] = useState([]);
@@ -146,11 +147,7 @@ function PostPage() {
                 <div className="post-header">
                   <img
                     className="profile-pic"
-                    src={
-                      post.profile_img
-                        ? `${process.env.REACT_APP_API_URL}${post.profile_img}`
-                        : "/common/img/사용자이미지.jpeg"
-                    }
+                    src={getImageUrl(post.profile_img)}
                     alt="프로필"
                   />
                   <Link
@@ -186,7 +183,7 @@ function PostPage() {
                 {/* image */}
                 <img
                   className="post-image"
-                  src={`${process.env.REACT_APP_API_URL}${post.media_url}`}
+                  src={getImageUrl(post.media_url, "")}
                   alt="게시물"
                 />
 

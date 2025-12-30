@@ -3,11 +3,12 @@ import ReactDOM from "react-dom";
 import "styles/PostUploadModal.css";
 import { useNavigate } from "react-router-dom";
 import { useModalScrollLock } from "utils/modalScrollLock";
+import { getImageUrl } from "utils/imageUtils";
 
 function PostUpdateModal({ post, onClose, onUpdate, currentUser }) {
   useModalScrollLock(true);
   const [image, setImage] = useState(
-    `${process.env.REACT_APP_API_URL}${post.media_url}`
+    getImageUrl(post.media_url, "")
   );
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState(post.content);

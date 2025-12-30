@@ -1,8 +1,7 @@
 const pool = require("../models/db");
-const parsedLimit = parseInt(process.env.MESSAGE_FETCH_LIMIT, 10);
-const SERVER_LIMIT =
-  Number.isInteger(parsedLimit) && parsedLimit > 0 ? parsedLimit : 20;
-// 팔로우 목록 + 수신받은 미팔로우 메시지 방 목록 조회
+const MESSAGE_FETCH_LIMIT = parseInt(process.env.MESSAGE_FETCH_LIMIT, 10) || 20;
+
+// 팔로우 목록 + 들어가진 메시지 방 목록 조회
 async function getExpMessageRoomList(user_id) {
   const result = await pool.query(
     `
@@ -65,13 +64,6 @@ async function getRoomList(user_id) {
     [user_id]
   );
 
-  console.log("=== 방 목록 조회 결과 ===");
-  result.rows.forEach((row) => {
-    console.log(
-      `방: ${row.room_id}, 사용자: ${row.nick_name}, left_at: ${row.left_at}, unread: ${row.unread_count}`
-    );
-  });
-
   return result.rows;
 }
 
@@ -124,7 +116,7 @@ async function checkMessageRoom(room_id) {
 }
 
 // 기존 메시지 이력 조회
-async function getMessageContent(room_id, offset = 0, limit = SERVER_LIMIT) {
+async function getMessageContent(room_id, offset = 0, limit = MESSAGE_FETCH_LIMIT) {
   const message = await pool.query(
     `SELECT * FROM messages 
      WHERE room_id = $1 
@@ -152,7 +144,6 @@ async function saveMessage(
     [room_id, sender_id, receiver_id, content, content_type]
   );
 
-  console.log("저장된 메시지:", result.rows[0]);
   return result.rows[0];
 }
 
@@ -183,10 +174,6 @@ async function markMessagesAsRead(room_id, user_id) {
     [room_id, user_id]
   );
 
-  console.log(
-    `방 ${room_id}의 사용자 ${user_id} 읽음 처리:`,
-    result.rows[0]?.left_at
-  );
   return result.rows[0];
 }
 

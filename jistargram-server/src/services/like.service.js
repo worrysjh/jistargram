@@ -11,7 +11,7 @@ async function checkLike(user_id, target_type, target_id) {
   return result.rowCount > 0;
 }
 
-// 좋아요 눌렀을때
+// 좋아요 추가
 async function addLike(user_id, target_type, target_id) {
   await pool.query(
     `INSERT INTO likes (user_id, target_type, target_id) VALUES ($1, $2, $3)`,
@@ -21,7 +21,7 @@ async function addLike(user_id, target_type, target_id) {
   return { success: true };
 }
 
-// 좋아요 취소했을때
+// 좋아요 취소
 async function removeLike(user_id, target_type, target_id) {
   await pool.query(
     `DELETE FROM likes

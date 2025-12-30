@@ -67,11 +67,11 @@ async function updateProfileBio(req, res) {
 
 // 프로필 이미지 업데이트 (기존 이미지 삭제 포함)
 async function updateProfileImg(req, res) {
-  const filename = req.file.filename;
+  const imageUrl = req.file.supabaseUrl;
   const user_name = req.user.user_name;
 
   try {
-    const result = await services.updateMyImgService({ user_name, filename });
+    const result = await services.updateMyImgService({ user_name, imageUrl });
     if (!result.success) {
       return res.status(400).json({ message: result.message });
     }

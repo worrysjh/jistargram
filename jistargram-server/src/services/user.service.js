@@ -1,7 +1,5 @@
 const pool = require("../models/db");
 const bcrypt = require("bcrypt");
-const path = require("path");
-const fs = require("fs");
 
 // 회원가입
 async function registerUser({
@@ -76,35 +74,10 @@ async function getProfileService(user_id) {
 }
 
 // 프로필 사진 업데이트트
-async function updateMyImgService({ user_name, filename }) {
-  const imagePath = `/uploads/profile_imgs/${filename}`;
-  // 기존 이미지 삭제
-  const result = await pool.query(
-    `SELECT profile_img FROM users WHERE user_name = $1`,
-    [user_name]
-  );
-  const oldImage = result.rows[0]?.profile_img;
-
-  if (oldImage && oldImage !== "/common/img/사용자이미지.jpeg") {
-    const oldImagePath = path.join(__dirname, "..", "public", oldImage);
-    fs.unlink(oldImagePath, (err) => {
-      if (err) {
-        return {
-          success: false,
-          message: "기존 이미지 삭제 실패 또는 존재하지 않음: ",
-        };
-      } else {
-        return {
-          success: false,
-          message: `기존 이미지 삭제 성공: ${oldImagePath}`,
-        };
-      }
-    });
-  }
-
-  // DB 업데이트
+async function updateMyImgService({ user_name, imageUrl }) {
+  // DB 업데이트 - Supabase URL을 직접 저장
   await pool.query(`UPDATE users SET profile_img = $1 WHERE user_name = $2`, [
-    imagePath,
+    imageUrl,
     user_name,
   ]);
 
@@ -135,7 +108,6 @@ async function getAllUserInfo(keyword = "", my_id = null) {
   console.log("getAllUserInfo 호출:", { keyword, my_id });
 
   const params = [];
-  // $1 = my_id (nullable), $2 = keyword (if provided)
   let query = `
     SELECT 
       u.user_id AS "user_id", 
@@ -149,7 +121,6 @@ async function getAllUserInfo(keyword = "", my_id = null) {
     WHERE u.user_state = '활성' AND u.user_id != $1
   `;
 
-  // param 1: my_id (may be null)
   params.push(my_id);
 
   // 검색 키워드가 있으면 추가

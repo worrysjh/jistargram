@@ -15,6 +15,7 @@ import {
 } from "actions/profile/profileActions";
 import { fetchFollowStatus } from "actions/user/userActions";
 import DeleteFollowerForm from "components/user/DeleteFollowerForm";
+import { getImageUrl } from "utils/imageUtils";
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -35,7 +36,6 @@ function ProfilePage() {
   const target_user_id = searchParams.get("user_id");
 
   const handleFollow = async (target_user_id) => {
-    console.log("내용: ", followStatusData);
     try {
       if (followStatusData > 0) {
         // 언팔로우
@@ -154,11 +154,7 @@ function ProfilePage() {
       <div className="profile-header">
         <div className="profile-picture">
           <img
-            src={
-              profile.profile_img
-                ? `${process.env.REACT_APP_API_URL}${profile.profile_img}`
-                : "/common/img/사용자이미지.jpeg"
-            }
+            src={getImageUrl(profile.profile_img)}
             alt="프로필 이미지"
           />
         </div>
@@ -231,7 +227,7 @@ function ProfilePage() {
                 onClick={() => openModal(post)}
               >
                 <img
-                  src={`${process.env.REACT_APP_API_URL}${post.media_url}`}
+                  src={getImageUrl(post.media_url, "")}
                   alt="post"
                 />
               </div>

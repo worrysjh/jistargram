@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { calculateDateDifference } from "utils/dateCalculate";
 import { useModalScrollLock } from "utils/modalScrollLock";
 import useAuthStore from "store/useAuthStore";
+import { getImageUrl } from "utils/imageUtils";
 
 function PostDetailModal({ post, onClose }) {
   useModalScrollLock(true);
@@ -159,7 +160,7 @@ function PostDetailModal({ post, onClose }) {
             {/* 좌측 이미지 */}
             <div className="detail-left">
               <img
-                src={`${process.env.REACT_APP_API_URL}${post.media_url}`}
+                src={getImageUrl(post.media_url, "")}
                 alt="게시물"
               />
             </div>
@@ -168,11 +169,7 @@ function PostDetailModal({ post, onClose }) {
               {/* 헤더 */}
               <div className="detail-header">
                 <img
-                  src={
-                    post.profile_img
-                      ? `${process.env.REACT_APP_API_URL}${post.profile_img}`
-                      : "/common/img/사용자이미지.jpeg"
-                  }
+                  src={getImageUrl(post.profile_img)}
                   alt="프로필"
                   className="detail-profile-img"
                 />

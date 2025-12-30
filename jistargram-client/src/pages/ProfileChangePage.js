@@ -6,6 +6,7 @@ import {
   updateProfileBio,
   updateProfileImage,
 } from "actions/profile/profileActions";
+import { getImageUrl } from "utils/imageUtils";
 
 function ProfileChangePage() {
   const [profile, setProfile] = useState(null);
@@ -64,11 +65,7 @@ function ProfileChangePage() {
     <div className="profile-edit-container">
       <div className="profile-edit-header">
         <img
-          src={
-            profile.profile_img
-              ? `${process.env.REACT_APP_API_URL}${profile.profile_img}`
-              : "/common/img/사용자이미지.jpeg"
-          }
+          src={getImageUrl(profile.profile_img)}
           alt="프로필 이미지"
           className="profile-edit-picture"
         />

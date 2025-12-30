@@ -7,6 +7,7 @@ import {
 import { Link } from "react-router-dom";
 import "styles/UserSearchPage.css";
 import DeleteFollowerForm from "components/user/DeleteFollowerForm";
+import { getImageUrl } from "utils/imageUtils";
 
 function UserSearchPage() {
   const [users, setUsers] = useState([]);
@@ -15,7 +16,7 @@ function UserSearchPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [userToUnfollow, setUserToUnfollow] = useState(null);
 
-  // 디바운스: search 값이 변경되고 1초 후에 debouncedSearch 업데이트
+  // search 값이 변경되고 1초 후에 debouncedSearch 업데이트
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -151,7 +152,7 @@ function UserSearchPage() {
                   <div className="user-avatar">
                     {user.profile_img ? (
                       <img
-                        src={`${process.env.REACT_APP_API_URL}${user.profile_img}`}
+                        src={getImageUrl(user.profile_img)}
                         alt={user.user_name}
                       />
                     ) : (

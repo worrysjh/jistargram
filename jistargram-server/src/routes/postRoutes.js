@@ -14,7 +14,10 @@ const {
   getUserPost,
 } = require("../controllers/postController");
 const authenticateToken = require("../middlewares/auth");
-const upload = require("../middlewares/uploadPostImage");
+const {
+  upload,
+  uploadToSupabase,
+} = require("../middlewares/uploadPostImage");
 
 const router = express.Router();
 
@@ -22,6 +25,7 @@ router.post(
   "/uploadPost",
   authenticateToken,
   upload.single("image"),
+  uploadToSupabase,
   uploadPost
 );
 router.get("/postList", authenticateToken, getAllPost);
@@ -29,6 +33,7 @@ router.put(
   "/updatePost/:post_id",
   authenticateToken,
   upload.single("image"),
+  uploadToSupabase,
   updatePost
 );
 

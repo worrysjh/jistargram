@@ -15,7 +15,10 @@ const {
 } = require("../controllers/userController");
 const authenticateToken = require("../middlewares/auth");
 const verifyPasswd = require("../middlewares/verifyPasswd");
-const upload = require("../middlewares/uploadProfileImage");
+const {
+  upload,
+  uploadProfileToSupabase,
+} = require("../middlewares/uploadProfileImage");
 
 const router = express.Router();
 
@@ -25,6 +28,7 @@ router.post(
   "/updateProfileImg",
   authenticateToken,
   upload.single("profile_img"),
+  uploadProfileToSupabase,
   updateProfileImg
 );
 

@@ -70,7 +70,7 @@ module.exports = (server) => {
             return;
           }
 
-          // 인증된 사용자 ID와 요청한 userId가 일치하는지 확인 (사칭 방지)
+          // 인증된 사용자 ID와 요청한 userId가 일치하는지 확인
           if (authenticatedUserId !== userId) {
             console.error(
               `join_room 실패: 사용자 사칭 시도 (인증된 사용자: ${authenticatedUserId}, 요청 사용자: ${userId})`
@@ -101,8 +101,6 @@ module.exports = (server) => {
           const { room_id, user_id } = data;
 
           try {
-            // 단순히 소켓 방에서만 나가기
-            // 읽음 처리(left_at 업데이트)는 ChatWindow에서 명시적으로 markMessagesAsRead API 호출 시에만 수행
             socket.leave(room_id);
             console.log(`${user_id}가 ${room_id} 방 퇴장`);
           } catch (err) {

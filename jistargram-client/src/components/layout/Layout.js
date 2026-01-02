@@ -6,9 +6,7 @@ import PostUploadModal from "components/posts/PostUploadModal";
 import MessageModal from "components/messages/MessageModal";
 
 function Layout() {
-  const handleSubmit = (data) => {
-    console.log("게시글 데이터", data);
-  };
+  const handleSubmit = (data) => {};
   const [showPostUploadModal, setShowPostUploadModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
 

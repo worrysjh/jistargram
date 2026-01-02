@@ -13,8 +13,6 @@ function LoginPage() {
   const loginSuccess = useAuthStore((state) => state.login);
 
   const handleLogin = async (user_name, passwd) => {
-    console.log("로그인 시도:", user_name);
-
     // 정규식
     const USERNAME_REGEX = /^[a-zA-Z0-9_]{4,20}$/;
     const PASSWORD_REGEX = /^[a-zA-Z0-9!@#$%^&*]{6,30}$/;
@@ -33,16 +31,13 @@ function LoginPage() {
 
     try {
       const { response, data } = await login(user_name, passwd);
-      console.log("서버 응답:", response.status, data);
 
       if (response.ok && data.access_token) {
         setMessage("로그인 성공");
-        console.log("로그인 성공, 이동 중...");
         loginSuccess({ user_id: data.user_id });
         navigate("/home");
       } else {
         setMessage(`로그인 실패: ${data.message || "알 수 없는 오류"}`);
-        console.log("로그인 실패:", data.message);
       }
     } catch (err) {
       console.error("서버 요청 중 오류:", err);

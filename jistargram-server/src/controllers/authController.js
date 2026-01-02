@@ -63,7 +63,6 @@ async function refreshToken(req, res) {
     const newAccessToken = jwt.sign({ data, iv, tag }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    console.log("갱신성공");
     return res.json({ access_token: newAccessToken });
   } catch (err) {
     res.clearCookie("refresh_token", {

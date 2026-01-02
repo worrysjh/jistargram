@@ -29,7 +29,6 @@ async function getMyProfile(req, res) {
 
   try {
     const result = await services.getProfileService(user_id);
-    console.log("내 프로필 데이터:", result);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -43,7 +42,6 @@ async function getUserProfile(req, res) {
 
   try {
     const result = await services.getProfileService(user_id);
-    console.log("선택 대상 프로필 데이터:", result);
     res.json(result.result);
   } catch (err) {
     console.error(err);
@@ -77,7 +75,7 @@ async function updateProfileImg(req, res) {
     }
     res.json({ message: "프로필 업데이트 성공" });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "프로필 업데이트 실패" });
   }
 }
@@ -100,8 +98,6 @@ async function fetchAllUser(req, res) {
   try {
     const my_id = req.user.user_id;
     const searchKeyword = req.query && req.query.search ? req.query.search : "";
-    console.log("Search Keyword:", searchKeyword);
-    console.log("User ID:", my_id);
     const result = await services.getAllUserInfo(searchKeyword, my_id);
     return res.status(200).json(result);
   } catch (err) {
@@ -114,8 +110,6 @@ async function addFollow(req, res) {
   try {
     const my_id = req.user.user_id;
     const target_id = req.params.user_id;
-
-    console.log("팔로우 요청:", { my_id, target_id });
 
     const result = await services.addFollowUser(my_id, target_id);
     return res.status(200).json(result);
@@ -149,9 +143,7 @@ async function getFollowStatus(req, res) {
   try {
     const my_id = req.user.user_id;
     const target_id = req.params.user_id;
-    console.log("팔로우 상태 조회 요청:", { my_id, target_id });
     const result = await services.getFollowInfo(my_id, target_id);
-    console.log("팔로우 상태 조회 결과:", result);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ message: "팔로우 상태 조회 실패" });

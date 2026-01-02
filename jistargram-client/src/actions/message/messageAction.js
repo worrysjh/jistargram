@@ -14,7 +14,6 @@ export const checkMessageRoom = async (targetUserId) => {
 
     return await res.json();
   } catch (err) {
-    console.error("대화 방 조회 오류:", err);
     throw err;
   }
 };
@@ -38,7 +37,6 @@ export const getMessages = async (targetUserId, offset = 0, limit = 20) => {
         ? msgData.messages
         : [];
   } catch (err) {
-    console.error("메시지 조회 오류:", err);
     throw err;
   }
 };
@@ -59,7 +57,6 @@ export const sendMessageToServer = async (messagePayload) => {
 
     return await res.json();
   } catch (err) {
-    console.error("메시지 전송 실패:", err);
     throw err;
   }
 };
@@ -81,10 +78,8 @@ export const markMessagesAsRead = async (roomId, userId) => {
       throw new Error(`읽음 처리 실패, status: ${res.status}`);
     }
 
-    console.log(`방 입장 - 읽음 처리 완료: ${roomId}`);
     return await res.json();
   } catch (err) {
-    console.error("읽음 처리 실패:", err);
     throw err;
   }
 };

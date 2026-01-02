@@ -20,7 +20,7 @@ async function verifyPasswd(req, res, next) {
 
     next();
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Password verification failed" });
   }
 }

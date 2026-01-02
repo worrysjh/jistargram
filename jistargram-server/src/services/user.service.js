@@ -105,8 +105,6 @@ async function changeStateService(user_id) {
 }
 
 async function getAllUserInfo(keyword = "", my_id = null) {
-  console.log("getAllUserInfo 호출:", { keyword, my_id });
-
   const params = [];
   let query = `
     SELECT 
@@ -131,12 +129,8 @@ async function getAllUserInfo(keyword = "", my_id = null) {
 
   query += ` ORDER BY u.user_name`;
 
-  console.log("실행 쿼리:", query);
-  console.log("파라미터:", params);
-
   try {
     const result = await pool.query(query, params);
-    console.log("조회된 사용자 수:", result.rows.length);
     return result.rows;
   } catch (err) {
     console.error("getAllUserInfo DB error:", err);

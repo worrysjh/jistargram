@@ -96,7 +96,6 @@ async function sendMessage(req, res) {
       message: savedMessage,
     });
   } catch (err) {
-    console.log("메시지 저장 실패: ", err);
     return res.status(500).json({ message: "메시지 저장 실패" });
   }
 }

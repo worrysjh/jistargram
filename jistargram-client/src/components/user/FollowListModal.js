@@ -54,7 +54,6 @@ function FollowListModal({ type, userId, onClose }) {
         if (!res || !res.ok) throw new Error("목록 조회 실패");
 
         const data = await res.json();
-        console.log("Fetched users:", data);
 
         const uniqueUsers = Array.from(
           new Map(data.map((u) => [u.user_id, u])).values()

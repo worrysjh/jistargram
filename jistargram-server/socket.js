@@ -18,8 +18,6 @@ module.exports = (server) => {
 
   Promise.all([pubClient.connect(), subClient.connect()])
     .then(() => {
-      console.log("Connected to Redis for Socket.io adapter");
-
       // Socket.io 어댑터 적용
       io.adapter(createAdapter(pubClient, subClient));
 
@@ -53,10 +51,6 @@ module.exports = (server) => {
 
       // Socket 이벤트 핸들러
       io.on("connection", (socket) => {
-        console.log(
-          `사용자 연결됨: ${socket.id} (user_id: ${socket.user?.user_id})`
-        );
-
         socket.on("join_room", (data) => {
           const { roomId, userId, partnerId } = data;
           const authenticatedUserId = socket.user?.user_id;
@@ -94,7 +88,6 @@ module.exports = (server) => {
 
           // 검증 성공 - 방 입장
           socket.join(roomId);
-          console.log(`${roomId} 방 입장 - 사용자: ${userId}`);
         });
 
         socket.on("leave_room", async (data) => {
@@ -102,7 +95,6 @@ module.exports = (server) => {
 
           try {
             socket.leave(room_id);
-            console.log(`${user_id}가 ${room_id} 방 퇴장`);
           } catch (err) {
             console.error(
               `방 퇴장 중 오류 (room: ${room_id}, user: ${user_id}):`,
@@ -112,13 +104,10 @@ module.exports = (server) => {
         });
 
         socket.on("send_message", (message) => {
-          console.log(`[${socket.id}] 메시지 전송 및 Redis 발행: `, message);
           io.to(message.roomId).emit("receive_message", message);
         });
 
-        socket.on("disconnect", () => {
-          console.log("사용자 연결 해제:", socket.id);
-        });
+        socket.on("disconnect", () => {});
       });
     })
     .catch((err) => {

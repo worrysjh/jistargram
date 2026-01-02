@@ -33,7 +33,6 @@ export default function MessageModal({ onClose, initialTargetUser }) {
       }
 
       const data = await chatUserListRes.json();
-      console.log("=== 새로고침된 방 목록 ===", data);
 
       const roomList = Array.isArray(data)
         ? data
@@ -70,7 +69,7 @@ export default function MessageModal({ onClose, initialTargetUser }) {
         });
       });
     };
-  }, [currentUser?.user_id, rooms.length]);
+  }, [currentUser?.user_id, rooms]);
 
   // receive_message 이벤트 리스닝으로 실시간 room 목록 갱신
   useEffect(() => {
@@ -110,7 +109,6 @@ export default function MessageModal({ onClose, initialTargetUser }) {
           return;
         }
         const me = await meRes.json();
-        console.log("fetched current user:", me);
         if (!mounted) return;
         setCurrentUser(me);
 
@@ -137,7 +135,6 @@ export default function MessageModal({ onClose, initialTargetUser }) {
         }
 
         const data = await chatUserListRes.json();
-        console.log("fetched users:", data);
 
         const roomList = Array.isArray(data)
           ? data

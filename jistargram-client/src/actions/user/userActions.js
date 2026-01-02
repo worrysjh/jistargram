@@ -2,7 +2,6 @@ import { authFetch } from "utils/authFetch";
 
 export async function fetchUserList(searchKeyword = "") {
   const base = `${process.env.REACT_APP_API_URL}/users/all`;
-  console.log("Fetching users with keyword:", searchKeyword);
   const url = new URL(base);
   if (searchKeyword) {
     url.searchParams.set("search", searchKeyword);

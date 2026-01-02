@@ -18,18 +18,13 @@ async function connectToDBWithExponentialBackoff(retry = 0) {
   const delay = Math.pow(2, retry) * 1000;
   try {
     client = await db.connect();
-    console.log("Connected to PostgreSQL");
-
-    server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    server.listen(PORT, () => {});
   } catch (err) {
     console.error(
       `PostgreSQL connection failed (attempt ${retry + 1}):`,
       err.message
     );
     if (retry < MAX_RETRIES) {
-      console.log(`Retrying in ${delay / 1000} seconds...`);
       setTimeout(() => connectToDBWithExponentialBackoff(retry + 1), delay);
     } else {
       console.error("All DB connection attempts failed. Exiting.");

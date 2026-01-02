@@ -15,8 +15,11 @@ services:
       - "4001:4000"
     env_file:
       - .env.development
+    environment:
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - db
+      - redis
 
   db:
     image: postgres:15
@@ -26,6 +29,10 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./jistargram-server/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:alpine
+    restart: always
 
 volumes:
   pgdata:

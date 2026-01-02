@@ -55,7 +55,6 @@ export default function ChatWindow({
   const loadMoreMessages = useCallback(async () => {
     if (!roomId || isLoadingMessages || !hasMore) return;
 
-    console.log("이전 메시지 로딩 시작, 현재 offset:", offset);
     setIsLoadingMessages(true);
     const newOffset = offset + limit;
 
@@ -66,10 +65,7 @@ export default function ChatWindow({
         limit
       );
 
-      console.log(`불러온 메시지 개수: ${newMessages.length}`);
-
       if (newMessages.length < limit) {
-        console.log("더 이상 불러올 메시지 없음");
         setHasMore(false);
       }
 
@@ -103,7 +99,6 @@ export default function ChatWindow({
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && hasMore && !isLoadingMessages) {
-            console.log("첫 메시지 도달 - 이전 메시지 로드");
             loadMoreMessages();
           }
         },
@@ -229,7 +224,6 @@ export default function ChatWindow({
             setMessages(list);
             setIsLoadingMessages(false);
           }
-          console.log("기존 메시지 불러오기 성공:", list);
         } else {
           if (mounted) {
             setRoomId(null);
@@ -255,11 +249,9 @@ export default function ChatWindow({
   // receive_message 핸들러
   useEffect(() => {
     const handleReceive = (message) => {
-      console.log("메시지 수신:", message);
 
       // 현재 방의 메시지가 아니면 무시
       if (message.roomId !== roomId) {
-        console.log(`다른 방의 메시지 무시 - 현재 방: ${roomId}, 메시지 방: ${message.roomId}`);
         return;
       }
 
@@ -314,12 +306,10 @@ export default function ChatWindow({
 
     try {
       const result = await sendMessageToServer(messagePayload);
-      console.log("메시지 저장 성공:", result);
 
       const targetRoomId = result.room_id;
 
       if (!roomId && targetRoomId) {
-        console.log("최초 메시지 - Room 즉시 참가: ", targetRoomId);
         socket.emit("join_room", {
           roomId: targetRoomId,
           userId: currentUser.user_id,
@@ -345,7 +335,6 @@ export default function ChatWindow({
       );
 
       socket.emit("send_message", confirmedMessage);
-      console.log("메시지 소켓 전송:", confirmedMessage);
     } catch (err) {
       setMessages((prev) =>
         prev.filter((msg) => msg.message_id !== tempMessage.message_id)

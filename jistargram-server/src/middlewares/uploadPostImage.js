@@ -27,9 +27,7 @@ async function uploadToSupabase(req, res, next) {
   try {
     const file = req.file;
     const fileExt = file.originalname.split(".").pop();
-    // 확장자를 제외한 순수 파일명 추출
     const originalName = file.originalname.replace(/\.[^/.]+$/, "");
-    // username + 파일명 + 현재시간
     const fileName = `${req.user.user_name}_${originalName}_${Date.now()}.${fileExt}`;
     const filePath = `post_imgs/${fileName}`;
 

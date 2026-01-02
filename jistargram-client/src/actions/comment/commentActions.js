@@ -41,7 +41,6 @@ export async function fetchComments(post_id) {
     const data = await res.json();
     return data;
   } catch (err) {
-    console.error("댓글 로딩 실패:", err);
     return null;
   }
 }

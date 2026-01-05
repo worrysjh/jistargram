@@ -1,4 +1,5 @@
 const services = require("../services");
+const { sanitizeHtml } = require("../utils/sanitizeUtils");
 
 //게시글 등록
 async function uploadPost(req, res) {
@@ -10,10 +11,11 @@ async function uploadPost(req, res) {
 
   const user_id = req.user.user_id;
   const { content } = req.body;
+  const sanitizeContent = sanitizeHtml(content);
   const media_url = req.file.supabaseUrl;
 
   try {
-    await services.uploadService({ user_id, content, media_url });
+    await services.uploadService({ user_id, content: sanitizeContent, media_url });
     res.status(200).json({ message: "게시글 등록 성공" });
   } catch (err) {
     console.error(err);
@@ -39,11 +41,12 @@ async function getAllPost(req, res) {
 //게시글 수정
 async function updatePost(req, res) {
   const { content, existingImage } = req.body;
-  const post_id = req.params.post_id;
+  const post_id = req.params.post_id; 
+  const sanitizeContent = sanitizeHtml(content);
   const media_url = req.file ? req.file.supabaseUrl : existingImage;
 
   try {
-    await services.updatePostService({ content, media_url, post_id });
+    await services.updatePostService({ content: sanitizeContent, media_url, post_id });
     res.json({ message: "게시글 수정에 성공하였습니다." });
   } catch (err) {
     console.error(err);

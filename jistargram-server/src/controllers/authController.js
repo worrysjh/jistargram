@@ -120,6 +120,25 @@ async function verifyCode(req, res) {
   }
 }
 
+async function resetPassword(req, res) {
+  const { email, newPassword } = req.body;
+  if (!email || !newPassword) {
+    return res.status(400).json({ message: "필수 정보가 누락되었습니다." });
+  }
+
+  try {
+    const result = await services.resetPasswordService(email, newPassword);
+    if (result.success) {
+      res.json({ message: "비밀번호가 성공적으로 변경되었습니다." });
+    } else {
+      res.status(400).json({ message: result.message });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "비밀번호 변경 중 오류 발생" });
+  }
+}
+
 function logout(_req, res) {
   res.clearCookie("access_token", {
     httpOnly: true,
@@ -134,4 +153,11 @@ function logout(_req, res) {
   res.status(200).json({ message: "로그아웃 완료" });
 }
 
-module.exports = { login, refreshToken, logout, sendVerificationCode, verifyCode };
+module.exports = {
+  login,
+  refreshToken,
+  logout,
+  sendVerificationCode,
+  verifyCode,
+  resetPassword,
+};

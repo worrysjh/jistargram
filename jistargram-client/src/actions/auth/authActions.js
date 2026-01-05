@@ -72,3 +72,16 @@ export async function verifyEmailCode(email, code) {
   const data = await response.json();
   return { response, data };
 }
+
+export async function resetPassword(email, newPassword) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/auth/resetPassword`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, newPassword }),
+    }
+  );
+  const data = await response.json();
+  return { response, data };
+}

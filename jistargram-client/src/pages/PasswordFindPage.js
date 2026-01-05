@@ -70,7 +70,9 @@ function PasswordFindPage() {
       if (response.ok) {
         setIsEmailVerified(true);
         setVerifyStatusMessage("* 인증에 성공하였습니다.");
-        alert("이메일 인증에 성공하였습니다. 비밀번호 재설정 페이지로 이동합니다. (기능 준비 중)");
+        setTimeout(() => {
+          navigate("/password-reset", { state: { email } });
+        }, 1200);
       } else {
         setVerifyStatusMessage("* 인증에 실패하였습니다.");
       }

@@ -124,4 +124,31 @@ async function verifyCodeService(email, code) {
   }
 }
 
-module.exports = { loginService, getRefreshToken, sendVerificationService, verifyCodeService };
+async function resetPasswordService(email, newPassword) {
+  try {
+    const saltRounds = 10;
+    const hashedPasswd = await bcrypt.hash(newPassword, saltRounds);
+    
+    const result = await pool.query(
+      `UPDATE users SET passwd = $1 WHERE email = $2`,
+      [hashedPasswd, email]
+    );
+
+    if (result.rowCount === 0) {
+      return { success: false, message: "사용자를 찾을 수 없습니다." };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("Password reset error:", err);
+    throw err;
+  }
+}
+
+module.exports = {
+  loginService,
+  getRefreshToken,
+  sendVerificationService,
+  verifyCodeService,
+  resetPasswordService,
+};

@@ -123,7 +123,7 @@
   padding: 8px 12px;
 }
 
-.comment-block p {
+.comment-block .comment-body {
   margin: 0;
   line-height: 1.5;
 }
@@ -165,28 +165,29 @@
   border-radius: 4px;
 }
 
-/* 답글 입력창과 감싸진 답글 영역이 겹치지 않게 여백 조정 */
-.reply-input {
-  margin-top: 2px;
-  margin-left: 16px;
-  padding: 10px;
+/* 답글 및 수정 입력창 공통 */
+.comment-inline-input {
+  margin-top: 4px;
+  padding: 8px;
   display: flex;
   gap: 8px;
   align-items: center;
   background-color: #fafafa;
   border-radius: 4px;
+  border: 1px solid #efefef;
 }
 
-.reply-input input {
+.comment-inline-input input {
   flex: 1;
   border: 1px solid #ddd;
   padding: 6px 10px;
   border-radius: 4px;
   outline: none;
   font-size: 13px;
+  background: white;
 }
 
-.reply-input button {
+.comment-inline-input button {
   background: #0095f6;
   color: white;
   border: none;
@@ -195,13 +196,19 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-.reply-input button:last-child {
+.comment-inline-input button:last-child {
   background: #dbdbdb;
   color: #262626;
 }
 
-.reply-input button:hover {
+.comment-inline-input button:hover {
   opacity: 0.8;
+}
+
+/* 답글일 경우에만 들여쓰기 */
+.reply-input-wrapper {
+  margin-left: 20px;
 }

@@ -44,3 +44,16 @@ export async function fetchComments(post_id) {
     return null;
   }
 }
+
+// 댓글 수정
+export async function updateComment(comment_id, comment_content) {
+  const res = await authFetch(
+    `${process.env.REACT_APP_API_URL}/posts/updateComment`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ comment_id, comment_content }),
+    }
+  );
+  if (!res.ok) throw new Error("댓글 수정 실패");
+}

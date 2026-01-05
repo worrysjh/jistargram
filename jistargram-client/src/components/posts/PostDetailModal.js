@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "styles/PostDetailModal.css";
-import { addComment, deleteComment } from "actions/comment/commentActions";
+import { addComment, deleteComment, updateComment } from "actions/comment/commentActions";
 import { fetchAndFlattenComments } from "utils/commentUtils";
 import { fetchFollowStatus, addFollowUser } from "actions/user/userActions";
 import { updatePost, deletePost } from "actions/post/postActions";
@@ -23,6 +23,8 @@ function PostDetailModal({ post, onClose }) {
   const [menuOpenFor, setMenuOpenFor] = useState(null);
   const [followStatus, setFollowStatus] = useState(null);
   const [updateModal, setUpdateModal] = useState({ open: false, post: null });
+  const [editTarget, setEditTarget] = useState(null);
+  const [editContent, setEditContent] = useState("");
   const target_user_id = post.user_id;
   const post_id = post.post_id;
   const post_created_at = post.created_at;
@@ -140,6 +142,21 @@ function PostDetailModal({ post, onClose }) {
     }
   };
 
+  // 댓글 수정
+  const handleUpdateComment = async (comment_id) => {
+    if (!editContent.trim()) return;
+    try {
+      await updateComment(comment_id, editContent);
+      setEditTarget(null);
+      setEditContent("");
+
+      const { comments } = await fetchAndFlattenComments(post_id);
+      setComments(comments);
+    } catch (err) {
+      console.error("댓글 수정 에러:", err);
+    }
+  };
+
   const handleFollow = async (user_id) => {
     try {
       await addFollowUser(user_id);
@@ -214,7 +231,7 @@ function PostDetailModal({ post, onClose }) {
                         key={c.comment_id}
                         className={`comment-block${c.parent_id ? " reply-comment" : ""}`}
                       >
-                        <p>
+                        <div className="comment-body">
                           <Link
                             to={
                               isOwner ? "/profile" : `/profile?user_id=${c.user_id}`
@@ -227,8 +244,30 @@ function PostDetailModal({ post, onClose }) {
                             <span style={{ color: "gray", fontStyle: "italic" }}>
                               삭제된 댓글입니다.
                             </span>
+                          ) : editTarget === c.comment_id ? (
+                            <div className="comment-inline-input">
+                              <input
+                                type="text"
+                                value={editContent}
+                                onChange={(e) => setEditContent(e.target.value)}
+                                autoFocus
+                              />
+                              <button
+                                onClick={() =>
+                                  handleUpdateComment(c.comment_id)
+                                }
+                              >
+                                수정
+                              </button>
+                              <button onClick={() => setEditTarget(null)}>
+                                취소
+                              </button>
+                            </div>
                           ) : (
                             <>
+                              {c.comment_state === "수정" && (
+                                <span className="modified-text">(수정됨) </span>
+                              )}
                               {c.comment_content}
                               <br />
                               <LikeButton
@@ -236,7 +275,10 @@ function PostDetailModal({ post, onClose }) {
                                 target_type="comment"
                               />
                               <small className="comment-date">
-                                {calculateDateDifference(c.created_at, new Date())}
+                                {calculateDateDifference(
+                                  c.created_at,
+                                  new Date()
+                                )}
                               </small>
                               <span
                                 className="comment-action reply-text"
@@ -251,6 +293,15 @@ function PostDetailModal({ post, onClose }) {
                               {loginUserId === c.user_id && (
                                 <>
                                   <span
+                                    className="comment-action edit-text"
+                                    onClick={() => {
+                                      setEditTarget(c.comment_id);
+                                      setEditContent(c.comment_content);
+                                    }}
+                                  >
+                                    수정
+                                  </span>
+                                  <span
                                     className="comment-action delete-text"
                                     onClick={() =>
                                       handleDeleteComment(c.comment_id)
@@ -262,21 +313,26 @@ function PostDetailModal({ post, onClose }) {
                               )}
                             </>
                           )}
-                        </p>
+                        </div>
 
-                        {/* replyTarget과 맞을 때만 렌더링 */}
+                        {/* 답글 입력창 */}
                         {replyTarget === c.comment_id && (
-                          <div className="reply-input">
-                            <input
-                              type="text"
-                              placeholder="답글 달기..."
-                              value={replyContent}
-                              onChange={(e) => setReplyContent(e.target.value)}
-                            />
-                            <button onClick={handleReplySubmit}>등록</button>
-                            <button onClick={() => setReplyTarget(null)}>
-                              취소
-                            </button>
+                          <div className="reply-input-wrapper">
+                            <div className="comment-inline-input">
+                              <input
+                                type="text"
+                                placeholder="답글 달기..."
+                                value={replyContent}
+                                onChange={(e) =>
+                                  setReplyContent(e.target.value)
+                                }
+                                autoFocus
+                              />
+                              <button onClick={handleReplySubmit}>등록</button>
+                              <button onClick={() => setReplyTarget(null)}>
+                                취소
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>

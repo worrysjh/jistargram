@@ -1,13 +1,12 @@
 import { authFetch } from "utils/authFetch";
 
 export async function fetchUserList(searchKeyword = "") {
-  const base = `${process.env.REACT_APP_API_URL}/users/all`;
-  const url = new URL(base);
+  let url = `${process.env.REACT_APP_API_URL}/users/all`;
+  
   if (searchKeyword) {
-    url.searchParams.set("search", searchKeyword);
+    url += `?search=${encodeURIComponent(searchKeyword)}`;
   }
-
-  const res = await authFetch(url.toString(), { method: "GET" });
+  const res = await authFetch(url, { method: "GET" });
   if (!res.ok) throw new Error("네트워크 응답 실패");
   return res.json();
 }

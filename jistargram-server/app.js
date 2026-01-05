@@ -7,6 +7,7 @@ require("dotenv").config({
       : path.resolve(__dirname, "../.env.development"),
 });
 const express = require("express");
+const helmet = require("helmet");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./src/routes/userRoutes");
@@ -16,6 +17,12 @@ const authRoutes = require("./src/routes/authRoutes");
 const messageRoutes = require("./src/routes/messageRoutes");
 
 const app = express();
+
+// 프록시 환경(Nginx)에서 client IP를 올바르게 인식하기 위한 설정
+app.set("trust proxy", 1);
+
+// 보안 헤더 설정
+app.use(helmet());
 
 // CORS 설정
 app.use(

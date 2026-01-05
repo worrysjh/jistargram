@@ -59,7 +59,7 @@ async function getRefreshToken(user_id, token) {
     `SELECT * FROM refresh_tokens WHERE user_id = $1 AND payload = $2`,
     [user_id, token]
   );
-  return { result };
+  return result;
 }
 
 module.exports = { loginService, getRefreshToken };

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const services = require("../services");
+const { decryptData } = require("../utils/cryptoUtils");
 
 // 로그인
 async function login(req, res) {
@@ -50,12 +51,15 @@ async function refreshToken(req, res) {
   if (!token) return res.status(401).json({ message: "Refresh token 없음" });
 
   try {
-    //refresh 토큰 검증
+    // refresh 토큰 검증
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
     const { data, iv, tag } = decoded;
 
+    // 데이터 복호화하여 user_id 추출
+    const user = decryptData({ data, iv, tag });
+
     // DB에 저장된 토큰과 일치하는지 확인
-    const result = await services.getRefreshToken(data.user_id, token);
+    const result = await services.getRefreshToken(user.user_id, token);
     if (result.rowCount === 0) {
       return res.status(403).json({ message: "유효하지 않은 refresh token" });
     }
@@ -63,6 +67,14 @@ async function refreshToken(req, res) {
     const newAccessToken = jwt.sign({ data, iv, tag }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+
+    res.cookie("access_token", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 60 * 60 * 1000,
+    });
+
     return res.json({ access_token: newAccessToken });
   } catch (err) {
     res.clearCookie("refresh_token", {

@@ -87,6 +87,39 @@ async function refreshToken(req, res) {
   }
 }
 
+// 인증번호 발송
+async function sendVerificationCode(req, res) {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "이메일이 필요합니다." });
+
+  try {
+    await services.sendVerificationService(email);
+    res.json({ message: "인증번호가 발송되었습니다." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "인증번호 발송 실패" });
+  }
+}
+
+// 인증번호 검증
+async function verifyCode(req, res) {
+  const { email, code } = req.body;
+  if (!email || !code)
+    return res.status(400).json({ message: "이메일과 인증번호가 필요합니다." });
+
+  try {
+    const result = await services.verifyCodeService(email, code);
+    if (result.success) {
+      res.json({ message: "인증 성공" });
+    } else {
+      res.status(400).json({ message: result.message });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "인증 확인 중 오류 발생" });
+  }
+}
+
 function logout(_req, res) {
   res.clearCookie("access_token", {
     httpOnly: true,
@@ -101,4 +134,4 @@ function logout(_req, res) {
   res.status(200).json({ message: "로그아웃 완료" });
 }
 
-module.exports = { login, refreshToken, logout };
+module.exports = { login, refreshToken, logout, sendVerificationCode, verifyCode };

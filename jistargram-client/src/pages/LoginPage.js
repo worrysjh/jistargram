@@ -53,9 +53,9 @@ function LoginPage() {
             <h2>Jistargram</h2>
             <LoginForm onLogin={handleLogin} />
             <div className="divider">또는</div>
-            <a href="forgot" className="forgot-link">
+            <Link to="/password-find" className="forgot-link">
               비밀번호를 잊으셨나요?
-            </a>
+            </Link>
             <p className="login-message">{message}</p>
           </div>
 

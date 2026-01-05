@@ -46,3 +46,29 @@ export async function register({
   const data = await response.json();
   return { response, data };
 }
+
+export async function sendVerificationCode(email) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/auth/sendVerification`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    }
+  );
+  const data = await response.json();
+  return { response, data };
+}
+
+export async function verifyEmailCode(email, code) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/auth/verifyCode`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code }),
+    }
+  );
+  const data = await response.json();
+  return { response, data };
+}

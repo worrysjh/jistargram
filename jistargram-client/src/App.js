@@ -10,6 +10,7 @@ import MessageModal from "components/messages/MessageModal";
 import RegisterPage from "pages/RegisterPage";
 import ProfilePage from "pages/ProfilePage";
 import ProfileChangePage from "pages/ProfileChangePage";
+import PasswordFindPage from "pages/PasswordFindPage";
 
 function App() {
   const [isPostUploadModalOpen, setIsPostUploadModalOpen] = useState(false);
@@ -37,6 +38,7 @@ function App() {
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/password-find" element={<PasswordFindPage />} />
       </Routes>
 
       {isPostUploadModalOpen && (

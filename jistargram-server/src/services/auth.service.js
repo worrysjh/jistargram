@@ -2,6 +2,8 @@ const pool = require("../models/db");
 const { encryptData } = require("../utils/cryptoUtils");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const redisClient = require("../config/redis");
+const nodemailer = require("nodemailer");
 
 // 로그인
 async function loginService({ user_name, passwd }) {
@@ -62,4 +64,64 @@ async function getRefreshToken(user_id, token) {
   return result;
 }
 
-module.exports = { loginService, getRefreshToken };
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+async function sendVerificationService(email) {
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  try {
+    await redisClient.set(`verify:${email}`, code, {
+      EX: 300,
+    });
+
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      await transporter.sendMail({
+        from: `"Jistargram" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "[Jistargram] 이메일 인증 번호입니다.",
+        text: `인증 번호: ${code} (5분 이내에 입력해주세요)`,
+      });
+    } else {
+      console.warn("EMAIL_USER 또는 EMAIL_PASS 환경변수가 설정되지 않았습니다.");
+      console.log(`[DEV ONLY] 이메일(${email}) 인증번호: [ ${code} ]`);
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("Verification code storage/send error:", err);
+    throw err;
+  }
+}
+
+async function verifyCodeService(email, code) {
+  try {
+    // Redis에서 해당 이메일의 코드 조회
+    const savedCode = await redisClient.get(`verify:${email}`);
+
+    if (!savedCode) {
+      return { success: false, message: "인증번호가 만료되었거나 존재하지 않습니다." };
+    }
+
+    if (savedCode !== code) {
+      return { success: false, message: "인증번호가 일치하지 않습니다." };
+    }
+
+    // 인증 성공 시 Redis에서 삭제
+    await redisClient.del(`verify:${email}`);
+
+    return { success: true };
+  } catch (err) {
+    console.error("Verification check error:", err);
+    throw err;
+  }
+}
+
+module.exports = { loginService, getRefreshToken, sendVerificationService, verifyCodeService };

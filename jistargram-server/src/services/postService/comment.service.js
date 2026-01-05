@@ -29,7 +29,7 @@ async function deleteCommentService(comment_id) {
 // 기능 미구현
 async function updateCommentService(comment_id, comment_content) {
   await pool.query(
-    `UPDATE comments SET comment_content = $1 WHERE comment_id = $2`,
+    `UPDATE comments SET comment_content = $1, comment_state = '수정' WHERE comment_id = $2`,
     [comment_content, comment_id]
   );
 

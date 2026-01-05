@@ -116,12 +116,13 @@ async function countPost(req, res) {
 async function newComment(req, res) {
   const { post_id, comment_content, parent_id } = req.body;
   const user_id = req.user.user_id;
+  const sanitizedContent = sanitizeHtml(comment_content);
 
   try {
     await services.newCommentService({
       post_id,
       user_id,
-      comment_content,
+      comment_content: sanitizedContent,
       parent_id: parent_id || null,
     });
     res.json({ message: "(대)댓글 작성 성공" });
@@ -154,9 +155,10 @@ async function showAllComment(req, res) {
 //댓글 수정
 async function updateComment(req, res) {
   const { comment_id, comment_content } = req.body;
+  const sanitizedContent = sanitizeHtml(comment_content);
 
   try {
-    await services.updateCommentService(comment_id, comment_content);
+    await services.updateCommentService(comment_id, sanitizedContent);
     res.json({ message: "댓글 수정에 성공하였습니다." });
   } catch (err) {
     console.error(err);
